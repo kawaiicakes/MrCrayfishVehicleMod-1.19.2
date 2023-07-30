@@ -5,7 +5,7 @@ import com.mrcrayfish.vehicle.inventory.container.StorageContainer;
 import com.mrcrayfish.vehicle.util.InventoryUtil;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.container.SimpleNamedContainerProvider;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.fml.network.NetworkHooks;
 
 import javax.annotation.Nullable;
@@ -24,17 +24,17 @@ public interface IStorage
         return this.getStorageInventories().get(key);
     }
 
-    default void readInventories(CompoundNBT tag)
+    default void readInventories(CompoundTag tag)
     {
-        CompoundNBT storageTag = tag.getCompound("Storage");
+        CompoundTag storageTag = tag.getCompound("Storage");
         this.getStorageInventories().forEach((key, storage) -> {
             InventoryUtil.readInventoryToNBT(storageTag, key, storage);
         });
     }
 
-    default void writeInventories(CompoundNBT tag)
+    default void writeInventories(CompoundTag tag)
     {
-        CompoundNBT storageTag = new CompoundNBT();
+        CompoundTag storageTag = new CompoundTag();
         this.getStorageInventories().forEach((key, storage) -> {
             InventoryUtil.writeInventoryToNBT(storageTag, key, storage);
         });

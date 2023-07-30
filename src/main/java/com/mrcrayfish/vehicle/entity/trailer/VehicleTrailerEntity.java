@@ -7,11 +7,11 @@ import com.mrcrayfish.vehicle.init.ModEntities;
 import com.mrcrayfish.vehicle.network.PacketHandler;
 import com.mrcrayfish.vehicle.network.message.MessageAttachTrailer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -20,7 +20,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
  */
 public class VehicleTrailerEntity extends TrailerEntity
 {
-    public VehicleTrailerEntity(EntityType<? extends VehicleTrailerEntity> type, World worldIn)
+    public VehicleTrailerEntity(EntityType<? extends VehicleTrailerEntity> type, Level worldIn)
     {
         super(type, worldIn);
     }
@@ -42,7 +42,7 @@ public class VehicleTrailerEntity extends TrailerEntity
     {
         if(passenger instanceof VehicleEntity)
         {
-            Vector3d offset = ((VehicleEntity) passenger).getProperties().getTrailerOffset().yRot((float) Math.toRadians(-this.yRot));
+            Vec3 offset = ((VehicleEntity) passenger).getProperties().getTrailerOffset().yRot((float) Math.toRadians(-this.yRot));
             passenger.setPos(this.getX() + offset.x, this.getY() + getPassengersRidingOffset() + offset.y, this.getZ() + offset.z);
             passenger.yRotO = this.yRotO;
             passenger.yRot = this.yRot;
@@ -63,7 +63,7 @@ public class VehicleTrailerEntity extends TrailerEntity
         }, (entity, rightClick) -> {
             if(rightClick) {
                 PacketHandler.getPlayChannel().sendToServer(new MessageAttachTrailer(entity.getId()));
-                Minecraft.getInstance().player.swing(Hand.MAIN_HAND);
+                Minecraft.getInstance().player.swing(InteractionHand.MAIN_HAND);
             }
         }, entity -> true);
     }

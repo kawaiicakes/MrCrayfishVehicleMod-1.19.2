@@ -1,14 +1,14 @@
 package com.mrcrayfish.vehicle.util;
 
 import com.mrcrayfish.vehicle.crafting.WorkstationIngredient;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListNBT;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.Constants;
 
 import java.util.Random;
@@ -20,7 +20,7 @@ public class InventoryUtil
 {
     private static final Random RANDOM = new Random();
 
-    public static void writeInventoryToNBT(CompoundNBT compound, String tagName, IInventory inventory)
+    public static void writeInventoryToNBT(CompoundTag compound, String tagName, IInventory inventory)
     {
         ListNBT tagList = new ListNBT();
         for(int i = 0; i < inventory.getContainerSize(); i++)
@@ -28,7 +28,7 @@ public class InventoryUtil
             ItemStack stack = inventory.getItem(i);
             if(!stack.isEmpty())
             {
-                CompoundNBT stackTag = new CompoundNBT();
+                CompoundTag stackTag = new CompoundTag();
                 stackTag.putByte("Slot", (byte) i);
                 stack.save(stackTag);
                 tagList.add(stackTag);
@@ -37,14 +37,14 @@ public class InventoryUtil
         compound.put(tagName, tagList);
     }
 
-    public static <T extends IInventory> T readInventoryToNBT(CompoundNBT compound, String tagName, T t)
+    public static <T extends IInventory> T readInventoryToNBT(CompoundTag compound, String tagName, T t)
     {
         if(compound.contains(tagName, Constants.NBT.TAG_LIST))
         {
             ListNBT tagList = compound.getList(tagName, Constants.NBT.TAG_COMPOUND);
             for(int i = 0; i < tagList.size(); i++)
             {
-                CompoundNBT tagCompound = tagList.getCompound(i);
+                CompoundTag tagCompound = tagList.getCompound(i);
                 byte slot = tagCompound.getByte("Slot");
                 if(slot >= 0 && slot < t.getContainerSize())
                 {
@@ -55,7 +55,7 @@ public class InventoryUtil
         return t;
     }
 
-    public static void dropInventoryItems(World worldIn, double x, double y, double z, IInventory inventory)
+    public static void dropInventoryItems(Level worldIn, double x, double y, double z, IInventory inventory)
     {
         for(int i = 0; i < inventory.getContainerSize(); ++i)
         {
@@ -68,7 +68,7 @@ public class InventoryUtil
         }
     }
 
-    public static void spawnItemStack(World worldIn, double x, double y, double z, ItemStack stack)
+    public static void spawnItemStack(Level worldIn, double x, double y, double z, ItemStack stack)
     {
         float offsetX = -0.25F + RANDOM.nextFloat() * 0.5F;
         float offsetY = RANDOM.nextFloat() * 0.8F;
@@ -83,12 +83,12 @@ public class InventoryUtil
         }
     }
 
-    public static int getItemAmount(PlayerEntity player, Item item)
+    public static int getItemAmount(Player player, Item item)
     {
         int amount = 0;
-        for(int i = 0; i < player.inventory.getContainerSize(); i++)
+        for(int i = 0; i < player.getInventory().getContainerSize(); i++)
         {
-            ItemStack stack = player.inventory.getItem(i);
+            ItemStack stack = player.getInventory().getItem(i);
             if(!stack.isEmpty() && stack.getItem() == item)
             {
                 amount += stack.getCount();
@@ -97,10 +97,10 @@ public class InventoryUtil
         return amount;
     }
 
-    public static boolean hasItemAndAmount(PlayerEntity player, Item item, int amount)
+    public static boolean hasItemAndAmount(Player player, Item item, int amount)
     {
         int count = 0;
-        for(ItemStack stack : player.inventory.items)
+        for(ItemStack stack : player.getInventory().items)
         {
             if(stack != null && stack.getItem() == item)
             {
@@ -110,13 +110,13 @@ public class InventoryUtil
         return amount <= count;
     }
 
-    public static boolean removeItemWithAmount(PlayerEntity player, Item item, int amount)
+    public static boolean removeItemWithAmount(Player player, Item item, int amount)
     {
         if(hasItemAndAmount(player, item, amount))
         {
-            for(int i = 0; i < player.inventory.getContainerSize(); i++)
+            for(int i = 0; i < player.getInventory().getContainerSize(); i++)
             {
-                ItemStack stack = player.inventory.getItem(i);
+                ItemStack stack = player.getInventory().getItem(i);
                 if(!stack.isEmpty() && stack.getItem() == item)
                 {
                     if(amount - stack.getCount() < 0)
@@ -127,7 +127,7 @@ public class InventoryUtil
                     else
                     {
                         amount -= stack.getCount();
-                        player.inventory.items.set(i, ItemStack.EMPTY);
+                        player.getInventory().items.set(i, ItemStack.EMPTY);
                         if(amount == 0) return true;
                     }
                 }
@@ -136,10 +136,10 @@ public class InventoryUtil
         return false;
     }
 
-    public static int getItemStackAmount(PlayerEntity player, ItemStack find)
+    public static int getItemStackAmount(Player player, ItemStack find)
     {
         int count = 0;
-        for(ItemStack stack : player.inventory.items)
+        for(ItemStack stack : player.getInventory().items)
         {
             if(!stack.isEmpty() && areItemStacksEqualIgnoreCount(stack, find))
             {
@@ -149,10 +149,10 @@ public class InventoryUtil
         return count;
     }
 
-    public static boolean hasItemStack(PlayerEntity player, ItemStack find)
+    public static boolean hasItemStack(Player player, ItemStack find)
     {
         int count = 0;
-        for(ItemStack stack : player.inventory.items)
+        for(ItemStack stack : player.getInventory().items)
         {
             if(!stack.isEmpty() && areItemStacksEqualIgnoreCount(stack, find))
             {
@@ -162,10 +162,10 @@ public class InventoryUtil
         return find.getCount() <= count;
     }
 
-    public static boolean hasWorkstationIngredient(PlayerEntity player, WorkstationIngredient find)
+    public static boolean hasWorkstationIngredient(Player player, WorkstationIngredient find)
     {
         int count = 0;
-        for(ItemStack stack : player.inventory.items)
+        for(ItemStack stack : player.getInventory().items)
         {
             if(!stack.isEmpty() && find.test(stack))
             {
@@ -175,12 +175,12 @@ public class InventoryUtil
         return find.getCount() <= count;
     }
 
-    public static boolean removeItemStack(PlayerEntity player, ItemStack find)
+    public static boolean removeItemStack(Player player, ItemStack find)
     {
         int amount = find.getCount();
-        for(int i = 0; i < player.inventory.getContainerSize(); i++)
+        for(int i = 0; i < player.getInventory().getContainerSize(); i++)
         {
-            ItemStack stack = player.inventory.getItem(i);
+            ItemStack stack = player.getInventory().getItem(i);
             if(!stack.isEmpty() && areItemStacksEqualIgnoreCount(stack, find))
             {
                 if(amount - stack.getCount() < 0)
@@ -191,7 +191,7 @@ public class InventoryUtil
                 else
                 {
                     amount -= stack.getCount();
-                    player.inventory.items.set(i, ItemStack.EMPTY);
+                    player.getInventory().items.set(i, ItemStack.EMPTY);
                     if(amount == 0) return true;
                 }
             }
@@ -199,12 +199,12 @@ public class InventoryUtil
         return false;
     }
 
-    public static boolean removeWorkstationIngredient(PlayerEntity player, WorkstationIngredient find)
+    public static boolean removeWorkstationIngredient(Player player, WorkstationIngredient find)
     {
         int amount = find.getCount();
-        for(int i = 0; i < player.inventory.getContainerSize(); i++)
+        for(int i = 0; i < player.getInventory().getContainerSize(); i++)
         {
-            ItemStack stack = player.inventory.getItem(i);
+            ItemStack stack = player.getInventory().getItem(i);
             if(!stack.isEmpty() && find.test(stack))
             {
                 if(amount - stack.getCount() < 0)
@@ -215,7 +215,7 @@ public class InventoryUtil
                 else
                 {
                     amount -= stack.getCount();
-                    player.inventory.items.set(i, ItemStack.EMPTY);
+                    player.getInventory().items.set(i, ItemStack.EMPTY);
                     if(amount == 0) return true;
                 }
             }

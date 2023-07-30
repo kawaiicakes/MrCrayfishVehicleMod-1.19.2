@@ -2,11 +2,11 @@ package com.mrcrayfish.vehicle.tileentity;
 
 import com.mrcrayfish.vehicle.init.ModTileEntities;
 import com.mrcrayfish.vehicle.util.TileEntityUtil;
-import net.minecraft.block.BlockState;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tileentity.TileEntityType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.BlockPos;
 import net.minecraftforge.common.util.Constants;
 
 import java.util.HashSet;
@@ -65,14 +65,14 @@ public class PipeTileEntity extends TileEntitySynced
     {
         if(this.level != null && !this.level.isClientSide())
         {
-            CompoundNBT compound = new CompoundNBT();
+            CompoundTag compound = new CompoundTag();
             this.writeConnections(compound);
             TileEntityUtil.sendUpdatePacket(this, super.save(compound));
         }
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT compound)
+    public void load(BlockState state, CompoundTag compound)
     {
         super.load(state, compound);
         if(compound.contains("DisabledConnections", Constants.NBT.TAG_BYTE_ARRAY))
@@ -86,13 +86,13 @@ public class PipeTileEntity extends TileEntitySynced
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT compound)
+    public CompoundTag save(CompoundTag compound)
     {
         this.writeConnections(compound);
         return super.save(compound);
     }
 
-    private void writeConnections(CompoundNBT compound)
+    private void writeConnections(CompoundTag compound)
     {
         byte[] connections = new byte[this.disabledConnections.length];
         for(int i = 0; i < connections.length; i++)

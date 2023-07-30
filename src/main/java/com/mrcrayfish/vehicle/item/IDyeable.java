@@ -2,8 +2,8 @@ package com.mrcrayfish.vehicle.item;
 
 import com.mrcrayfish.vehicle.util.CommonUtils;
 import net.minecraft.item.DyeItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.common.util.Constants;
 
 import java.util.List;
@@ -15,19 +15,19 @@ public interface IDyeable
 {
     default boolean hasColor(ItemStack stack)
     {
-        CompoundNBT compound = stack.getTag();
-        return compound != null && compound.contains("Color", Constants.NBT.TAG_INT);
+        CompoundTag compound = stack.getTag();
+        return compound != null && compound.contains("Color", Tag.TAG_INT);
     }
 
     default int getColor(ItemStack stack)
     {
-        CompoundNBT compound = stack.getTag();
+        CompoundTag compound = stack.getTag();
         return compound != null ? compound.getInt("Color") : -1;
     }
 
     default void setColor(ItemStack stack, int color)
     {
-        CompoundNBT compound = CommonUtils.getOrCreateStackTag(stack);
+        CompoundTag compound = CommonUtils.getOrCreateStackTag(stack);
         compound.putInt("Color", color);
     }
 

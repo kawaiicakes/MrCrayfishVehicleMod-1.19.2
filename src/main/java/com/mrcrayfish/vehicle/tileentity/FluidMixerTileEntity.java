@@ -10,8 +10,8 @@ import com.mrcrayfish.vehicle.init.ModFluids;
 import com.mrcrayfish.vehicle.init.ModTileEntities;
 import com.mrcrayfish.vehicle.inventory.container.FluidMixerContainer;
 import com.mrcrayfish.vehicle.util.InventoryUtil;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
@@ -19,15 +19,15 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
 import net.minecraft.util.IIntArray;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeHooks;
@@ -204,7 +204,7 @@ public class FluidMixerTileEntity extends TileEntitySynced implements IInventory
     }
 
     @Override
-    public boolean stillValid(PlayerEntity player)
+    public boolean stillValid(Player player)
     {
         return this.level.getBlockEntity(this.worldPosition) == this && player.distanceToSqr((double) this.worldPosition.getX() + 0.5D, (double) this.worldPosition.getY() + 0.5D, (double) this.worldPosition.getZ() + 0.5D) <= 64.0D;
     }
@@ -351,7 +351,7 @@ public class FluidMixerTileEntity extends TileEntitySynced implements IInventory
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT compound)
+    public void load(BlockState state, CompoundTag compound)
     {
         super.load(state, compound);
         if(compound.contains("Items", Constants.NBT.TAG_LIST))
@@ -365,38 +365,38 @@ public class FluidMixerTileEntity extends TileEntitySynced implements IInventory
         }
         if(compound.contains("TankBlaze", Constants.NBT.TAG_COMPOUND))
         {
-            CompoundNBT tagCompound = compound.getCompound("TankBlaze");
+            CompoundTag tagCompound = compound.getCompound("TankBlaze");
             //FluidUtils.fixEmptyTag(tagCompound); //TODO might not need
             this.tankBlaze.readFromNBT(tagCompound);
         }
         if(compound.contains("TankEnderSap", Constants.NBT.TAG_COMPOUND))
         {
-            CompoundNBT tagCompound = compound.getCompound("TankEnderSap");
+            CompoundTag tagCompound = compound.getCompound("TankEnderSap");
             //FluidUtils.fixEmptyTag(tagCompound);
             this.tankEnderSap.readFromNBT(tagCompound);
         }
         if(compound.contains("TankFuelium", Constants.NBT.TAG_COMPOUND))
         {
-            CompoundNBT tagCompound = compound.getCompound("TankFuelium");
+            CompoundTag tagCompound = compound.getCompound("TankFuelium");
             //FluidUtils.fixEmptyTag(tagCompound);
             this.tankFuelium.readFromNBT(tagCompound);
         }
-        if(compound.contains("RemainingFuel", Constants.NBT.TAG_INT))
+        if(compound.contains("RemainingFuel", Tag.TAG_INT))
         {
             this.remainingFuel = compound.getInt("RemainingFuel");
         }
-        if(compound.contains("FuelMaxProgress", Constants.NBT.TAG_INT))
+        if(compound.contains("FuelMaxProgress", Tag.TAG_INT))
         {
             this.fuelMaxProgress = compound.getInt("FuelMaxProgress");
         }
-        if(compound.contains("ExtractionProgress", Constants.NBT.TAG_INT))
+        if(compound.contains("ExtractionProgress", Tag.TAG_INT))
         {
             this.extractionProgress = compound.getInt("ExtractionProgress");
         }
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT compound)
+    public CompoundTag save(CompoundTag compound)
     {
         super.save(compound);
 
@@ -416,25 +416,25 @@ public class FluidMixerTileEntity extends TileEntitySynced implements IInventory
     }
 
     @Override
-    public CompoundNBT getUpdateTag()
+    public CompoundTag getUpdateTag()
     {
-        CompoundNBT tag = super.save(new CompoundNBT());
+        CompoundTag tag = super.save(new CompoundTag());
         this.writeTanks(tag);
         return tag;
     }
 
     @Override
-    public void writeTanks(CompoundNBT compound)
+    public void writeTanks(CompoundTag compound)
     {
-        CompoundNBT tagTankBlaze = new CompoundNBT();
+        CompoundTag tagTankBlaze = new CompoundTag();
         this.tankBlaze.writeToNBT(tagTankBlaze);
         compound.put("TankBlaze", tagTankBlaze);
 
-        CompoundNBT tagTankEnderSap = new CompoundNBT();
+        CompoundTag tagTankEnderSap = new CompoundTag();
         this.tankEnderSap.writeToNBT(tagTankEnderSap);
         compound.put("TankEnderSap", tagTankEnderSap);
 
-        CompoundNBT tagTankFuelium = new CompoundNBT();
+        CompoundTag tagTankFuelium = new CompoundTag();
         this.tankFuelium.writeToNBT(tagTankFuelium);
         compound.put("TankFuelium", tagTankFuelium);
     }
@@ -456,9 +456,9 @@ public class FluidMixerTileEntity extends TileEntitySynced implements IInventory
     }
 
     @Override
-    public ITextComponent getDisplayName()
+    public Component getDisplayName()
     {
-        return this.hasCustomName() ? new StringTextComponent(this.getName()) : new TranslationTextComponent(this.getName());
+        return this.hasCustomName() ? new TextComponent(this.getName()) : new TranslatableContents(this.getName());
     }
 
     @Nullable
@@ -511,7 +511,7 @@ public class FluidMixerTileEntity extends TileEntitySynced implements IInventory
 
     @Nullable
     @Override
-    public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity)
+    public Container createMenu(int windowId, PlayerInventory playerInventory, Player playerEntity)
     {
         return new FluidMixerContainer(windowId, playerInventory, this);
     }

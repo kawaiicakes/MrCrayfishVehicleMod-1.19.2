@@ -13,26 +13,26 @@ import com.mrcrayfish.vehicle.network.PacketHandler;
 import com.mrcrayfish.vehicle.network.message.MessageAttachTrailer;
 import com.mrcrayfish.vehicle.network.message.MessageSyncStorage;
 import com.mrcrayfish.vehicle.util.InventoryUtil;
-import net.minecraft.block.Block;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.block.CropsBlock;
 import net.minecraft.block.FarmlandBlock;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.container.SimpleNamedContainerProvider;
 import net.minecraft.item.BlockNamedItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.world.World;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.Tags;
@@ -47,12 +47,12 @@ import java.util.Map;
  */
 public class SeederTrailerEntity extends TrailerEntity implements IStorage
 {
-    private static final String INVENTORY_STORAGE_KEY = "Inventory";
+    private static final String INVENTORY_STORAGE_KEY = "SimpleContainer";
 
     private int inventoryTimer;
     private StorageInventory inventory;
 
-    public SeederTrailerEntity(EntityType<? extends SeederTrailerEntity> type, World worldIn)
+    public SeederTrailerEntity(EntityType<? extends SeederTrailerEntity> type, Level worldIn)
     {
         super(type, worldIn);
         this.initInventory();
@@ -65,13 +65,13 @@ public class SeederTrailerEntity extends TrailerEntity implements IStorage
     }
 
     @Override
-    public ActionResultType interact(PlayerEntity player, Hand hand)
+    public InteractionResult interact(Player player, InteractionHand hand)
     {
         ItemStack heldItem = player.getItemInHand(hand);
         if((heldItem.isEmpty() || !(heldItem.getItem() instanceof SprayCanItem)) && player instanceof ServerPlayerEntity)
         {
             IStorage.openStorage((ServerPlayerEntity) player, this, INVENTORY_STORAGE_KEY);
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
         return super.interact(player, hand);
     }
@@ -92,13 +92,13 @@ public class SeederTrailerEntity extends TrailerEntity implements IStorage
     {
         super.onUpdateVehicle();
 
-        Vector3d lookVec = this.getLookAngle();
+        Vec3 lookVec = this.getLookAngle();
         this.plantSeed(lookVec.yRot((float) Math.toRadians(90F)).scale(0.85));
-        this.plantSeed(Vector3d.ZERO);
+        this.plantSeed(Vec3.ZERO);
         this.plantSeed(lookVec.yRot((float) Math.toRadians(-90F)).scale(0.85));
     }
 
-    private void plantSeed(Vector3d vec)
+    private void plantSeed(Vec3 vec)
     {
         BlockPos pos = new BlockPos(xo + vec.x, yo + 0.25, zo + vec.z);
         if(level.isEmptyBlock(pos) && level.getBlockState(pos.below()).getBlock() instanceof FarmlandBlock)
@@ -161,7 +161,7 @@ public class SeederTrailerEntity extends TrailerEntity implements IStorage
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundNBT compound)
+    protected void readAdditionalSaveData(CompoundTag compound)
     {
         super.readAdditionalSaveData(compound);
         if(compound.contains(INVENTORY_STORAGE_KEY, Constants.NBT.TAG_LIST))
@@ -172,7 +172,7 @@ public class SeederTrailerEntity extends TrailerEntity implements IStorage
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundNBT compound)
+    protected void addAdditionalSaveData(CompoundTag compound)
     {
         super.addAdditionalSaveData(compound);
         if(this.inventory != null)
@@ -229,7 +229,7 @@ public class SeederTrailerEntity extends TrailerEntity implements IStorage
         }, (entity, rightClick) -> {
             if(rightClick) {
                 PacketHandler.getPlayChannel().sendToServer(new MessageAttachTrailer(entity.getId()));
-                Minecraft.getInstance().player.swing(Hand.MAIN_HAND);
+                Minecraft.getInstance().player.swing(InteractionHand.MAIN_HAND);
             }
         }, entity -> true);
     }

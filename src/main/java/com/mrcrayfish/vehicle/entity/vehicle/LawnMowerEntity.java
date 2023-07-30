@@ -2,21 +2,22 @@ package com.mrcrayfish.vehicle.entity.vehicle;
 
 import com.mrcrayfish.vehicle.entity.LandVehicleEntity;
 import com.mrcrayfish.vehicle.entity.trailer.StorageTrailerEntity;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.BushBlock;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.BushBlock;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ import java.util.List;
  */
 public class LawnMowerEntity extends LandVehicleEntity
 {
-    public LawnMowerEntity(EntityType<? extends LawnMowerEntity> type, World worldIn)
+    public LawnMowerEntity(EntityType<? extends LawnMowerEntity> type, Level worldIn)
     {
         super(type, worldIn);
     }
@@ -37,12 +38,12 @@ public class LawnMowerEntity extends LandVehicleEntity
 
         if(!level.isClientSide && this.getControllingPassenger() != null)
         {
-            AxisAlignedBB axisAligned = this.getBoundingBox().inflate(0.25);
-            Vector3d lookVec = this.getLookAngle().scale(0.5);
-            int minX = MathHelper.floor(axisAligned.minX + lookVec.x);
-            int maxX = MathHelper.ceil(axisAligned.maxX + lookVec.x);
-            int minZ = MathHelper.floor(axisAligned.minZ + lookVec.z);
-            int maxZ = MathHelper.ceil(axisAligned.maxZ + lookVec.z);
+            AABB axisAligned = this.getBoundingBox().inflate(0.25);
+            Vec3 lookVec = this.getLookAngle().scale(0.5);
+            int minX = Mth.floor(axisAligned.minX + lookVec.x);
+            int maxX = Mth.ceil(axisAligned.maxX + lookVec.x);
+            int minZ = Mth.floor(axisAligned.minZ + lookVec.z);
+            int maxZ = Mth.ceil(axisAligned.maxZ + lookVec.z);
 
             for(int x = minX; x < maxX; x++)
             {
@@ -59,13 +60,13 @@ public class LawnMowerEntity extends LandVehicleEntity
 
                     if(state.getBlock() instanceof BushBlock)
                     {
-                        List<ItemStack> drops = Block.getDrops(state, (ServerWorld) level, pos, null);
+                        List<ItemStack> drops = Block.getDrops(state, (ServerLevel) level, pos, null);
                         for(ItemStack stack : drops)
                         {
                             this.addItemToStorage(trailer, stack);
                         }
                         level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
-                        level.playSound(null, pos, state.getBlock().getSoundType(state, level, pos, this).getBreakSound(), SoundCategory.BLOCKS, 1.0F, 1.0F);
+                        level.playSound(null, pos, state.getBlock().getSoundType(state, level, pos, this).getBreakSound(), SoundSource.BLOCKS, 1.0F, 1.0F);
                         level.levelEvent(2001, pos, Block.getId(state));
                     }
                 }
@@ -80,7 +81,7 @@ public class LawnMowerEntity extends LandVehicleEntity
 
         if(storageTrailer != null && storageTrailer.getInventory() != null)
         {
-            Inventory storage = storageTrailer.getInventory();
+            SimpleContainer storage = storageTrailer.getInventory();
             stack = storage.addItem(stack);
             if(!stack.isEmpty())
             {
@@ -100,7 +101,7 @@ public class LawnMowerEntity extends LandVehicleEntity
         }
     }
 
-    private void spawnItemStack(World worldIn, ItemStack stack)
+    private void spawnItemStack(Level worldIn, ItemStack stack)
     {
         while(!stack.isEmpty())
         {
@@ -109,5 +110,15 @@ public class LawnMowerEntity extends LandVehicleEntity
             itemEntity.setDeltaMovement(-this.getDeltaMovement().x / 4.0, random.nextGaussian() * 0.05D + 0.2D, -this.getDeltaMovement().z / 4.0);
             worldIn.addFreshEntity(itemEntity);
         }
+    }
+
+    @Override
+    protected void readAdditionalSaveData(CompoundTag p_20052_) {
+
+    }
+
+    @Override
+    protected void addAdditionalSaveData(CompoundTag p_20139_) {
+
     }
 }

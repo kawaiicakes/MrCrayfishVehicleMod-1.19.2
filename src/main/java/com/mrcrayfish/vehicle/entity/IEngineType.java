@@ -1,7 +1,7 @@
 package com.mrcrayfish.vehicle.entity;
 
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.contents.TranslatableContents;
 
 /**
  * Author: MrCrayfish
@@ -12,8 +12,8 @@ public interface IEngineType
 
     int hashCode();
 
-    default TranslationTextComponent getEngineName()
+    default TranslatableContents getEngineName()
     {
-        return new TranslationTextComponent(this.getId().getNamespace() + ".engine_type." + this.getId().getPath() + ".name");
+        return new TranslatableContents(this.getId().getNamespace() + ".engine_type." + this.getId().getPath() + ".name");
     }
 }

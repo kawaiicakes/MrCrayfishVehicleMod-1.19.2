@@ -151,7 +151,7 @@
     "vehicle.config.server.trailer_detach_threshold.tooltip": "拖车与载具的分离距离",
     "vehicle.config.server.trailer_sync_cooldown": "拖车同步冷却",
     "vehicle.config.server.trailer_sync_cooldown.tooltip": "向客户端同步拖车连接的数据之前要等待的时间，这对于客户端拖车的平稳移动非常重要",
-    "vehicle.config.server.trailer_inventory_sync_cooldown": "Trailer Inventory Sync Cooldown",
+    "vehicle.config.server.trailer_inventory_sync_cooldown": "Trailer SimpleContainer Sync Cooldown",
     "vehicle.config.server.trailer_inventory_sync_cooldown.tooltip": "The amount of ticks to wait before syncing trailer inventory to tracking clients. If the value is set to 0 or less, the inventory will not sync and will save on network usage.",
     "vehicle.config.server.pick_up_vehicles": "拾取载具",
     "vehicle.config.server.pick_up_vehicles.tooltip": "允许玩家通过Shift+右键来拾取载具",

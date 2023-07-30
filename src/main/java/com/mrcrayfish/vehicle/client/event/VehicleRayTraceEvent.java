@@ -1,7 +1,7 @@
 package com.mrcrayfish.vehicle.client.event;
 
 import com.mrcrayfish.vehicle.client.raytrace.VehicleRayTraceResult;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.Cancelable;
 
@@ -13,7 +13,7 @@ public class VehicleRayTraceEvent extends PlayerEvent
 {
     private final VehicleRayTraceResult result;
 
-    public VehicleRayTraceEvent(PlayerEntity player, VehicleRayTraceResult result)
+    public VehicleRayTraceEvent(Player player, VehicleRayTraceResult result)
     {
         super(player);
         this.result = result;

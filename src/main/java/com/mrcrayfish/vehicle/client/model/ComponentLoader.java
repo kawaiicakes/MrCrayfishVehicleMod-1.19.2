@@ -1,7 +1,7 @@
 package com.mrcrayfish.vehicle.client.model;
 
 import com.google.common.collect.ImmutableList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;

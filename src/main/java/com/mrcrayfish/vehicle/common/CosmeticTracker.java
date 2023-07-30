@@ -11,10 +11,10 @@ import com.mrcrayfish.vehicle.network.PacketHandler;
 import com.mrcrayfish.vehicle.network.message.MessageSyncActionData;
 import com.mrcrayfish.vehicle.network.message.MessageSyncCosmetics;
 import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
@@ -81,7 +81,7 @@ public class CosmeticTracker
             {
                 this.dirtyActions.forEach((cosmeticId, actions) ->
                 {
-                    List<Pair<ResourceLocation, CompoundNBT>> actionData = actions.stream().map(action -> Pair.of(CosmeticActions.getId(action.getClass()), action.save(true))).collect(Collectors.toList());
+                    List<Pair<ResourceLocation, CompoundTag>> actionData = actions.stream().map(action -> Pair.of(CosmeticActions.getId(action.getClass()), action.save(true))).collect(Collectors.toList());
                     PacketHandler.getPlayChannel().send(PacketDistributor.TRACKING_ENTITY.with(() -> vehicle), new MessageSyncActionData(vehicle.getId(), cosmeticId, actionData));
                     actions.forEach(Action::clean);
                 });
@@ -158,15 +158,15 @@ public class CosmeticTracker
         this.selectedCosmetics.forEach((cosmeticId, entry) -> entry.dirty = false);
     }
 
-    public CompoundNBT write()
+    public CompoundTag write()
     {
-        CompoundNBT tag = new CompoundNBT();
+        CompoundTag tag = new CompoundTag();
         ListNBT list = new ListNBT();
         this.selectedCosmetics.forEach((cosmeticId, entry) -> {
-            CompoundNBT cosmeticTag = new CompoundNBT();
+            CompoundTag cosmeticTag = new CompoundTag();
             cosmeticTag.putString("Id", cosmeticId.toString());
             cosmeticTag.putString("Model", entry.getModelLocation().toString());
-            CompoundNBT actions = new CompoundNBT();
+            CompoundTag actions = new CompoundTag();
             entry.getActions().forEach(action -> {
                 ResourceLocation id = CosmeticActions.getId(action.getClass());
                 actions.put(id.toString(), action.save(false));
@@ -178,17 +178,17 @@ public class CosmeticTracker
         return tag;
     }
 
-    public void read(CompoundNBT tag)
+    public void read(CompoundTag tag)
     {
         if(tag.contains("Cosmetics", Constants.NBT.TAG_LIST))
         {
             ListNBT list = tag.getList("Cosmetics", Constants.NBT.TAG_COMPOUND);
             list.forEach(nbt -> {
-                CompoundNBT cosmeticTag = (CompoundNBT) nbt;
+                CompoundTag cosmeticTag = (CompoundTag) nbt;
                 ResourceLocation cosmeticId = new ResourceLocation(cosmeticTag.getString("Id"));
                 ResourceLocation modelLocation = new ResourceLocation(cosmeticTag.getString("Model"));
                 this.setSelectedModel(cosmeticId, modelLocation);
-                CompoundNBT actions = cosmeticTag.getCompound("Actions");
+                CompoundTag actions = cosmeticTag.getCompound("Actions");
                 this.selectedCosmetics.get(cosmeticId).getActions().forEach(action -> {
                     ResourceLocation id = CosmeticActions.getId(action.getClass());
                     action.load(actions.getCompound(id.toString()), false);
@@ -197,7 +197,7 @@ public class CosmeticTracker
         }
     }
 
-    public void write(PacketBuffer buffer)
+    public void write(FriendlyByteBuf buffer)
     {
         buffer.writeInt(this.selectedCosmetics.size());
         this.selectedCosmetics.forEach((cosmeticId, entry) -> {
@@ -211,7 +211,7 @@ public class CosmeticTracker
         });
     }
 
-    public void read(PacketBuffer buffer)
+    public void read(FriendlyByteBuf buffer)
     {
         int size = buffer.readInt();
         for(int i = 0; i < size; i++)
@@ -222,17 +222,17 @@ public class CosmeticTracker
             int actionLength = buffer.readInt();
             if(actionLength > 0)
             {
-                Map<ResourceLocation, CompoundNBT> dataMap = new HashMap<>();
+                Map<ResourceLocation, CompoundTag> dataMap = new HashMap<>();
                 for(int j = 0; j < actionLength; j++)
                 {
                     ResourceLocation id = buffer.readResourceLocation();
-                    CompoundNBT data = buffer.readNbt();
+                    CompoundTag data = buffer.readNbt();
                     dataMap.put(id, data);
                 }
                 this.selectedCosmetics.get(cosmeticId).getActions().forEach(action ->
                 {
                     ResourceLocation id = CosmeticActions.getId(action.getClass());
-                    CompoundNBT data = dataMap.get(id);
+                    CompoundTag data = dataMap.get(id);
                     if(data != null)
                     {
                         action.load(data, false);

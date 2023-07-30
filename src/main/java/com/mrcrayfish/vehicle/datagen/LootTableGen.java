@@ -5,7 +5,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mrcrayfish.vehicle.Reference;
 import com.mrcrayfish.vehicle.init.ModBlocks;
 import com.mrcrayfish.vehicle.world.storage.loot.functions.CopyFluidTanks;
-import net.minecraft.block.Block;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.loot.BlockLootTables;
 import net.minecraft.loot.ConstantRange;
@@ -15,7 +15,7 @@ import net.minecraft.loot.LootParameterSets;
 import net.minecraft.loot.LootPool;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.functions.CopyNbt;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.data.ForgeLootTableProvider;
 import net.minecraftforge.registries.ForgeRegistries;
 

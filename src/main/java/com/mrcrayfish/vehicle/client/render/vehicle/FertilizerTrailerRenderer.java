@@ -1,6 +1,6 @@
 package com.mrcrayfish.vehicle.client.render.vehicle;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mrcrayfish.vehicle.client.model.VehicleModels;
 import com.mrcrayfish.vehicle.client.raytrace.RayTraceTransforms;
 import com.mrcrayfish.vehicle.client.raytrace.TransformHelper;
@@ -11,12 +11,12 @@ import com.mrcrayfish.vehicle.entity.properties.VehicleProperties;
 import com.mrcrayfish.vehicle.entity.trailer.FertilizerTrailerEntity;
 import com.mrcrayfish.vehicle.util.RenderUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.ItemStack;
+import com.mojang.math.Vector3f;
 
 import javax.annotation.Nullable;
 
@@ -33,7 +33,7 @@ public class FertilizerTrailerRenderer extends AbstractTrailerRenderer<Fertilize
     }
 
     @Override
-    protected void render(@Nullable FertilizerTrailerEntity vehicle, MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer, float partialTicks, int light)
+    protected void render(@Nullable FertilizerTrailerEntity vehicle, PoseStack matrixStack, MultiBufferSource renderTypeBuffer, float partialTicks, int light)
     {
         this.renderDamagedPart(vehicle, VehicleModels.FERTILIZER_TRAILER, matrixStack, renderTypeBuffer, light, partialTicks);
 
@@ -66,7 +66,7 @@ public class FertilizerTrailerRenderer extends AbstractTrailerRenderer<Fertilize
                             matrixStack.mulPose(Vector3f.ZP.rotationDegrees(47F * index));
                             matrixStack.mulPose(Vector3f.XP.rotationDegrees(2F * layerIndex));
                             matrixStack.translate(layer * 0.001, layer * 0.001, layer * 0.001); // Fixes Z fighting
-                            Minecraft.getInstance().getItemRenderer().render(stack, ItemCameraTransforms.TransformType.NONE, false, matrixStack, renderTypeBuffer, light, OverlayTexture.NO_OVERLAY, RenderUtil.getModel(stack));
+                            Minecraft.getInstance().getItemRenderer().render(stack, ItemTransforms.TransformType.NONE, false, matrixStack, renderTypeBuffer, light, OverlayTexture.NO_OVERLAY, RenderUtil.getModel(stack));
                         }
                         matrixStack.popPose();
                         index++;
@@ -87,7 +87,7 @@ public class FertilizerTrailerRenderer extends AbstractTrailerRenderer<Fertilize
             matrixStack.mulPose(Vector3f.ZP.rotationDegrees(90F));
             matrixStack.mulPose(Axis.POSITIVE_X.rotationDegrees(-this.getWheelRotation(vehicle, null, partialTicks)));
             matrixStack.scale((float) 1.25, (float) 1.25, (float) 1.25);
-            RenderUtil.renderColoredModel(VehicleModels.SEED_SPIKER.getBaseModel(), ItemCameraTransforms.TransformType.NONE, false, matrixStack, renderTypeBuffer, -1, light, OverlayTexture.NO_OVERLAY);
+            RenderUtil.renderColoredModel(VehicleModels.SEED_SPIKER.getBaseModel(), ItemTransforms.TransformType.NONE, false, matrixStack, renderTypeBuffer, -1, light, OverlayTexture.NO_OVERLAY);
         }
         matrixStack.popPose();
     }

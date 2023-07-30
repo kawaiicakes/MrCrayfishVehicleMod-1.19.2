@@ -6,14 +6,14 @@ import com.mrcrayfish.vehicle.entity.VehicleEntity;
 import com.mrcrayfish.vehicle.init.ModEntities;
 import com.mrcrayfish.vehicle.init.ModSounds;
 import com.mrcrayfish.vehicle.init.ModTileEntities;
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.block.material.PushReaction;
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
@@ -65,7 +65,7 @@ public class JackTileEntity extends TileEntitySynced implements ITickableTileEnt
 
         if(this.jack == null)
         {
-            List<EntityJack> jacks = this.level.getEntitiesOfClass(EntityJack.class, new AxisAlignedBB(this.worldPosition));
+            List<EntityJack> jacks = this.level.getEntitiesOfClass(EntityJack.class, new AABB(this.worldPosition));
             if(jacks.size() > 0)
             {
                 this.jack = jacks.get(0);
@@ -83,20 +83,20 @@ public class JackTileEntity extends TileEntitySynced implements ITickableTileEnt
             {
                 if(!this.activated)
                 {
-                    this.level.playSound(null, this.worldPosition, ModSounds.BLOCK_JACK_HEAD_UP.get(), SoundCategory.BLOCKS, 1.0F, 1.0F);
+                    this.level.playSound(null, this.worldPosition, ModSounds.BLOCK_JACK_HEAD_UP.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
                     this.activated = true;
                     this.level.setBlock(this.worldPosition, this.getBlockState().setValue(JackBlock.ENABLED, true), Constants.BlockFlags.DEFAULT);
                 }
             }
             else if(this.activated)
             {
-                this.level.playSound(null, this.worldPosition, ModSounds.BLOCK_JACK_HEAD_DOWN.get(), SoundCategory.BLOCKS, 1.0F, 1.0F);
+                this.level.playSound(null, this.worldPosition, ModSounds.BLOCK_JACK_HEAD_DOWN.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
                 this.activated = false;
             }
         }
         else if(this.activated)
         {
-            this.level.playSound(null, this.worldPosition, ModSounds.BLOCK_JACK_HEAD_DOWN.get(), SoundCategory.BLOCKS, 1.0F, 1.0F);
+            this.level.playSound(null, this.worldPosition, ModSounds.BLOCK_JACK_HEAD_DOWN.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
             this.activated = false;
         }
 
@@ -120,7 +120,7 @@ public class JackTileEntity extends TileEntitySynced implements ITickableTileEnt
         BlockState state = this.level.getBlockState(this.getBlockPos());
         if(state.getBlock() instanceof JackBlock)
         {
-            AxisAlignedBB boundingBox = state.getShape(this.level, this.worldPosition).bounds().move(this.worldPosition);
+            AABB boundingBox = state.getShape(this.level, this.worldPosition).bounds().move(this.worldPosition);
             List<Entity> list = this.level.getEntities(this.jack, boundingBox);
             if(!list.isEmpty())
             {
@@ -128,9 +128,9 @@ public class JackTileEntity extends TileEntitySynced implements ITickableTileEnt
                 {
                     if(entity.getPistonPushReaction() != PushReaction.IGNORE)
                     {
-                        AxisAlignedBB entityBoundingBox = entity.getBoundingBox();
+                        AABB entityBoundingBox = entity.getBoundingBox();
                         double posY = boundingBox.maxY - entityBoundingBox.minY;
-                        entity.move(MoverType.PISTON, new Vector3d(0.0, posY, 0.0));
+                        entity.move(MoverType.PISTON, new Vec3(0.0, posY, 0.0));
                     }
                 }
             }
@@ -143,7 +143,7 @@ public class JackTileEntity extends TileEntitySynced implements ITickableTileEnt
     }
 
     @Override
-    public AxisAlignedBB getRenderBoundingBox()
+    public AABB getRenderBoundingBox()
     {
         return INFINITE_EXTENT_AABB;
     }

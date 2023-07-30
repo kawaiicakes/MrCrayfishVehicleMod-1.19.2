@@ -1,8 +1,8 @@
 package com.mrcrayfish.vehicle.client.raytrace;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.minecraft.util.math.vector.Matrix4f;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Matrix4f;
 
 /**
  * Author: MrCrayfish
@@ -21,7 +21,7 @@ public class Triangle
         return this.data;
     }
 
-    public void draw(MatrixStack matrixStack, IVertexBuilder builder, float red, float green, float blue, float alpha)
+    public void draw(PoseStack matrixStack, VertexConsumer builder, float red, float green, float blue, float alpha)
     {
         Matrix4f matrix = matrixStack.last().pose();
         builder.vertex(matrix, this.data[6], this.data[7], this.data[8]).color(red, green, blue, alpha).endVertex();

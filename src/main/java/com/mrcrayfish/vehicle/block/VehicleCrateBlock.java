@@ -5,41 +5,41 @@ import com.mrcrayfish.vehicle.init.ModBlocks;
 import com.mrcrayfish.vehicle.init.ModItems;
 import com.mrcrayfish.vehicle.tileentity.VehicleCrateTileEntity;
 import com.mrcrayfish.vehicle.util.RenderUtil;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.BlockRenderType;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.particle.DiggingParticle;
-import net.minecraft.client.util.ITooltipFlag;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.item.DyeColor;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.particles.BlockParticleData;
 import net.minecraft.particles.ParticleTypes;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.shapes.VoxelShapes;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextFormatting;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.core.NonNullList;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.phys.shapes.Shapes; //tbh idk if this is the right one (prev. Shapes)
+import net.minecraft.network.chat.Component;
+import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
@@ -59,18 +59,18 @@ public class VehicleCrateBlock extends RotatedObjectBlock
 
     public VehicleCrateBlock()
     {
-        super(AbstractBlock.Properties.of(Material.METAL, DyeColor.LIGHT_GRAY).dynamicShape().noOcclusion().strength(1.5F, 5.0F));
+        super(BlockBehaviour.Properties.of(Material.METAL, DyeColor.LIGHT_GRAY).dynamicShape().noOcclusion().strength(1.5F, 5.0F));
     }
 
     @Override
-    public void fillItemCategory(ItemGroup group, NonNullList<ItemStack> items)
+    public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items)
     {
         REGISTERED_CRATES.forEach(resourceLocation ->
         {
-            CompoundNBT blockEntityTag = new CompoundNBT();
+            CompoundTag blockEntityTag = new CompoundTag();
             blockEntityTag.putString("Vehicle", resourceLocation.toString());
             blockEntityTag.putBoolean("Creative", true);
-            CompoundNBT itemTag = new CompoundNBT();
+            CompoundTag itemTag = new CompoundTag();
             itemTag.put("BlockEntityTag", blockEntityTag);
             ItemStack stack = new ItemStack(ModBlocks.VEHICLE_CRATE.get());
             stack.setTag(itemTag);
@@ -79,27 +79,27 @@ public class VehicleCrateBlock extends RotatedObjectBlock
     }
 
     @Override
-    public boolean propagatesSkylightDown(BlockState state, IBlockReader reader, BlockPos pos)
+    public boolean propagatesSkylightDown(BlockState state, BlockGetter reader, BlockPos pos)
     {
         return true;
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader worldIn, BlockPos pos, ISelectionContext context)
+    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) //CollisionContext context is normally the next param, but idk wtf this class is actually supposed to override in 1.17.1
     {
-        TileEntity te = worldIn.getBlockEntity(pos);
+        BlockEntity te = worldIn.getBlockEntity(pos);
         if(te instanceof VehicleCrateTileEntity && ((VehicleCrateTileEntity)te).isOpened())
             return PANEL;
-        return VoxelShapes.block();
+        return Shapes.block();
     }
 
     @Override
-    public boolean canSurvive(BlockState state, IWorldReader reader, BlockPos pos)
+    public boolean canSurvive(BlockState state, LevelReader reader, BlockPos pos)
     {
         return this.isBelowBlockTopSolid(reader, pos) && this.canOpen(reader, pos);
     }
 
-    private boolean canOpen(IWorldReader reader, BlockPos pos)
+    private boolean canOpen(LevelReader reader, BlockPos pos)
     {
         for(Direction side : Direction.Plane.HORIZONTAL)
         {
@@ -115,34 +115,34 @@ public class VehicleCrateBlock extends RotatedObjectBlock
         return true;
     }
 
-    private boolean isBelowBlockTopSolid(IWorldReader reader, BlockPos pos)
+    private boolean isBelowBlockTopSolid(LevelReader reader, BlockPos pos)
     {
         return reader.getBlockState(pos.below()).isFaceSturdy(reader, pos.below(), Direction.UP);
     }
 
     @Override
-    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity playerEntity, Hand hand, BlockRayTraceResult result)
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player playerEntity, InteractionHand hand, BlockHitResult result)
     {
         if(result.getDirection() == Direction.UP && playerEntity.getItemInHand(hand).getItem() == ModItems.WRENCH.get())
         {
             this.openCrate(world, pos, state, playerEntity);
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
-        return ActionResultType.SUCCESS;
+        return InteractionResult.SUCCESS;
     }
 
     @Override
-    public void setPlacedBy(World world, BlockPos pos, BlockState state, @Nullable LivingEntity livingEntity, ItemStack stack)
+    public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity livingEntity, ItemStack stack)
     {
-        if(livingEntity instanceof PlayerEntity && ((PlayerEntity) livingEntity).isCreative())
+        if(livingEntity instanceof Player && ((Player) livingEntity).isCreative())
         {
             this.openCrate(world, pos, state, livingEntity);
         }
     }
 
-    private void openCrate(World world, BlockPos pos, BlockState state, LivingEntity placer)
+    private void openCrate(Level world, BlockPos pos, BlockState state, LivingEntity placer)
     {
-        TileEntity tileEntity = world.getBlockEntity(pos);
+        BlockEntity tileEntity = world.getBlockEntity(pos);
         if(tileEntity instanceof VehicleCrateTileEntity && this.canOpen(world, pos))
         {
             if(world.isClientSide)
@@ -174,35 +174,35 @@ public class VehicleCrateBlock extends RotatedObjectBlock
     }
 
     @Override
-    public boolean hasTileEntity(BlockState state)
+    public boolean hasBlockEntity()
     {
         return true;
     }
 
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world)
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
     {
         return new VehicleCrateTileEntity();
     }
 
     @Override
-    public BlockRenderType getRenderShape(BlockState state)
+    public RenderShape getRenderShape(BlockState state)
     {
-        return BlockRenderType.ENTITYBLOCK_ANIMATED;
+        return RenderShape.ENTITYBLOCK_ANIMATED;
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable IBlockReader reader, List<ITextComponent> list, ITooltipFlag advanced)
+    public void appendHoverText(ItemStack stack, @Nullable BlockGetter reader, List<Component> list, TooltipFlag advanced)
     {
-        ITextComponent vehicleName = EntityType.PIG.getDescription();
-        CompoundNBT tagCompound = stack.getTag();
+        Component vehicleName = EntityType.PIG.getDescription();
+        CompoundTag tagCompound = stack.getTag();
         if(tagCompound != null)
         {
             if(tagCompound.contains("BlockEntityTag", Constants.NBT.TAG_COMPOUND))
             {
-                CompoundNBT blockEntityTag = tagCompound.getCompound("BlockEntityTag");
+                CompoundTag blockEntityTag = tagCompound.getCompound("BlockEntityTag");
                 String entityType = blockEntityTag.getString("Vehicle");
                 if(!Strings.isNullOrEmpty(entityType))
                 {
@@ -212,23 +212,23 @@ public class VehicleCrateBlock extends RotatedObjectBlock
         }
         if(Screen.hasShiftDown())
         {
-            list.addAll(RenderUtil.lines(new TranslationTextComponent(this.getDescriptionId() + ".info", vehicleName), 150));
+            list.addAll(RenderUtil.lines(new TranslatableContents(this.getDescriptionId() + ".info", vehicleName), 150));
         }
         else
         {
-            list.add(vehicleName.copy().withStyle(TextFormatting.BLUE));
-            list.add(new TranslationTextComponent("vehicle.info_help").withStyle(TextFormatting.YELLOW));
+            list.add(vehicleName.copy().withStyle(ChatFormatting.BLUE));
+            list.add(new TranslatableContents("vehicle.info_help").withStyle(ChatFormatting.YELLOW));
         }
     }
 
     public static ItemStack create(ResourceLocation entityId, int color, ItemStack engine, ItemStack wheel)
     {
-        CompoundNBT blockEntityTag = new CompoundNBT();
+        CompoundTag blockEntityTag = new CompoundTag();
         blockEntityTag.putString("Vehicle", entityId.toString());
         blockEntityTag.putInt("Color", color);
-        blockEntityTag.put("EngineStack", engine.save(new CompoundNBT()));
-        blockEntityTag.put("WheelStack", wheel.save(new CompoundNBT()));
-        CompoundNBT itemTag = new CompoundNBT();
+        blockEntityTag.put("EngineStack", engine.save(new CompoundTag()));
+        blockEntityTag.put("WheelStack", wheel.save(new CompoundTag()));
+        CompoundTag itemTag = new CompoundTag();
         itemTag.put("BlockEntityTag", blockEntityTag);
         ItemStack stack = new ItemStack(ModBlocks.VEHICLE_CRATE.get());
         stack.setTag(itemTag);

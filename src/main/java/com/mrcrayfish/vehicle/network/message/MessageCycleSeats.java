@@ -2,9 +2,9 @@ package com.mrcrayfish.vehicle.network.message;
 
 import com.mrcrayfish.vehicle.network.play.ServerPlayHandler;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -16,10 +16,10 @@ public class MessageCycleSeats implements IMessage<MessageCycleSeats>
     public MessageCycleSeats() {}
 
     @Override
-    public void encode(MessageCycleSeats message, PacketBuffer buffer) {}
+    public void encode(MessageCycleSeats message, FriendlyByteBuf buffer) {}
 
     @Override
-    public MessageCycleSeats decode(PacketBuffer buffer)
+    public MessageCycleSeats decode(FriendlyByteBuf buffer)
     {
         return new MessageCycleSeats();
     }

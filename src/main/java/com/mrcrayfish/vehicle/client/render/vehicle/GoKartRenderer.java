@@ -1,6 +1,6 @@
 package com.mrcrayfish.vehicle.client.render.vehicle;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mrcrayfish.vehicle.client.model.VehicleModels;
 import com.mrcrayfish.vehicle.client.raytrace.MatrixTransform;
 import com.mrcrayfish.vehicle.client.raytrace.RayTraceFunction;
@@ -13,10 +13,10 @@ import com.mrcrayfish.vehicle.entity.properties.VehicleProperties;
 import com.mrcrayfish.vehicle.entity.vehicle.GoKartEntity;
 import com.mrcrayfish.vehicle.init.ModEntities;
 import com.mrcrayfish.vehicle.init.ModItems;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.entity.model.PlayerModel;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.model.PlayerModel;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nullable;
 
@@ -31,14 +31,14 @@ public class GoKartRenderer extends AbstractLandVehicleRenderer<GoKartEntity>
     }
 
     @Override
-    protected void render(@Nullable GoKartEntity vehicle, MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer, float partialTicks, int light)
+    protected void render(@Nullable GoKartEntity vehicle, PoseStack matrixStack, MultiBufferSource renderTypeBuffer, float partialTicks, int light)
     {
         this.renderDamagedPart(vehicle, VehicleModels.GO_KART_BODY, matrixStack, renderTypeBuffer, light, partialTicks);
         this.renderSteeringWheel(vehicle, VehicleModels.GO_KART_STEERING_WHEEL, 0.0, 0.6814, 8.0426, 1.0F, -45F, matrixStack, renderTypeBuffer, light, partialTicks);
     }
 
     @Override
-    public void applyPlayerModel(GoKartEntity entity, PlayerEntity player, PlayerModel model, float partialTicks)
+    public void applyPlayerModel(GoKartEntity entity, Player player, PlayerModel model, float partialTicks)
     {
         model.rightLeg.xRot = (float) Math.toRadians(-85F);
         model.rightLeg.yRot = (float) Math.toRadians(10F);

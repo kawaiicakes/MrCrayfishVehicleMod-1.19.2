@@ -1,37 +1,41 @@
 package com.mrcrayfish.vehicle.block;
 
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.HorizontalBlock;
-import net.minecraft.item.BlockItemUseContext;
-import net.minecraft.state.DirectionProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Mirror;
-import net.minecraft.util.Rotation;
+import com.google.common.collect.ImmutableMap;
+import com.mojang.serialization.MapCodec;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.item.context.BlockPlaceContext;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.state.properties.Property;
+
+import javax.annotation.Nullable;
 
 /**
  * Author: MrCrayfish
  */
-public abstract class RotatedObjectBlock extends ObjectBlock
+public abstract class RotatedObjectBlock extends ObjectBlock implements EntityBlock
 {
-    public static final DirectionProperty DIRECTION = HorizontalBlock.FACING;
+    public static final DirectionProperty DIRECTION = HorizontalDirectionalBlock.FACING;
 
-    public RotatedObjectBlock(AbstractBlock.Properties properties)
+    public RotatedObjectBlock(BlockBehaviour.Properties properties)
     {
         super(properties);
         this.registerDefaultState(this.getStateDefinition().any().setValue(DIRECTION, Direction.NORTH));
     }
 
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext context)
+    public BlockState getStateForPlacement(BlockPlaceContext context)
     {
         return super.getStateForPlacement(context).setValue(DIRECTION, context.getHorizontalDirection());
     }
 
     @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder)
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
     {
         super.createBlockStateDefinition(builder);
         builder.add(DIRECTION);
@@ -49,4 +53,22 @@ public abstract class RotatedObjectBlock extends ObjectBlock
         return state.rotate(mirror.getRotation(state.getValue(DIRECTION)));
     }
 
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos p_153215_, BlockState p_153216_) {
+        return null;
+    }
+
+    static class BlockStateBase extends BlockBehaviour.BlockStateBase {
+        protected BlockStateBase(Block p_60608_, ImmutableMap<Property<?>, Comparable<?>> p_60609_, MapCodec<BlockState> p_60610_) {
+            super(p_60608_, p_60609_, p_60610_);
+        }
+        @Override
+        protected BlockState asState() {
+            return null;
+        }
+
+        @Override
+        public boolean hasBlockEntity() {return false;}
+    }
 }

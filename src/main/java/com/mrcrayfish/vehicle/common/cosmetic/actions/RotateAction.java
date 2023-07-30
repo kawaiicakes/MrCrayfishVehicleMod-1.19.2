@@ -1,7 +1,7 @@
 package com.mrcrayfish.vehicle.common.cosmetic.actions;
 
 import com.google.gson.JsonObject;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mrcrayfish.vehicle.entity.PlaneEntity;
 import com.mrcrayfish.vehicle.entity.VehicleEntity;
 import com.mrcrayfish.vehicle.util.Axis;
@@ -29,7 +29,7 @@ public class RotateAction extends Action
     }
 
     @Override
-    public void beforeRender(MatrixStack stack, VehicleEntity vehicle, float partialTicks)
+    public void beforeRender(PoseStack stack, VehicleEntity vehicle, float partialTicks)
     {
         stack.mulPose(this.axis.getAxis().rotationDegrees(this.source.valueFunction.apply(vehicle, partialTicks)));
     }

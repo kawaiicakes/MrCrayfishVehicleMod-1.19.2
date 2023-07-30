@@ -1,7 +1,7 @@
 package com.mrcrayfish.vehicle.client.render;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mrcrayfish.vehicle.client.model.ComponentManager;
 import com.mrcrayfish.vehicle.client.model.ComponentModel;
 import com.mrcrayfish.vehicle.client.model.VehicleModels;
@@ -16,18 +16,18 @@ import com.mrcrayfish.vehicle.entity.Wheel;
 import com.mrcrayfish.vehicle.entity.properties.VehicleProperties;
 import com.mrcrayfish.vehicle.item.IDyeable;
 import com.mrcrayfish.vehicle.util.RenderUtil;
-import net.minecraft.client.entity.player.AbstractClientPlayerEntity;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.entity.model.PlayerModel;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.model.PlayerModel;
+import net.minecraftforge.client.extensions.IForgeBakedModel;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
+import com.mojang.math.Vector3f;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
@@ -64,9 +64,9 @@ public abstract class AbstractVehicleRenderer<T extends VehicleEntity>
     @Nullable
     public abstract RayTraceTransforms getRayTraceTransforms();
 
-    protected abstract void render(@Nullable T vehicle, MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer, float partialTicks, int light);
+    protected abstract void render(@Nullable T vehicle, PoseStack matrixStack, MultiBufferSource renderTypeBuffer, float partialTicks, int light);
 
-    public void setupTransformsAndRender(@Nullable T vehicle, MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer, float partialTicks, int light)
+    public void setupTransformsAndRender(@Nullable T vehicle, PoseStack matrixStack, MultiBufferSource renderTypeBuffer, float partialTicks, int light)
     {
         matrixStack.pushPose();
 
@@ -80,7 +80,7 @@ public abstract class AbstractVehicleRenderer<T extends VehicleEntity>
             matrixStack.pushPose();
             double inverseScale = 1.0 / bodyPosition.getScale();
             matrixStack.scale((float) inverseScale, (float) inverseScale, (float) inverseScale);
-            Vector3d towBarOffset = properties.getTowBarOffset().scale(bodyPosition.getScale());
+            Vec3 towBarOffset = properties.getTowBarOffset().scale(bodyPosition.getScale());
             matrixStack.translate(towBarOffset.x * 0.0625, towBarOffset.y * 0.0625 + 0.5, towBarOffset.z * 0.0625);
             matrixStack.mulPose(Vector3f.YP.rotationDegrees(180F));
             this.getTowBarModel().render(vehicle, matrixStack, renderTypeBuffer, this.colorProperty.get(vehicle), light, partialTicks);
@@ -113,18 +113,18 @@ public abstract class AbstractVehicleRenderer<T extends VehicleEntity>
      * @param entity
      * @param partialTicks
      */
-    public void applyPreRotations(T entity, MatrixStack stack, float partialTicks) {}
+    public void applyPreRotations(T entity, PoseStack stack, float partialTicks) {}
 
-    public void applyPlayerModel(T entity, PlayerEntity player, PlayerModel<AbstractClientPlayerEntity> model, float partialTicks) {}
+    public void applyPlayerModel(T entity, Player player, PlayerModel<AbstractClientPlayer> model, float partialTicks) {}
 
-    public void applyPlayerRender(T entity, PlayerEntity player, float partialTicks, MatrixStack matrixStack, IVertexBuilder builder)
+    public void applyPlayerRender(T entity, Player player, float partialTicks, PoseStack matrixStack, VertexConsumer builder)
     {
         int index = entity.getSeatTracker().getSeatIndex(player.getUUID());
         if(index != -1)
         {
             VehicleProperties properties = entity.getProperties();
             Seat seat = properties.getSeats().get(index);
-            Vector3d seatVec = seat.getPosition().add(0, properties.getAxleOffset() + properties.getWheelOffset(), 0).scale(properties.getBodyTransform().getScale()).multiply(-1, 1, 1).add(properties.getBodyTransform().getTranslate()).scale(0.0625);
+            Vec3 seatVec = seat.getPosition().add(0, properties.getAxleOffset() + properties.getWheelOffset(), 0).scale(properties.getBodyTransform().getScale()).multiply(-1, 1, 1).add(properties.getBodyTransform().getTranslate()).scale(0.0625);
             double playerScale = 32.0 / 30.0;
             double offsetX = -seatVec.x * playerScale;
             double offsetY = (seatVec.y + player.getMyRidingOffset()) * playerScale + (24 * 0.0625);
@@ -138,19 +138,19 @@ public abstract class AbstractVehicleRenderer<T extends VehicleEntity>
         }
     }
 
-    protected void renderDamagedPart(@Nullable T vehicle, ComponentModel model, MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer, int light, float partialTicks)
+    protected void renderDamagedPart(@Nullable T vehicle, ComponentModel model, PoseStack matrixStack, MultiBufferSource renderTypeBuffer, int light, float partialTicks)
     {
         this.renderDamagedPart(vehicle, model, matrixStack, renderTypeBuffer, false, light, partialTicks);
         this.renderDamagedPart(vehicle, model, matrixStack, renderTypeBuffer, true, light, partialTicks);
     }
 
-    private void renderDamagedPart(@Nullable T vehicle, ComponentModel model, MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer, boolean renderDamage, int light, float partialTicks)
+    private void renderDamagedPart(@Nullable T vehicle, ComponentModel model, PoseStack matrixStack, MultiBufferSource renderTypeBuffer, boolean renderDamage, int light, float partialTicks)
     {
         if(renderDamage && vehicle != null)
         {
             if(vehicle.getDestroyedStage() > 0)
             {
-                RenderUtil.renderDamagedVehicleModel(model.getBaseModel(), ItemCameraTransforms.TransformType.NONE, false, matrixStack, vehicle.getDestroyedStage(), this.colorProperty.get(vehicle), light, OverlayTexture.NO_OVERLAY);
+                RenderUtil.renderDamagedVehicleModel(model.getBaseModel(), ItemTransforms.TransformType.NONE, false, matrixStack, vehicle.getDestroyedStage(), this.colorProperty.get(vehicle), light, OverlayTexture.NO_OVERLAY);
             }
         }
         else
@@ -166,7 +166,7 @@ public abstract class AbstractVehicleRenderer<T extends VehicleEntity>
      * @param position the render definitions to construct to the part
      * @param model the part to render onto the vehicle
      */
-    protected void renderPart(Transform position, IBakedModel model, MatrixStack matrixStack, IRenderTypeBuffer buffer, int color, int lightTexture, int overlayTexture)
+    protected void renderPart(Transform position, IForgeBakedModel model, PoseStack matrixStack, MultiBufferSource buffer, int color, int lightTexture, int overlayTexture)
     {
         if(position == null) return;
         matrixStack.pushPose();
@@ -176,11 +176,11 @@ public abstract class AbstractVehicleRenderer<T extends VehicleEntity>
         matrixStack.mulPose(Vector3f.XP.rotationDegrees((float) position.getRotX()));
         matrixStack.mulPose(Vector3f.YP.rotationDegrees((float) position.getRotY()));
         matrixStack.mulPose(Vector3f.ZP.rotationDegrees((float) position.getRotZ()));
-        RenderUtil.renderColoredModel(model, ItemCameraTransforms.TransformType.NONE, false, matrixStack, buffer, color, lightTexture, overlayTexture);
+        RenderUtil.renderColoredModel(model, ItemTransforms.TransformType.NONE, false, matrixStack, buffer, color, lightTexture, overlayTexture);
         matrixStack.popPose();
     }
 
-    protected void renderKey(Transform position, ItemStack stack, IBakedModel model, MatrixStack matrixStack, IRenderTypeBuffer buffer, int color, int lightTexture, int overlayTexture)
+    protected void renderKey(Transform position, ItemStack stack, IForgeBakedModel model, PoseStack matrixStack, MultiBufferSource buffer, int color, int lightTexture, int overlayTexture)
     {
         if(position == null) return;
         matrixStack.pushPose();
@@ -191,11 +191,11 @@ public abstract class AbstractVehicleRenderer<T extends VehicleEntity>
         matrixStack.mulPose(Vector3f.YP.rotationDegrees((float) position.getRotY()));
         matrixStack.mulPose(Vector3f.ZP.rotationDegrees((float) position.getRotZ()));
         matrixStack.translate(0.0, 0.0, -0.05);
-        RenderUtil.renderModel(stack, ItemCameraTransforms.TransformType.NONE, false, matrixStack, buffer, lightTexture, overlayTexture, model);
+        RenderUtil.renderModel(stack, ItemTransforms.TransformType.NONE, false, matrixStack, buffer, lightTexture, overlayTexture, model);
         matrixStack.popPose();
     }
 
-    protected void renderWheels(@Nullable T vehicle, MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer, float partialTicks, int light)
+    protected void renderWheels(@Nullable T vehicle, PoseStack matrixStack, MultiBufferSource renderTypeBuffer, float partialTicks, int light)
     {
         ItemStack wheelStack = this.wheelStackProperty.get(vehicle);
         if(!wheelStack.isEmpty())
@@ -204,13 +204,13 @@ public abstract class AbstractVehicleRenderer<T extends VehicleEntity>
             matrixStack.pushPose();
             matrixStack.translate(0.0, -8 * 0.0625, 0.0);
             matrixStack.translate(0.0, -properties.getAxleOffset() * 0.0625F, 0.0);
-            IBakedModel wheelModel = RenderUtil.getModel(wheelStack);
+            IForgeBakedModel wheelModel = RenderUtil.getModel(wheelStack);
             properties.getWheels().forEach(wheel -> this.renderWheel(vehicle, wheel, wheelStack, wheelModel, partialTicks, matrixStack, renderTypeBuffer, light));
             matrixStack.popPose();
         }
     }
 
-    protected void renderWheel(@Nullable T vehicle, Wheel wheel, ItemStack stack, IBakedModel model, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer, int light)
+    protected void renderWheel(@Nullable T vehicle, Wheel wheel, ItemStack stack, IForgeBakedModel model, float partialTicks, PoseStack matrixStack, MultiBufferSource renderTypeBuffer, int light)
     {
         if(!wheel.shouldRender())
             return;
@@ -228,17 +228,17 @@ public abstract class AbstractVehicleRenderer<T extends VehicleEntity>
             matrixStack.mulPose(Vector3f.YP.rotationDegrees(180F));
         }
         int wheelColor = IDyeable.getColorFromStack(stack);
-        RenderUtil.renderColoredModel(model, ItemCameraTransforms.TransformType.NONE, false, matrixStack, renderTypeBuffer, wheelColor, light, OverlayTexture.NO_OVERLAY);
+        RenderUtil.renderColoredModel(model, ItemTransforms.TransformType.NONE, false, matrixStack, renderTypeBuffer, wheelColor, light, OverlayTexture.NO_OVERLAY);
         matrixStack.popPose();
     }
 
-    protected void renderCosmetics(@Nullable T vehicle, MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer, float partialTicks, int light)
+    protected void renderCosmetics(@Nullable T vehicle, PoseStack matrixStack, MultiBufferSource renderTypeBuffer, float partialTicks, int light)
     {
         VehicleProperties properties = this.vehiclePropertiesProperty.get(vehicle);
         properties.getCosmetics().forEach((id, cosmetic) -> {
             if(!this.canRenderCosmetic(vehicle, id)) return;
             this.getCosmeticModel(vehicle, id).ifPresent(model -> {
-                Vector3d offset = cosmetic.getOffset().scale(0.0625);
+                Vec3 offset = cosmetic.getOffset().scale(0.0625);
                 matrixStack.pushPose();
                 matrixStack.translate(offset.x, offset.y, offset.z);
                 matrixStack.translate(0, -0.5, 0);

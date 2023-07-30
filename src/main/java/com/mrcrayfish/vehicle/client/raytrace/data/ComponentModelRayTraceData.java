@@ -10,9 +10,9 @@ import com.mrcrayfish.vehicle.client.raytrace.Triangle;
 import com.mrcrayfish.vehicle.client.render.complex.ComplexModel;
 import com.mrcrayfish.vehicle.client.render.complex.transforms.Transform;
 import com.mrcrayfish.vehicle.entity.VehicleEntity;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraftforge.client.extensions.IForgeBakedModel;
+import net.minecraft.world.entity.Entity;
+import com.mojang.math.Matrix4f;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
@@ -56,7 +56,7 @@ public class ComponentModelRayTraceData extends RayTraceData
         private final List<Triangle> baseTriangles;
         private final List<Pair<List<Triangle>, BiFunction<RayTraceData, Entity, Matrix4f>>> matrixPairs = new ArrayList<>();
 
-        private ComplexTriangleList(IBakedModel model, Matrix4f baseMatrix)
+        private ComplexTriangleList(IForgeBakedModel model, Matrix4f baseMatrix)
         {
             this.baseMatrix = baseMatrix;
             this.baseTriangles = EntityRayTracer.createTrianglesFromBakedModel(model, baseMatrix);
@@ -90,7 +90,7 @@ public class ComponentModelRayTraceData extends RayTraceData
             complexTransforms.removeAll(model.getTransforms());
         }
 
-        private Pair<List<Triangle>, BiFunction<RayTraceData, Entity, Matrix4f>> createEntry(IBakedModel model, List<Transform> modelTransforms)
+        private Pair<List<Triangle>, BiFunction<RayTraceData, Entity, Matrix4f>> createEntry(IForgeBakedModel model, List<Transform> modelTransforms)
         {
             return Pair.of(EntityRayTracer.createTrianglesFromBakedModel(model, null), (data, entity) -> {
                 VehicleEntity vehicle = ((VehicleEntity) entity);

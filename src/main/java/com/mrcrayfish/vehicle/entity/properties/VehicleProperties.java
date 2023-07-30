@@ -17,15 +17,15 @@ import com.mrcrayfish.vehicle.network.HandshakeMessages;
 import com.mrcrayfish.vehicle.util.ExtraJSONUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.ReloadListener;
-import net.minecraft.entity.EntityType;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.profiler.IProfiler;
 import net.minecraft.resources.IResource;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.InputEvent;
@@ -71,10 +71,10 @@ public class VehicleProperties
 
     public static final float DEFAULT_MAX_HEALTH = 100F;
     public static final float DEFAULT_AXLE_OFFSET = 0F;
-    public static final Vector3d DEFAULT_HELD_OFFSET = Vector3d.ZERO;
+    public static final Vec3 DEFAULT_HELD_OFFSET = Vec3.ZERO;
     public static final boolean DEFAULT_CAN_TOW_TRAILERS = false;
-    public static final Vector3d DEFAULT_TOW_BAR_OFFSET = Vector3d.ZERO;
-    public static final Vector3d DEFAULT_TRAILER_OFFSET = Vector3d.ZERO;
+    public static final Vec3 DEFAULT_TOW_BAR_OFFSET = Vec3.ZERO;
+    public static final Vec3 DEFAULT_TRAILER_OFFSET = Vec3.ZERO;
     public static final boolean DEFAULT_CAN_CHANGE_WHEELS = false;
     public static final boolean DEFAULT_IMMUNE_TO_FALL_DAMAGE = false;
     public static final boolean DEFAULT_CAN_PLAYER_CARRY = true;
@@ -86,10 +86,10 @@ public class VehicleProperties
     private final float maxHealth;
     private final float axleOffset;
     private final float wheelOffset;
-    private final Vector3d heldOffset;
+    private final Vec3 heldOffset;
     private final boolean canTowTrailers;
-    private final Vector3d towBarOffset;
-    private final Vector3d trailerOffset;
+    private final Vec3 towBarOffset;
+    private final Vec3 trailerOffset;
     private final boolean canChangeWheels;
     private final boolean immuneToFallDamage;
     private final boolean canPlayerCarry;
@@ -103,7 +103,7 @@ public class VehicleProperties
     private final ImmutableMap<ResourceLocation, ExtendedProperties> extended;
     private final ImmutableMap<ResourceLocation, CosmeticProperties> cosmetics;
 
-    private VehicleProperties(float maxHealth, float axleOffset, float wheelOffset, Vector3d heldOffset, boolean canTowTrailers, Vector3d towBarOffset, Vector3d trailerOffset, boolean canChangeWheels, boolean immuneToFallDamage, boolean canPlayerCarry, boolean canFitInTrailer, List<Wheel> wheels, Transform bodyTransform, Transform displayTransform, List<Seat> seats, boolean canBePainted, CameraProperties camera, Map<ResourceLocation, ExtendedProperties> extended, Map<ResourceLocation, CosmeticProperties> cosmetics)
+    private VehicleProperties(float maxHealth, float axleOffset, float wheelOffset, Vec3 heldOffset, boolean canTowTrailers, Vec3 towBarOffset, Vec3 trailerOffset, boolean canChangeWheels, boolean immuneToFallDamage, boolean canPlayerCarry, boolean canFitInTrailer, List<Wheel> wheels, Transform bodyTransform, Transform displayTransform, List<Seat> seats, boolean canBePainted, CameraProperties camera, Map<ResourceLocation, ExtendedProperties> extended, Map<ResourceLocation, CosmeticProperties> cosmetics)
     {
         this.maxHealth = maxHealth;
         this.axleOffset = axleOffset;
@@ -141,7 +141,7 @@ public class VehicleProperties
         return this.wheelOffset;
     }
 
-    public Vector3d getHeldOffset()
+    public Vec3 getHeldOffset()
     {
         return this.heldOffset;
     }
@@ -151,12 +151,12 @@ public class VehicleProperties
         return this.canTowTrailers;
     }
 
-    public Vector3d getTowBarOffset()
+    public Vec3 getTowBarOffset()
     {
         return this.towBarOffset;
     }
 
-    public Vector3d getTrailerOffset()
+    public Vec3 getTrailerOffset()
     {
         return this.trailerOffset;
     }
@@ -391,7 +391,7 @@ public class VehicleProperties
             provider.getVehiclePropertiesMap().forEach(NETWORK_VEHICLE_PROPERTIES::put);
         });
 
-        Minecraft.getInstance().gui.setOverlayMessage(new StringTextComponent("Refreshed vehicle properties!"), false);
+        Minecraft.getInstance().gui.setOverlayMessage(new TextComponent("Refreshed vehicle properties!"), false);
     }
 
     public static class Serializer implements JsonDeserializer<VehicleProperties>, JsonSerializer<VehicleProperties>
@@ -578,10 +578,10 @@ public class VehicleProperties
     {
         private float maxHealth = DEFAULT_MAX_HEALTH;
         private float axleOffset = DEFAULT_AXLE_OFFSET;
-        private Vector3d heldOffset = DEFAULT_HELD_OFFSET;
+        private Vec3 heldOffset = DEFAULT_HELD_OFFSET;
         private boolean canTowTrailers = DEFAULT_CAN_TOW_TRAILERS;
-        private Vector3d towBarOffset = DEFAULT_TOW_BAR_OFFSET;
-        private Vector3d trailerOffset = DEFAULT_TRAILER_OFFSET;
+        private Vec3 towBarOffset = DEFAULT_TOW_BAR_OFFSET;
+        private Vec3 trailerOffset = DEFAULT_TRAILER_OFFSET;
         private boolean canChangeWheels = DEFAULT_CAN_CHANGE_WHEELS;
         private boolean immuneToFallDamage = DEFAULT_IMMUNE_TO_FALL_DAMAGE;
         private boolean canPlayerCarry = DEFAULT_CAN_PLAYER_CARRY;
@@ -609,11 +609,11 @@ public class VehicleProperties
 
         public Builder setHeldOffset(double x, double y, double z)
         {
-            this.heldOffset = new Vector3d(x, y, z);
+            this.heldOffset = new Vec3(x, y, z);
             return this;
         }
 
-        public Builder setHeldOffset(Vector3d vec)
+        public Builder setHeldOffset(Vec3 vec)
         {
             this.heldOffset = vec;
             return this;
@@ -621,7 +621,7 @@ public class VehicleProperties
 
         public Builder setTowBarPosition(double x, double y, double z)
         {
-            this.towBarOffset = new Vector3d(x, y, z);
+            this.towBarOffset = new Vec3(x, y, z);
             return this;
         }
 
@@ -631,7 +631,7 @@ public class VehicleProperties
             return this;
         }
 
-        public Builder setTowBarOffset(Vector3d vec)
+        public Builder setTowBarOffset(Vec3 vec)
         {
             this.towBarOffset = vec;
             return this;
@@ -639,11 +639,11 @@ public class VehicleProperties
 
         public Builder setTrailerOffset(double x, double y, double z)
         {
-            this.trailerOffset = new Vector3d(x, y, z);
+            this.trailerOffset = new Vec3(x, y, z);
             return this;
         }
 
-        public Builder setTrailerOffset(Vector3d vec)
+        public Builder setTrailerOffset(Vec3 vec)
         {
             this.trailerOffset = vec;
             return this;
@@ -764,7 +764,7 @@ public class VehicleProperties
                 double xScale = wheel.getScale().x != 0.0 ? wheel.getScale().x : scale;
                 double yScale = wheel.getScale().y != 0.0 ? wheel.getScale().y : scale;
                 double zScale = wheel.getScale().z != 0.0 ? wheel.getScale().z : scale;
-                Vector3d newScale = new Vector3d(xScale, yScale, zScale);
+                Vec3 newScale = new Vec3(xScale, yScale, zScale);
                 return wheel.rescale(newScale);
             }).collect(Collectors.toList());
         }
@@ -884,7 +884,7 @@ public class VehicleProperties
             return instance;
         }
 
-        public void writeVehicleProperties(PacketBuffer buffer)
+        public void writeVehicleProperties(FriendlyByteBuf buffer)
         {
             buffer.writeVarInt(this.vehicleProperties.size());
             this.vehicleProperties.forEach((id, properties) ->
@@ -895,7 +895,7 @@ public class VehicleProperties
             });
         }
 
-        public static ImmutableMap<ResourceLocation, VehicleProperties> readVehicleProperties(PacketBuffer buffer)
+        public static ImmutableMap<ResourceLocation, VehicleProperties> readVehicleProperties(FriendlyByteBuf buffer)
         {
             int size = buffer.readVarInt();
             if(size > 0)
@@ -914,7 +914,7 @@ public class VehicleProperties
             return ImmutableMap.of();
         }
 
-        private static void writeCosmeticModelLocations(PacketBuffer buffer, VehicleProperties properties)
+        private static void writeCosmeticModelLocations(FriendlyByteBuf buffer, VehicleProperties properties)
         {
             buffer.writeInt(properties.getCosmetics().size());
             properties.getCosmetics().forEach((cosmeticId, cosmeticProperties) ->
@@ -931,7 +931,7 @@ public class VehicleProperties
             });
         }
 
-        private static void readCosmeticModelLocations(PacketBuffer buffer, VehicleProperties properties)
+        private static void readCosmeticModelLocations(FriendlyByteBuf buffer, VehicleProperties properties)
         {
             int cosmeticsLength = buffer.readInt();
             for(int i = 0; i < cosmeticsLength; i++)

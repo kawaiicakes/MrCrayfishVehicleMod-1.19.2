@@ -1,9 +1,9 @@
 package com.mrcrayfish.vehicle.network.message;
 
 import com.mrcrayfish.vehicle.network.play.ClientPlayHandler;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -27,7 +27,7 @@ public class MessageSyncPlayerSeat implements IMessage<MessageSyncPlayerSeat>
     }
 
     @Override
-    public void encode(MessageSyncPlayerSeat message, PacketBuffer buffer)
+    public void encode(MessageSyncPlayerSeat message, FriendlyByteBuf buffer)
     {
         buffer.writeVarInt(message.entityId);
         buffer.writeVarInt(message.seatIndex);
@@ -35,7 +35,7 @@ public class MessageSyncPlayerSeat implements IMessage<MessageSyncPlayerSeat>
     }
 
     @Override
-    public MessageSyncPlayerSeat decode(PacketBuffer buffer)
+    public MessageSyncPlayerSeat decode(FriendlyByteBuf buffer)
     {
         return new MessageSyncPlayerSeat(buffer.readVarInt(), buffer.readVarInt(), buffer.readUUID());
     }

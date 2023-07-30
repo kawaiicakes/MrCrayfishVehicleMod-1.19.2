@@ -2,9 +2,9 @@ package com.mrcrayfish.vehicle.client.model;
 
 import com.mrcrayfish.vehicle.Reference;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.model.IBakedModel;
+import net.minecraftforge.client.extensions.IForgeBakedModel;
 import net.minecraft.client.renderer.model.ModelResourceLocation;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.ModelRegistryEvent;

@@ -10,22 +10,22 @@ import com.mrcrayfish.vehicle.client.handler.ControllerHandler;
 import com.mrcrayfish.vehicle.entity.HelicopterEntity;
 import com.mrcrayfish.vehicle.entity.PoweredVehicleEntity;
 import com.mrcrayfish.vehicle.init.ModParticleTypes;
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.ITickableSound;
-import net.minecraft.client.audio.SimpleSound;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.particle.DiggingParticle;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.client.settings.PointOfView;
+import net.minecraft.client.CameraType;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
@@ -73,13 +73,13 @@ public class VehicleHelper
 
     public static void playSound(SoundEvent soundEvent, BlockPos pos, float volume, float pitch)
     {
-        ISound sound = new SimpleSound(soundEvent, SoundCategory.BLOCKS, volume, pitch, pos.getX() + 0.5F, pos.getY(), pos.getZ() + 0.5F);
+        ISound sound = new SimpleSoundInstance(soundEvent, SoundSource.BLOCKS, volume, pitch, pos.getX() + 0.5F, pos.getY(), pos.getZ() + 0.5F);
         Minecraft.getInstance().submitAsync(() -> Minecraft.getInstance().getSoundManager().play(sound));
     }
 
     public static void playSound(SoundEvent soundEvent, float volume, float pitch)
     {
-        Minecraft.getInstance().submitAsync(() -> Minecraft.getInstance().getSoundManager().play(SimpleSound.forUI(soundEvent, volume, pitch)));
+        Minecraft.getInstance().submitAsync(() -> Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(soundEvent, volume, pitch)));
     }
 
     //@SubscribeEvent(priority = EventPriority.NORMAL, receiveCanceled = true)
@@ -111,14 +111,14 @@ public class VehicleHelper
                 Controller controller = Controllable.getController();
                 if(Controllable.getInput().isControllerInUse() && controller != null)
                 {
-                    float leftStick = -MathHelper.clamp(controller.getLThumbStickXValue(), -1.0F, 1.0F);
+                    float leftStick = -Mth.clamp(controller.getLThumbStickXValue(), -1.0F, 1.0F);
                     float strengthModifier = Math.abs(leftStick) > 0.1F ? 0.1F : 0.2F;
                     return steeringAngle + (vehicle.getMaxSteeringAngle() * leftStick - steeringAngle) * strengthModifier;
                 }
             }
 
             LivingEntity livingEntity = (LivingEntity) entity;
-            float turnValue = MathHelper.clamp(livingEntity.xxa, -1.0F, 1.0F);
+            float turnValue = Mth.clamp(livingEntity.xxa, -1.0F, 1.0F);
             float strengthModifier = livingEntity.xxa != 0 ? 0.05F : 0.2F;
             return steeringAngle + (vehicle.getMaxSteeringAngle() * turnValue - steeringAngle) * strengthModifier;
         }
@@ -265,7 +265,7 @@ public class VehicleHelper
                 return 0.0F;
             }
         }
-        return MathHelper.clamp(livingEntity.zza, -1.0F, 1.0F);
+        return Mth.clamp(livingEntity.zza, -1.0F, 1.0F);
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -295,7 +295,7 @@ public class VehicleHelper
         return false;
     }
 
-    public static void spawnWheelParticle(BlockPos pos, BlockState state, double x, double y, double z, Vector3d motion)
+    public static void spawnWheelParticle(BlockPos pos, BlockState state, double x, double y, double z, Vec3 motion)
     {
         Minecraft mc = Minecraft.getInstance();
         ClientWorld world = mc.level;
@@ -308,7 +308,7 @@ public class VehicleHelper
         }
     }
 
-    public static void spawnSmokeParticle(double x, double y, double z, Vector3d motion)
+    public static void spawnSmokeParticle(double x, double y, double z, Vec3 motion)
     {
         Minecraft mc = Minecraft.getInstance();
         ClientWorld world = mc.level;
@@ -324,12 +324,12 @@ public class VehicleHelper
 
     public static boolean isThirdPersonBack()
     {
-        return Minecraft.getInstance().options.getCameraType() == PointOfView.THIRD_PERSON_BACK;
+        return Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_BACK;
     }
 
     public static boolean isThirdPersonFront()
     {
-        return Minecraft.getInstance().options.getCameraType() == PointOfView.THIRD_PERSON_FRONT;
+        return Minecraft.getInstance().options.getCameraType() == CameraType.THIRD_PERSON_FRONT;
     }
 
     private enum SoundType

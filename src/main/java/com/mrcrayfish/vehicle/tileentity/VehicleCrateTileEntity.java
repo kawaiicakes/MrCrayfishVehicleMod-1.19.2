@@ -13,19 +13,19 @@ import com.mrcrayfish.vehicle.init.ModSounds;
 import com.mrcrayfish.vehicle.init.ModTileEntities;
 import com.mrcrayfish.vehicle.item.EngineItem;
 import com.mrcrayfish.vehicle.util.CommonUtils;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
@@ -112,7 +112,7 @@ public class VehicleCrateTileEntity extends TileEntitySynced implements ITickabl
                         if(this.entity != null)
                         {
                             VehicleHelper.playSound(SoundEvents.ITEM_BREAK, this.worldPosition, 1.0F, 0.5F);
-                            List<EntityDataManager.DataEntry<?>> entryList = this.entity.getEntityData().getAll();
+                            List<SynchedEntityData.DataEntry<?>> entryList = this.entity.getEntityData().getAll();
                             if(entryList != null)
                             {
                                 entryList.forEach(dataEntry -> this.entity.onSyncedDataUpdated(dataEntry.getAccessor()));
@@ -195,14 +195,14 @@ public class VehicleCrateTileEntity extends TileEntitySynced implements ITickabl
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT compound)
+    public void load(BlockState state, CompoundTag compound)
     {
         super.load(state, compound);
         if(compound.contains("Vehicle", Constants.NBT.TAG_STRING))
         {
             this.entityId = new ResourceLocation(compound.getString("Vehicle"));
         }
-        if(compound.contains("Color", Constants.NBT.TAG_INT))
+        if(compound.contains("Color", Tag.TAG_INT))
         {
             this.color = compound.getInt("Color");
         }
@@ -235,7 +235,7 @@ public class VehicleCrateTileEntity extends TileEntitySynced implements ITickabl
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT compound)
+    public CompoundTag save(CompoundTag compound)
     {
         if(this.entityId != null)
         {
@@ -259,7 +259,7 @@ public class VehicleCrateTileEntity extends TileEntitySynced implements ITickabl
     }
 
     @Override
-    public AxisAlignedBB getRenderBoundingBox()
+    public AABB getRenderBoundingBox()
     {
         return INFINITE_EXTENT_AABB;
     }

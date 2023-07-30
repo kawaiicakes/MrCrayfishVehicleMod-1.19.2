@@ -12,12 +12,12 @@ import com.mrcrayfish.vehicle.common.entity.Transform;
 import com.mrcrayfish.vehicle.entity.VehicleEntity;
 import com.mrcrayfish.vehicle.entity.properties.PoweredProperties;
 import com.mrcrayfish.vehicle.entity.properties.VehicleProperties;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import com.mojang.math.Matrix4f;
+import net.minecraft.world.phys.Vec3;
+import com.mojang.math.Vector3f;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -71,7 +71,7 @@ public class TransformHelper
         createPartTransforms(new ItemStackRayTraceData(new ItemStack(part), function), transform.getTranslate(), transform.getRotation(), (float) transform.getScale(), parts, globalTransforms);
     }
 
-    public static void createPartTransforms(RayTraceData data, Vector3d offset, Vector3d rotation, float scale, HashMap<RayTraceData, List<MatrixTransform>> parts, List<MatrixTransform> transformsGlobal)
+    public static void createPartTransforms(RayTraceData data, Vec3 offset, Vec3 rotation, float scale, HashMap<RayTraceData, List<MatrixTransform>> parts, List<MatrixTransform> transformsGlobal)
     {
         List<MatrixTransform> transforms = Lists.newArrayList();
         transforms.addAll(transformsGlobal);
@@ -137,8 +137,8 @@ public class TransformHelper
         transforms.add(MatrixTransform.rotate(Vector3f.YP.rotationDegrees(180F)));
         transforms.add(MatrixTransform.translate(0.0F, 0.5F, 0.0F));
         transforms.add(MatrixTransform.translate(0.0F, 0.5F, 0.0F)); // Need extra translate to prevent translation in #createPartTransforms call
-        Vector3d towBarOffset = properties.getTowBarOffset().scale(bodyScale).multiply(1, 1, -1);
-        createPartTransforms(new ComponentModelRayTraceData(model), towBarOffset, Vector3d.ZERO, 1.0F, parts, transforms);
+        Vec3 towBarOffset = properties.getTowBarOffset().scale(bodyScale).multiply(1, 1, -1);
+        createPartTransforms(new ComponentModelRayTraceData(model), towBarOffset, Vec3.ZERO, 1.0F, parts, transforms);
     }
 
     /**

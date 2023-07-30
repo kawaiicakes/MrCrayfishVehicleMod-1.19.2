@@ -7,8 +7,8 @@ import com.mrcrayfish.vehicle.crafting.RecipeType;
 import com.mrcrayfish.vehicle.init.ModTileEntities;
 import com.mrcrayfish.vehicle.inventory.container.FluidExtractorContainer;
 import com.mrcrayfish.vehicle.util.InventoryUtil;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
@@ -16,16 +16,16 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tileentity.ITickableTileEntity;
-import net.minecraft.util.Direction;
+import net.minecraft.core.Direction;
 import net.minecraft.util.IIntArray;
 import net.minecraft.util.INameable;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.core.NonNullList;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeHooks;
@@ -275,7 +275,7 @@ public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements 
     }
 
     @Override
-    public boolean stillValid(PlayerEntity player)
+    public boolean stillValid(Player player)
     {
         return this.level.getBlockEntity(this.worldPosition) == this && player.distanceToSqr((double) this.worldPosition.getX() + 0.5D, (double) this.worldPosition.getY() + 0.5D, (double) this.worldPosition.getZ() + 0.5D) <= 64.0D;
     }
@@ -321,18 +321,18 @@ public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements 
     }
 
     @Override
-    public void load(BlockState state, CompoundNBT compound)
+    public void load(BlockState state, CompoundTag compound)
     {
         super.load(state, compound);
-        if(compound.contains("ExtractionProgress", Constants.NBT.TAG_INT))
+        if(compound.contains("ExtractionProgress", Tag.TAG_INT))
         {
             this.extractionProgress = compound.getInt("ExtractionProgress");
         }
-        if(compound.contains("RemainingFuel", Constants.NBT.TAG_INT))
+        if(compound.contains("RemainingFuel", Tag.TAG_INT))
         {
             this.remainingFuel = compound.getInt("RemainingFuel");
         }
-        if(compound.contains("FuelMaxProgress", Constants.NBT.TAG_INT))
+        if(compound.contains("FuelMaxProgress", Tag.TAG_INT))
         {
             this.fuelMaxProgress = compound.getInt("FuelMaxProgress");
         }
@@ -348,7 +348,7 @@ public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements 
     }
 
     @Override
-    public CompoundNBT save(CompoundNBT compound)
+    public CompoundTag save(CompoundTag compound)
     {
         super.save(compound);
         compound.putInt("ExtractionProgress", this.extractionProgress);
@@ -366,7 +366,7 @@ public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements 
     }
 
     @Override
-    public ITextComponent getName()
+    public Component getName()
     {
         return this.getDisplayName();
     }
@@ -378,9 +378,9 @@ public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements 
     }
 
     @Override
-    public ITextComponent getDisplayName()
+    public Component getDisplayName()
     {
-        return this.hasCustomName() ? new StringTextComponent(this.customName) : new TranslationTextComponent("container.fluid_extractor");
+        return this.hasCustomName() ? new TextComponent(this.customName) : new TranslatableContents("container.fluid_extractor");
     }
 
     private void shrinkItem(int index)
@@ -395,7 +395,7 @@ public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements 
 
     @Nullable
     @Override
-    public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity)
+    public Container createMenu(int windowId, PlayerInventory playerInventory, Player playerEntity)
     {
         return new FluidExtractorContainer(windowId, playerInventory, this);
     }

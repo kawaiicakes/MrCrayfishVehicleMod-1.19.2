@@ -1,22 +1,22 @@
 package com.mrcrayfish.vehicle.util;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.util.Direction;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.world.World;
+import net.minecraft.core.Direction;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.BlockPos;
+import com.mojang.math.Matrix4f;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.ForgeHooksClient;
@@ -132,7 +132,7 @@ public class FluidUtils
     {
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuilder();
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormat.POSITION_TEX);
         buffer.vertex(x, y + height, 0).uv(minU, maxV).endVertex();
         buffer.vertex(x + width, y + height, 0).uv(maxU, maxV).endVertex();
         buffer.vertex(x + width, y, 0).uv(maxU, minV).endVertex();
@@ -141,7 +141,7 @@ public class FluidUtils
     }
 
     @OnlyIn(Dist.CLIENT)
-    public static void drawFluidInWorld(FluidTank tank, World world, BlockPos pos, MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer, float x, float y, float z, float width, float height, float depth, int light, FluidSides sides)
+    public static void drawFluidInWorld(FluidTank tank, Level world, BlockPos pos, PoseStack matrixStack, MultiBufferSource renderTypeBuffer, float x, float y, float z, float width, float height, float depth, int light, FluidSides sides)
     {
         if(tank.isEmpty())
             return;
@@ -157,7 +157,7 @@ public class FluidUtils
         float minV = sprite.getV0();
         float maxV = Math.min(minV + (sprite.getV1() - minV) * height, sprite.getV1());
 
-        IVertexBuilder buffer = renderTypeBuffer.getBuffer(RenderType.translucent());
+        VertexConsumer buffer = renderTypeBuffer.getBuffer(RenderType.translucent());
         Matrix4f matrix = matrixStack.last().pose();
 
         //left side

@@ -2,8 +2,8 @@ package com.mrcrayfish.vehicle.network.message;
 
 import com.mrcrayfish.vehicle.network.play.ServerPlayHandler;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -22,13 +22,13 @@ public class MessageAttachTrailer implements IMessage<MessageAttachTrailer>
     }
 
     @Override
-    public void encode(MessageAttachTrailer message, PacketBuffer buffer)
+    public void encode(MessageAttachTrailer message, FriendlyByteBuf buffer)
     {
         buffer.writeInt(message.trailerId);
     }
 
     @Override
-    public MessageAttachTrailer decode(PacketBuffer buffer)
+    public MessageAttachTrailer decode(FriendlyByteBuf buffer)
     {
         return new MessageAttachTrailer(buffer.readInt());
     }

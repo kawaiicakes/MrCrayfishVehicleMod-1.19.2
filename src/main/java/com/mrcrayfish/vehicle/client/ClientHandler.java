@@ -58,7 +58,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fmlclient.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -198,7 +198,7 @@ public class ClientHandler
     {
         IItemColor color = (stack, index) ->
         {
-            if(index == 0 && stack.hasTag() && stack.getTag().contains("Color", Constants.NBT.TAG_INT))
+            if(index == 0 && stack.hasTag() && stack.getTag().contains("Color", Tag.TAG_INT))
             {
                 return stack.getTag().getInt("Color");
             }

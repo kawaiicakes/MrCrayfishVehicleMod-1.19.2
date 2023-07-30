@@ -1,6 +1,6 @@
 package com.mrcrayfish.vehicle.util;
 
-import net.minecraft.util.math.vector.Vector3f;
+import com.mojang.math.Vector3f;
 
 import java.util.Arrays;
 

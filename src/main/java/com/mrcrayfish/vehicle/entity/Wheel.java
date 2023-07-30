@@ -3,15 +3,15 @@ package com.mrcrayfish.vehicle.entity;
 import com.google.gson.JsonObject;
 import com.mrcrayfish.vehicle.util.ExtraJSONUtils;
 import net.minecraft.util.JSONUtils;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * Author: MrCrayfish
  */
 public class Wheel
 {
-    public static final Vector3d DEFAULT_OFFSET = Vector3d.ZERO;
-    public static final Vector3d DEFAULT_SCALE = new Vector3d(1, 1, 1);
+    public static final Vec3 DEFAULT_OFFSET = Vec3.ZERO;
+    public static final Vec3 DEFAULT_SCALE = new Vec3(1, 1, 1);
     public static final float DEFAULT_WIDTH = 4.0F;
     public static final Side DEFAULT_SIDE = Side.NONE;
     public static final Position DEFAULT_POSITION = Position.NONE;
@@ -19,8 +19,8 @@ public class Wheel
     public static final boolean DEFAULT_PARTICLES = false;
     public static final boolean DEFAULT_RENDER = true;
 
-    private final Vector3d offset;
-    private final Vector3d scale;
+    private final Vec3 offset;
+    private final Vec3 scale;
     private final float width;
     private final Side side;
     private final Position position;
@@ -28,7 +28,7 @@ public class Wheel
     private final boolean particles;
     private final boolean render;
 
-    protected Wheel(Vector3d offset, Vector3d scale, float width, Side side, Position position, boolean autoScale, boolean particles, boolean render)
+    protected Wheel(Vec3 offset, Vec3 scale, float width, Side side, Position position, boolean autoScale, boolean particles, boolean render)
     {
         this.offset = offset;
         this.scale = scale;
@@ -40,12 +40,12 @@ public class Wheel
         this.render = render;
     }
 
-    public Vector3d getOffset()
+    public Vec3 getOffset()
     {
         return this.offset;
     }
 
-    public Vector3d getScale()
+    public Vec3 getScale()
     {
         return this.scale;
     }
@@ -132,7 +132,7 @@ public class Wheel
         return render;
     }
 
-    public Wheel rescale(Vector3d newScale)
+    public Wheel rescale(Vec3 newScale)
     {
         return new Wheel(this.offset, newScale, this.width, this.side, this.position, this.autoScale, this.particles, this.render);
     }
@@ -152,8 +152,8 @@ public class Wheel
 
     public static Wheel fromJsonObject(JsonObject object)
     {
-        Vector3d offset = ExtraJSONUtils.getAsVector3d(object, "offset", DEFAULT_OFFSET);
-        Vector3d scale = ExtraJSONUtils.getAsVector3d(object, "scale", DEFAULT_SCALE);
+        Vec3 offset = ExtraJSONUtils.getAsVector3d(object, "offset", DEFAULT_OFFSET);
+        Vec3 scale = ExtraJSONUtils.getAsVector3d(object, "scale", DEFAULT_SCALE);
         Wheel.Side side = ExtraJSONUtils.getAsEnum(object, "side", Wheel.Side.class, DEFAULT_SIDE);
         Wheel.Position position = ExtraJSONUtils.getAsEnum(object, "axle", Wheel.Position.class, DEFAULT_POSITION);
         boolean autoScale = JSONUtils.getAsBoolean(object, "autoScale", DEFAULT_AUTO_SCALE);
@@ -191,8 +191,8 @@ public class Wheel
 
     public static class Builder
     {
-        private Vector3d offset = DEFAULT_OFFSET;
-        private Vector3d scale = DEFAULT_SCALE;
+        private Vec3 offset = DEFAULT_OFFSET;
+        private Vec3 scale = DEFAULT_SCALE;
         private float width = DEFAULT_WIDTH;
         private Side side = DEFAULT_SIDE;
         private Position position = DEFAULT_POSITION;
@@ -202,19 +202,19 @@ public class Wheel
 
         public Builder setOffset(double x, double y, double z)
         {
-            this.offset = new Vector3d(x, y, z);
+            this.offset = new Vec3(x, y, z);
             return this;
         }
 
         public Builder setScale(double scale)
         {
-            this.scale = new Vector3d(scale, scale, scale);
+            this.scale = new Vec3(scale, scale, scale);
             return this;
         }
 
         public Builder setScale(double scaleX, double scaleY, double scaleZ)
         {
-            this.scale = new Vector3d(scaleX, scaleY, scaleZ);
+            this.scale = new Vec3(scaleX, scaleY, scaleZ);
             return this;
         }
 

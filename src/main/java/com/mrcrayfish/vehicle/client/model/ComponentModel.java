@@ -1,15 +1,15 @@
 package com.mrcrayfish.vehicle.client.model;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mrcrayfish.vehicle.client.render.complex.ComplexModel;
 import com.mrcrayfish.vehicle.entity.VehicleEntity;
 import com.mrcrayfish.vehicle.util.RenderUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraftforge.client.extensions.IForgeBakedModel;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
 
@@ -20,7 +20,7 @@ public class ComponentModel implements IComplexModel
 {
     private final ResourceLocation modelLocation;
     @Nullable
-    private IBakedModel cachedModel;
+    private IForgeBakedModel cachedModel;
     @Nullable
     private ComplexModel complexModel;
 
@@ -36,7 +36,7 @@ public class ComponentModel implements IComplexModel
     }
 
     @Override
-    public IBakedModel getBaseModel()
+    public IForgeBakedModel getBaseModel()
     {
         if(this.cachedModel == null)
         {
@@ -62,7 +62,7 @@ public class ComponentModel implements IComplexModel
         return this.complexModel;
     }
 
-    public void render(VehicleEntity entity, MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer, int color, int light, float partialTicks)
+    public void render(VehicleEntity entity, PoseStack matrixStack, MultiBufferSource renderTypeBuffer, int color, int light, float partialTicks)
     {
         if(this.complexModel != null)
         {
@@ -70,7 +70,7 @@ public class ComponentModel implements IComplexModel
         }
         else
         {
-            RenderUtil.renderColoredModel(this.getBaseModel(), ItemCameraTransforms.TransformType.NONE, false, matrixStack, renderTypeBuffer, color, light, OverlayTexture.NO_OVERLAY);
+            RenderUtil.renderColoredModel(this.getBaseModel(), ItemTransforms.TransformType.NONE, false, matrixStack, renderTypeBuffer, color, light, OverlayTexture.NO_OVERLAY);
         }
     }
 }

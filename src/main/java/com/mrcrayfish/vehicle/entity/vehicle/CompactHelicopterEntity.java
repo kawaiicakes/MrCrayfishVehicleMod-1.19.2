@@ -4,20 +4,20 @@ import com.mrcrayfish.vehicle.common.entity.Transform;
 import com.mrcrayfish.vehicle.entity.HelicopterEntity;
 import com.mrcrayfish.vehicle.entity.properties.VehicleProperties;
 import com.mrcrayfish.vehicle.init.ModParticleTypes;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.EntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.particles.IParticleData;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.util.math.BlockRayTraceResult;
+import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Matrix4f;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.util.math.vector.Vector4f;
-import net.minecraft.world.World;
+import net.minecraft.world.phys.HitResult;
+import com.mojang.math.Matrix4f;
+import net.minecraft.world.phys.Vec3;
+import com.mojang.math.Vector3f;
+import com.mojang.math.Vector4f;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.Tags;
 
 /**
@@ -25,7 +25,7 @@ import net.minecraftforge.common.Tags;
  */
 public class CompactHelicopterEntity extends HelicopterEntity
 {
-    public CompactHelicopterEntity(EntityType<?> entityType, World worldIn)
+    public CompactHelicopterEntity(EntityType<?> entityType, Level worldIn)
     {
         super(entityType, worldIn);
     }
@@ -37,7 +37,7 @@ public class CompactHelicopterEntity extends HelicopterEntity
 
         if(this.canDrive() && this.tickCount % 2 == 0)
         {
-            Vector3d exhaust = this.getExhaustFumesPosition().scale(0.0625);
+            Vec3 exhaust = this.getExhaustFumesPosition().scale(0.0625);
             Vector4f fumePosition = new Vector4f(new Vector3f(exhaust));
             fumePosition.transform(this.getTransformMatrix(0F));
             this.level.addParticle(ParticleTypes.LARGE_SMOKE, this.getX() + fumePosition.x(), this.getY() + fumePosition.y(), this.getZ() + fumePosition.z(), -this.getDeltaMovement().x, 0.0D, -this.getDeltaMovement().z);
@@ -53,12 +53,12 @@ public class CompactHelicopterEntity extends HelicopterEntity
             double posZ = this.getZ() + randZ;
             double downDistance = Math.min(12.0, this.bladeSpeed / 15.0);
             downDistance = (downDistance * 0.5) + (downDistance * 0.5) * this.random.nextDouble();
-            Vector3d start = new Vector3d(posX, this.getY() + 3.0, posZ);
-            Vector3d end = start.subtract(0, downDistance, 0);
-            BlockRayTraceResult result = this.level.clip(new RayTraceContext(start, end, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.SOURCE_ONLY, null));
-            if(result.getType() != RayTraceResult.Type.MISS)
+            Vec3 start = new Vec3(posX, this.getY() + 3.0, posZ);
+            Vec3 end = start.subtract(0, downDistance, 0);
+            BlockHitResult result = this.level.clip(new RayTraceContext(start, end, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.SOURCE_ONLY, null));
+            if(result.getType() != HitResult.Type.MISS)
             {
-                Vector3d loc = result.getLocation();
+                Vec3 loc = result.getLocation();
                 double distanceScale = (downDistance - start.distanceTo(loc)) / downDistance;
                 BlockState state = this.level.getBlockState(result.getBlockPos());
                 if(state.is(Tags.Blocks.DIRT) || state.is(Tags.Blocks.GRAVEL) || state.is(Tags.Blocks.SAND))

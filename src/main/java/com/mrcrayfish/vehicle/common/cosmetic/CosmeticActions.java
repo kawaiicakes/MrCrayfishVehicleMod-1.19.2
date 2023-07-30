@@ -8,7 +8,7 @@ import com.mrcrayfish.vehicle.common.cosmetic.actions.RotateAction;
 import com.mrcrayfish.vehicle.util.Axis;
 import com.mrcrayfish.vehicle.util.ExtraJSONUtils;
 import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;

@@ -1,15 +1,15 @@
 package com.mrcrayfish.vehicle.tileentity;
 
 import com.mrcrayfish.vehicle.util.TileEntityUtil;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.tileentity.TileEntityType;
 
 import javax.annotation.Nullable;
 
-public class TileEntitySynced extends TileEntity
+public class TileEntitySynced extends BlockEntity
 {
     public TileEntitySynced(TileEntityType<?> tileEntityTypeIn)
     {
@@ -23,9 +23,9 @@ public class TileEntitySynced extends TileEntity
     }
 
     @Override
-    public CompoundNBT getUpdateTag()
+    public CompoundTag getUpdateTag()
     {
-        return this.save(new CompoundNBT());
+        return this.save(new CompoundTag());
     }
 
     @Nullable

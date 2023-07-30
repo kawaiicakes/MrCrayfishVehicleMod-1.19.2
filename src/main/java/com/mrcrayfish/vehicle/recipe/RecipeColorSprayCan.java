@@ -5,11 +5,11 @@ import com.mrcrayfish.vehicle.init.ModRecipeSerializers;
 import com.mrcrayfish.vehicle.item.IDyeable;
 import net.minecraft.inventory.CraftingInventory;
 import net.minecraft.item.DyeItem;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.SpecialRecipe;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.Tags;
 
 import java.util.List;
@@ -25,7 +25,7 @@ public class RecipeColorSprayCan extends SpecialRecipe
     }
 
     @Override
-    public boolean matches(CraftingInventory inventory, World worldIn)
+    public boolean matches(CraftingInventory inventory, Level worldIn)
     {
         ItemStack dyeableItem = ItemStack.EMPTY;
         List<ItemStack> dyes = Lists.newArrayList();

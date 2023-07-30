@@ -22,9 +22,9 @@ import com.mrcrayfish.vehicle.entity.properties.VehicleProperties;
 import com.mrcrayfish.vehicle.init.*;
 import com.mrcrayfish.vehicle.network.PacketHandler;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.crafting.CraftingHelper;
@@ -47,7 +47,7 @@ import org.apache.logging.log4j.Logger;
 public class VehicleMod
 {
     public static final Logger LOGGER = LogManager.getLogger(Reference.MOD_ID);
-    public static final ItemGroup CREATIVE_TAB = new ItemGroup(Reference.MOD_ID)
+    public static final CreativeModeTab CREATIVE_TAB = new CreativeModeTab(Reference.MOD_ID)
     {
         @Override
         public ItemStack makeIcon()

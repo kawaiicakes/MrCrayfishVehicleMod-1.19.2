@@ -21,7 +21,7 @@ public class ClientEvents
     public void onKeyInput(InputEvent.KeyInputEvent event)
     {
         Minecraft mc = Minecraft.getInstance();
-        if(mc.overlay != null)
+        if(mc.getOverlay() != null)
             return;
 
         if(event.getAction() != GLFW.GLFW_PRESS)

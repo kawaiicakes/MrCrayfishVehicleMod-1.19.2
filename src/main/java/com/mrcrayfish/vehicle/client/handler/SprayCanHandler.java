@@ -3,12 +3,12 @@ package com.mrcrayfish.vehicle.client.handler;
 import com.mrcrayfish.vehicle.init.ModSounds;
 import com.mrcrayfish.vehicle.item.SprayCanItem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.SimpleSound;
-import net.minecraft.client.renderer.entity.model.PlayerModel;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.HandSide;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.entity.HumanoidArm;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
@@ -22,25 +22,25 @@ public class SprayCanHandler
     @SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event)
     {
-        PlayerEntity player = Minecraft.getInstance().player;
+        Player player = Minecraft.getInstance().player;
         if(event.phase != TickEvent.Phase.END || player == null)
             return;
 
-        int slot = player.inventory.selected;
+        int slot = player.getInventory().selected;
         if(this.lastSlot == slot)
             return;
 
         this.lastSlot = slot;
 
-        if(player.inventory.getSelected().isEmpty())
+        if(player.getInventory().getSelected().isEmpty())
             return;
 
-        if(!(player.inventory.getSelected().getItem() instanceof SprayCanItem))
+        if(!(player.getInventory().getSelected().getItem() instanceof SprayCanItem))
             return;
 
-        SprayCanItem sprayCan = (SprayCanItem) player.inventory.getSelected().getItem();
-        float pitch = 0.85F + 0.15F * sprayCan.getRemainingSprays(player.inventory.getSelected());
-        Minecraft.getInstance().getSoundManager().play(SimpleSound.forUI(ModSounds.ITEM_SPRAY_CAN_SHAKE.get(), pitch, 0.75F));
+        SprayCanItem sprayCan = (SprayCanItem) player.getInventory().getSelected().getItem();
+        float pitch = 0.85F + 0.15F * sprayCan.getRemainingSprays(player.getInventory().getSelected());
+        Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(ModSounds.ITEM_SPRAY_CAN_SHAKE.get(), pitch, 0.75F));
     }
 
     /**
@@ -49,12 +49,12 @@ public class SprayCanHandler
      * @param player the player holding the spray can
      * @param model  the model of the player
      */
-    static void applySprayCanPose(PlayerEntity player, PlayerModel<?> model)
+    static void applySprayCanPose(Player player, PlayerModel<?> model)
     {
         if(player.getVehicle() != null)
             return;
 
-        boolean rightHanded = player.getMainArm() == HandSide.RIGHT;
+        boolean rightHanded = player.getMainArm() == HumanoidArm.RIGHT;
         ItemStack rightItem = rightHanded ? player.getMainHandItem() : player.getOffhandItem();
         ItemStack leftItem = rightHanded ? player.getOffhandItem() : player.getMainHandItem();
         if(!rightItem.isEmpty() && rightItem.getItem() instanceof SprayCanItem)
@@ -75,7 +75,7 @@ public class SprayCanHandler
      * @param source the source model renderer to get the rotations form
      * @param target the target model renderer to apply to rotations to
      */
-    private static void copyModelAngles(ModelRenderer source, ModelRenderer target)
+    private static void copyModelAngles(ModelPart source, ModelPart target)
     {
         target.xRot = source.xRot;
         target.yRot = source.yRot;

@@ -8,7 +8,7 @@ import com.mrcrayfish.vehicle.recipe.RecipeColorSprayCan;
 import com.mrcrayfish.vehicle.recipe.RecipeRefillSprayCan;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.SpecialRecipeSerializer;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 

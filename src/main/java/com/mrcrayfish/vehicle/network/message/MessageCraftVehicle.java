@@ -2,9 +2,9 @@ package com.mrcrayfish.vehicle.network.message;
 
 import com.mrcrayfish.vehicle.network.play.ServerPlayHandler;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.core.BlockPos;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -25,14 +25,14 @@ public class MessageCraftVehicle implements IMessage<MessageCraftVehicle>
     }
 
     @Override
-    public void encode(MessageCraftVehicle message, PacketBuffer buffer)
+    public void encode(MessageCraftVehicle message, FriendlyByteBuf buffer)
     {
         buffer.writeUtf(message.vehicleId, 128);
         buffer.writeBlockPos(message.pos);
     }
 
     @Override
-    public MessageCraftVehicle decode(PacketBuffer buffer)
+    public MessageCraftVehicle decode(FriendlyByteBuf buffer)
     {
         return new MessageCraftVehicle(buffer.readUtf(128), buffer.readBlockPos());
     }

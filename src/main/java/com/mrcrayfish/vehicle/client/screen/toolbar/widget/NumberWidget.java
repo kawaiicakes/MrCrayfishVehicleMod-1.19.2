@@ -2,7 +2,7 @@ package com.mrcrayfish.vehicle.client.screen.toolbar.widget;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.network.chat.TextComponent;
 
 /**
  * Author: MrCrayfish
@@ -14,7 +14,7 @@ public class NumberWidget extends TextFieldWidget
 
     public NumberWidget(int width)
     {
-        super(Minecraft.getInstance().font, 0, 0, width, 20, StringTextComponent.EMPTY);
+        super(Minecraft.getInstance().font, 0, 0, width, 20, TextComponent.EMPTY);
         this.setFilter(s ->
         {
             try

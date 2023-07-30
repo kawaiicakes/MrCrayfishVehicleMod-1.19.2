@@ -3,44 +3,44 @@ package com.mrcrayfish.vehicle.common;
 import com.google.gson.JsonObject;
 import com.mrcrayfish.vehicle.util.ExtraJSONUtils;
 import net.minecraft.util.JSONUtils;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * Author: MrCrayfish
  */
 public class Seat
 {
-    public static final Vector3d DEFAULT_POSITION = Vector3d.ZERO;
+    public static final Vec3 DEFAULT_POSITION = Vec3.ZERO;
     public static final boolean DEFAULT_IS_DRIVER_SEAT = false;
     public static final float DEFAULT_YAW_OFFSET = 0F;
 
-    private final Vector3d position;
+    private final Vec3 position;
     private final boolean isDriver;
     private final float yawOffset;
 
-    protected Seat(Vector3d position)
+    protected Seat(Vec3 position)
     {
         this(position, false);
     }
 
-    protected Seat(Vector3d position, float yawOffset)
+    protected Seat(Vec3 position, float yawOffset)
     {
         this(position, false, yawOffset);
     }
 
-    protected Seat(Vector3d position, boolean isDriver)
+    protected Seat(Vec3 position, boolean isDriver)
     {
         this(position, isDriver, DEFAULT_YAW_OFFSET);
     }
 
-    public Seat(Vector3d position, boolean isDriver, float yawOffset)
+    public Seat(Vec3 position, boolean isDriver, float yawOffset)
     {
         this.position = position;
         this.isDriver = isDriver;
         this.yawOffset = yawOffset;
     }
 
-    public Vector3d getPosition()
+    public Vec3 getPosition()
     {
         return this.position;
     }
@@ -66,7 +66,7 @@ public class Seat
 
     public static Seat fromJsonObject(JsonObject object)
     {
-        Vector3d position = ExtraJSONUtils.getAsVector3d(object, "position", DEFAULT_POSITION);
+        Vec3 position = ExtraJSONUtils.getAsVector3d(object, "position", DEFAULT_POSITION);
         boolean isDriverSeat = JSONUtils.getAsBoolean(object, "driver", DEFAULT_IS_DRIVER_SEAT);
         float yawOffset = JSONUtils.getAsFloat(object, "yawOffset", DEFAULT_YAW_OFFSET);
         return new Seat(position, isDriverSeat, yawOffset);
@@ -74,21 +74,21 @@ public class Seat
 
     public static Seat of(double x, double y, double z)
     {
-        return new Seat(new Vector3d(x, y, z));
+        return new Seat(new Vec3(x, y, z));
     }
 
     public static Seat of(double x, double y, double z, boolean driver)
     {
-        return new Seat(new Vector3d(x, y, z), driver);
+        return new Seat(new Vec3(x, y, z), driver);
     }
 
     public static Seat of(double x, double y, double z, float yawOffset)
     {
-        return new Seat(new Vector3d(x, y, z), yawOffset);
+        return new Seat(new Vec3(x, y, z), yawOffset);
     }
 
     public static Seat of(double x, double y, double z, boolean driver, float yawOffset)
     {
-        return new Seat(new Vector3d(x, y, z), driver, yawOffset);
+        return new Seat(new Vec3(x, y, z), driver, yawOffset);
     }
 }

@@ -1,7 +1,7 @@
 package com.mrcrayfish.vehicle.client.render.vehicle;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mrcrayfish.vehicle.client.model.VehicleModels;
 import com.mrcrayfish.vehicle.client.raytrace.RayTraceTransforms;
 import com.mrcrayfish.vehicle.client.raytrace.TransformHelper;
@@ -9,14 +9,14 @@ import com.mrcrayfish.vehicle.client.render.AbstractTrailerRenderer;
 import com.mrcrayfish.vehicle.entity.properties.VehicleProperties;
 import com.mrcrayfish.vehicle.entity.trailer.FluidTrailerEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.entity.EntityType;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.util.math.vector.Matrix4f;
+import com.mojang.math.Matrix4f;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 
@@ -35,7 +35,7 @@ public class FluidTrailerRenderer extends AbstractTrailerRenderer<FluidTrailerEn
     }
 
     @Override
-    public void render(@Nullable FluidTrailerEntity vehicle, MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer, float partialTicks, int light)
+    public void render(@Nullable FluidTrailerEntity vehicle, PoseStack matrixStack, MultiBufferSource renderTypeBuffer, float partialTicks, int light)
     {
         this.renderDamagedPart(vehicle, VehicleModels.FLUID_TRAILER, matrixStack, renderTypeBuffer, light, partialTicks);
 
@@ -44,7 +44,7 @@ public class FluidTrailerRenderer extends AbstractTrailerRenderer<FluidTrailerEn
         this.drawFluid(vehicle, tank, matrixStack, renderTypeBuffer, -0.3875F, -0.1875F, -0.99F, 0.7625F, height, 1.67F, light);
     }
 
-    private void drawFluid(@Nullable FluidTrailerEntity vehicle, FluidTank tank, MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer, float x, float y, float z, float width, float height, float depth, int light)
+    private void drawFluid(@Nullable FluidTrailerEntity vehicle, FluidTank tank, PoseStack matrixStack, MultiBufferSource renderTypeBuffer, float x, float y, float z, float width, float height, float depth, int light)
     {
         Fluid fluid = tank.getFluid().getFluid();
         if(fluid == Fluids.EMPTY)
@@ -61,7 +61,7 @@ public class FluidTrailerRenderer extends AbstractTrailerRenderer<FluidTrailerEn
         float minV = sprite.getV0();
         float maxV = Math.min(minV + (sprite.getV1() - minV) * height, sprite.getV1());
 
-        IVertexBuilder buffer = renderTypeBuffer.getBuffer(RenderType.translucentNoCrumbling());
+        VertexConsumer buffer = renderTypeBuffer.getBuffer(RenderType.translucentNoCrumbling());
         Matrix4f matrix = matrixStack.last().pose();
 
         //left side

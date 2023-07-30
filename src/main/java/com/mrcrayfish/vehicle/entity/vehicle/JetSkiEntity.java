@@ -1,16 +1,16 @@
 package com.mrcrayfish.vehicle.entity.vehicle;
 
 import com.mrcrayfish.vehicle.entity.BoatEntity;
-import net.minecraft.entity.EntityType;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.particles.ParticleTypes;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 
 /**
  * Author: MrCrayfish
  */
 public class JetSkiEntity extends BoatEntity
 {
-    public JetSkiEntity(EntityType<? extends JetSkiEntity> type, World worldIn)
+    public JetSkiEntity(EntityType<? extends JetSkiEntity> type, Level worldIn)
     {
         super(type, worldIn);
     }

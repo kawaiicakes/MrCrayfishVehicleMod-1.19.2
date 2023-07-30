@@ -5,12 +5,12 @@ import com.mrcrayfish.vehicle.common.entity.Transform;
 import com.mrcrayfish.vehicle.entity.properties.LandProperties;
 import com.mrcrayfish.vehicle.entity.properties.VehicleProperties;
 import com.mrcrayfish.vehicle.util.CommonUtils;
-import net.minecraft.entity.EntityType;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
  */
 public abstract class LandVehicleEntity extends PoweredVehicleEntity
 {
-    protected Vector3d velocity = Vector3d.ZERO;
+    protected Vec3 velocity = Vec3.ZERO;
     protected float traction;
 
     @OnlyIn(Dist.CLIENT)
@@ -41,7 +41,7 @@ public abstract class LandVehicleEntity extends PoweredVehicleEntity
     @OnlyIn(Dist.CLIENT)
     protected int prevWheelieCount;
 
-    public LandVehicleEntity(EntityType<?> entityType, World worldIn)
+    public LandVehicleEntity(EntityType<?> entityType, Level worldIn)
     {
         super(entityType, worldIn);
     }
@@ -82,12 +82,12 @@ public abstract class LandVehicleEntity extends PoweredVehicleEntity
     @Override
     public void updateVehicleMotion()
     {
-        this.motion = Vector3d.ZERO;
+        this.motion = Vec3.ZERO;
 
         VehicleProperties properties = this.getProperties();
 
         // Gets the forward vector of the vehicle
-        Vector3d forward = Vector3d.directionFromRotation(this.getRotationVector());
+        Vec3 forward = Vec3.directionFromRotation(this.getRotationVector());
 
         // Calculates the distance between the front and rear axel
         Transform bodyPosition = properties.getBodyTransform();
@@ -97,14 +97,14 @@ public abstract class LandVehicleEntity extends PoweredVehicleEntity
         {
             float speed = 0.1F;
             float steeringAngle = this.getSteeringAngle();
-            Vector3d frontWheel = forward.scale((bodyPosition.getZ() + this.getFrontAxleOffset().z) * 0.0625 * bodyPosition.getScale());
-            Vector3d nextPosition = frontWheel.subtract(frontWheel.yRot((float) Math.toRadians(steeringAngle)));
-            Vector3d nextMovement = Vector3d.ZERO.vectorTo(nextPosition).scale(speed);
+            Vec3 frontWheel = forward.scale((bodyPosition.getZ() + this.getFrontAxleOffset().z) * 0.0625 * bodyPosition.getScale());
+            Vec3 nextPosition = frontWheel.subtract(frontWheel.yRot((float) Math.toRadians(steeringAngle)));
+            Vec3 nextMovement = Vec3.ZERO.vectorTo(nextPosition).scale(speed);
             this.motion = this.motion.add(nextMovement);
             this.yRot -= steeringAngle * speed;
-            float forwardForce = MathHelper.clamp(this.getThrottle(), -1.0F, 1.0F);
+            float forwardForce = Mth.clamp(this.getThrottle(), -1.0F, 1.0F);
             forwardForce *= this.getEngineTier().map(IEngineTier::getPowerMultiplier).orElse(1.0F);
-            this.chargingAmount = MathHelper.clamp(this.chargingAmount + forwardForce * 0.025F, 0.0F, 1.0F);
+            this.chargingAmount = Mth.clamp(this.chargingAmount + forwardForce * 0.025F, 0.0F, 1.0F);
         }
         else
         {
@@ -119,15 +119,15 @@ public abstract class LandVehicleEntity extends PoweredVehicleEntity
         // TODO a lot of this can be broken up into methods
         // Updates the acceleration, applies drag and friction, then adds to the velocity
         float throttle = this.isHandbraking() || this.charging ? 0F : this.getThrottle();
-        float forwardForce = enginePower * MathHelper.clamp(throttle, -1.0F, 1.0F);
+        float forwardForce = enginePower * Mth.clamp(throttle, -1.0F, 1.0F);
         forwardForce *= this.getEngineTier().map(IEngineTier::getPowerMultiplier).orElse(1.0F);
         if(this.isBoosting()) forwardForce += forwardForce * this.getSpeedMultiplier();
         if(this.getThrottle() < 0) forwardForce *= 0.4F;
-        Vector3d acceleration = forward.scale(forwardForce).scale(0.05);
-        if(this.velocity.length() < 0.05) this.velocity = Vector3d.ZERO;
-        Vector3d handbrakeForce = this.velocity.scale(this.isHandbraking() ? brakePower : 0F).scale(0.05);
-        Vector3d frictionForce = this.velocity.scale(-friction).scale(0.05);
-        Vector3d dragForce = this.velocity.scale(this.velocity.length()).scale(-drag).scale(0.05);
+        Vec3 acceleration = forward.scale(forwardForce).scale(0.05);
+        if(this.velocity.length() < 0.05) this.velocity = Vec3.ZERO;
+        Vec3 handbrakeForce = this.velocity.scale(this.isHandbraking() ? brakePower : 0F).scale(0.05);
+        Vec3 frictionForce = this.velocity.scale(-friction).scale(0.05);
+        Vec3 dragForce = this.velocity.scale(this.velocity.length()).scale(-drag).scale(0.05);
         acceleration = acceleration.add(dragForce).add(frictionForce).add(handbrakeForce);
         this.velocity = this.velocity.add(acceleration);
 
@@ -145,8 +145,8 @@ public abstract class LandVehicleEntity extends PoweredVehicleEntity
         else
         {
             float wheelTraction = this.getWheelType().map(IWheelType::getBaseTraction).orElse(1.0F);
-            float targetTraction = acceleration.length() > 0 ? (float) (wheelTraction * MathHelper.clamp((this.velocity.length() / acceleration.length()), 0.0F, 1.0F)) : wheelTraction;
-            float side = this.canSlide() ? MathHelper.clamp(1.0F - (float) this.velocity.normalize().cross(forward.normalize()).length() / 0.3F, 0.0F, 1.0F) : 1.0F;
+            float targetTraction = acceleration.length() > 0 ? (float) (wheelTraction * Mth.clamp((this.velocity.length() / acceleration.length()), 0.0F, 1.0F)) : wheelTraction;
+            float side = this.canSlide() ? Mth.clamp(1.0F - (float) this.velocity.normalize().cross(forward.normalize()).length() / 0.3F, 0.0F, 1.0F) : 1.0F;
             this.traction = this.traction + (targetTraction - this.traction) * side * 0.15F;
         }
 
@@ -154,15 +154,15 @@ public abstract class LandVehicleEntity extends PoweredVehicleEntity
         //Gets the new position of the wheels
         double frontAxleOffset = (bodyPosition.getZ() + this.getFrontAxleOffset().z) * 0.0625 * bodyPosition.getScale();
         double rearAxleOffset = (bodyPosition.getZ() + this.getRearAxleOffset().z) * 0.0625 * bodyPosition.getScale();
-        Vector3d worldFrontWheel = this.position().add(forward.scale(frontAxleOffset));
-        Vector3d worldRearWheel = this.position().add(forward.scale(rearAxleOffset));
+        Vec3 worldFrontWheel = this.position().add(forward.scale(frontAxleOffset));
+        Vec3 worldRearWheel = this.position().add(forward.scale(rearAxleOffset));
         worldFrontWheel = worldFrontWheel.add(this.velocity.yRot((float) Math.toRadians(this.getSteeringAngle())).scale(0.05));
         worldRearWheel = worldRearWheel.add(this.velocity.scale(0.05));
 
         //Updates the delta movement based on the new wheel positions
-        Vector3d heading = worldFrontWheel.subtract(worldRearWheel).normalize();
-        Vector3d nextPosition = worldRearWheel.add(heading.scale(-rearAxleOffset));
-        Vector3d nextMovement = nextPosition.subtract(this.position());
+        Vec3 heading = worldFrontWheel.subtract(worldRearWheel).normalize();
+        Vec3 nextPosition = worldRearWheel.add(heading.scale(-rearAxleOffset));
+        Vec3 nextMovement = nextPosition.subtract(this.position());
         this.motion = this.motion.add(nextMovement);
 
         // Updates the velocity based on the heading
@@ -173,7 +173,7 @@ public abstract class LandVehicleEntity extends PoweredVehicleEntity
         }
         else
         {
-            Vector3d reverse = heading.scale(-1).scale(Math.min(this.velocity.length(), this.getMaxReverseSpeed()));
+            Vec3 reverse = heading.scale(-1).scale(Math.min(this.velocity.length(), this.getMaxReverseSpeed()));
             this.velocity = CommonUtils.lerp(this.velocity, reverse, surfaceTraction);
         }
 
@@ -181,12 +181,12 @@ public abstract class LandVehicleEntity extends PoweredVehicleEntity
         if(!this.charging)
         {
             float vehicleDeltaYaw = CommonUtils.yaw(forward) - CommonUtils.yaw(heading);
-            vehicleDeltaYaw = MathHelper.wrapDegrees(vehicleDeltaYaw);
+            vehicleDeltaYaw = Mth.wrapDegrees(vehicleDeltaYaw);
             this.yRot -= vehicleDeltaYaw;
         }
 
         // Add gravity
-        this.setDeltaMovement(this.getDeltaMovement().add(new Vector3d(0, -0.08, 0)));
+        this.setDeltaMovement(this.getDeltaMovement().add(new Vec3(0, -0.08, 0)));
     }
 
     @Override
@@ -194,7 +194,7 @@ public abstract class LandVehicleEntity extends PoweredVehicleEntity
     {
         if(this.level.isClientSide())
         {
-            float targetAngle = !this.charging && this.isSliding() ? -MathHelper.clamp(this.getSteeringAngle() * 2, -this.getMaxSteeringAngle(), this.getMaxSteeringAngle()) : this.getSteeringAngle();
+            float targetAngle = !this.charging && this.isSliding() ? -Mth.clamp(this.getSteeringAngle() * 2, -this.getMaxSteeringAngle(), this.getMaxSteeringAngle()) : this.getSteeringAngle();
             this.renderWheelAngle = this.renderWheelAngle + (targetAngle - this.renderWheelAngle) * 0.3F;
         }
     }
@@ -243,7 +243,7 @@ public abstract class LandVehicleEntity extends PoweredVehicleEntity
         return this.traction;
     }
 
-    public Vector3d getVelocity()
+    public Vec3 getVelocity()
     {
         return this.velocity;
     }
@@ -257,7 +257,7 @@ public abstract class LandVehicleEntity extends PoweredVehicleEntity
     {
         if(this.canSlide())
         {
-            Vector3d forward = Vector3d.directionFromRotation(this.getRotationVector());
+            Vec3 forward = Vec3.directionFromRotation(this.getRotationVector());
             return this.velocity.normalize().cross(forward.normalize()).length() >= 0.3;
         }
         return false;
@@ -282,7 +282,7 @@ public abstract class LandVehicleEntity extends PoweredVehicleEntity
         VehicleProperties properties = this.getProperties();
         double wheelCircumference = 24.0;
         double vehicleScale = properties.getBodyTransform().getScale();
-        Vector3d forward = Vector3d.directionFromRotation(this.getRotationVector());
+        Vec3 forward = Vec3.directionFromRotation(this.getRotationVector());
         double direction = forward.dot(this.motion.normalize());
 
         if(this.isOnGround() || this.getThrottle() != 0)
@@ -354,12 +354,12 @@ public abstract class LandVehicleEntity extends PoweredVehicleEntity
     @OnlyIn(Dist.CLIENT)
     public float getWheelieProgress(float partialTicks)
     {
-        float p = MathHelper.lerp(partialTicks, this.prevWheelieCount, this.wheelieCount) / (float) MAX_WHEELIE_TICKS;
+        float p = Mth.lerp(partialTicks, this.prevWheelieCount, this.wheelieCount) / (float) MAX_WHEELIE_TICKS;
         return 1.0F - (1.0F - p) * (1.0F - p);
     }
 
     @Override
-    public void writeSpawnData(PacketBuffer buffer)
+    public void writeSpawnData(FriendlyByteBuf buffer)
     {
         super.writeSpawnData(buffer);
         buffer.writeFloat(this.traction);
@@ -369,19 +369,19 @@ public abstract class LandVehicleEntity extends PoweredVehicleEntity
     }
 
     @Override
-    public void readSpawnData(PacketBuffer buffer)
+    public void readSpawnData(FriendlyByteBuf buffer)
     {
         super.readSpawnData(buffer);
         this.traction = buffer.readFloat();
-        this.velocity = new Vector3d(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
+        this.velocity = new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble());
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundNBT compound)
+    protected void addAdditionalSaveData(CompoundTag compound)
     {
         super.addAdditionalSaveData(compound);
         compound.putFloat("Traction", this.traction);
-        CompoundNBT velocity = new CompoundNBT();
+        CompoundTag velocity = new CompoundTag();
         velocity.putDouble("X", this.velocity.x);
         velocity.putDouble("Y", this.velocity.y);
         velocity.putDouble("Z", this.velocity.z);
@@ -389,12 +389,12 @@ public abstract class LandVehicleEntity extends PoweredVehicleEntity
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundNBT compound)
+    protected void readAdditionalSaveData(CompoundTag compound)
     {
         super.readAdditionalSaveData(compound);
         this.traction = compound.getFloat("Traction");
-        CompoundNBT velocity = compound.getCompound("Velocity");
-        this.velocity = new Vector3d(velocity.getDouble("X"), velocity.getDouble("Y"), velocity.getDouble("Z"));
+        CompoundTag velocity = compound.getCompound("Velocity");
+        this.velocity = new Vec3(velocity.getDouble("X"), velocity.getDouble("Y"), velocity.getDouble("Z"));
     }
 
     @Override

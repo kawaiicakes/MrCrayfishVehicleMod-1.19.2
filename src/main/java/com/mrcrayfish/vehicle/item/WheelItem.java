@@ -1,7 +1,7 @@
 package com.mrcrayfish.vehicle.item;
 
 import com.mrcrayfish.vehicle.entity.IWheelType;
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 
 /**
  * Author: MrCrayfish

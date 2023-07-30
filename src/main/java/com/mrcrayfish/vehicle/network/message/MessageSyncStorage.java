@@ -4,9 +4,9 @@ import com.mrcrayfish.vehicle.common.inventory.IStorage;
 import com.mrcrayfish.vehicle.common.inventory.StorageInventory;
 import com.mrcrayfish.vehicle.entity.VehicleEntity;
 import com.mrcrayfish.vehicle.network.play.ClientPlayHandler;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ public class MessageSyncStorage implements IMessage<MessageSyncStorage>
 {
     private int entityId;
     private String[] keys;
-    private CompoundNBT[] tags;
+    private CompoundTag[] tags;
 
     public MessageSyncStorage() {}
 
@@ -28,28 +28,28 @@ public class MessageSyncStorage implements IMessage<MessageSyncStorage>
     {
         this.entityId = vehicle.getId();
         this.keys = keys;
-        List<Pair<String, CompoundNBT>> tagList = new ArrayList<>();
+        List<Pair<String, CompoundTag>> tagList = new ArrayList<>();
         for(String key : keys)
         {
             StorageInventory inventory = vehicle.getStorageInventory(key);
             if(inventory != null)
             {
-                CompoundNBT tag = new CompoundNBT();
-                tag.put("Inventory", inventory.createTag());
+                CompoundTag tag = new CompoundTag();
+                tag.put("SimpleContainer", inventory.createTag());
                 tagList.add(Pair.of(key, tag));
             }
         }
         this.keys = new String[tagList.size()];
-        this.tags = new CompoundNBT[tagList.size()];
+        this.tags = new CompoundTag[tagList.size()];
         for(int i = 0; i < tagList.size(); i++)
         {
-            Pair<String, CompoundNBT> pair = tagList.get(i);
+            Pair<String, CompoundTag> pair = tagList.get(i);
             this.keys[i] = pair.getLeft();
             this.tags[i] = pair.getRight();
         }
     }
 
-    private MessageSyncStorage(int entityId, String[] keys, CompoundNBT[] tags)
+    private MessageSyncStorage(int entityId, String[] keys, CompoundTag[] tags)
     {
         this.entityId = entityId;
         this.keys = keys;
@@ -57,7 +57,7 @@ public class MessageSyncStorage implements IMessage<MessageSyncStorage>
     }
 
     @Override
-    public void encode(MessageSyncStorage message, PacketBuffer buffer)
+    public void encode(MessageSyncStorage message, FriendlyByteBuf buffer)
     {
         buffer.writeInt(message.entityId);
         buffer.writeInt(message.keys.length);
@@ -69,12 +69,12 @@ public class MessageSyncStorage implements IMessage<MessageSyncStorage>
     }
 
     @Override
-    public MessageSyncStorage decode(PacketBuffer buffer)
+    public MessageSyncStorage decode(FriendlyByteBuf buffer)
     {
         int entityId = buffer.readInt();
         int keyLength = buffer.readInt();
         String[] keys = new String[keyLength];
-        CompoundNBT[] tags = new CompoundNBT[keyLength];
+        CompoundTag[] tags = new CompoundTag[keyLength];
         for(int i = 0; i < keyLength; i++)
         {
             keys[i] = buffer.readUtf();
@@ -99,7 +99,7 @@ public class MessageSyncStorage implements IMessage<MessageSyncStorage>
         return this.keys;
     }
 
-    public CompoundNBT[] getTags()
+    public CompoundTag[] getTags()
     {
         return this.tags;
     }

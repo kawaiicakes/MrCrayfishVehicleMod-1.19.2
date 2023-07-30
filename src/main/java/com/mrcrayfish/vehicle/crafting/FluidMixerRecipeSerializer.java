@@ -2,11 +2,11 @@ package com.mrcrayfish.vehicle.crafting;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 
 import javax.annotation.Nullable;
@@ -34,7 +34,7 @@ public class FluidMixerRecipeSerializer extends net.minecraftforge.registries.Fo
 
     @Nullable
     @Override
-    public FluidMixerRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer)
+    public FluidMixerRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer)
     {
         FluidEntry inputOne = FluidEntry.read(buffer);
         FluidEntry inputTwo = FluidEntry.read(buffer);
@@ -44,7 +44,7 @@ public class FluidMixerRecipeSerializer extends net.minecraftforge.registries.Fo
     }
 
     @Override
-    public void toNetwork(PacketBuffer buffer, FluidMixerRecipe recipe)
+    public void toNetwork(FriendlyByteBuf buffer, FluidMixerRecipe recipe)
     {
         for(FluidEntry entry : recipe.getInputs())
         {

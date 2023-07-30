@@ -1,16 +1,16 @@
 package com.mrcrayfish.vehicle.client.screen.toolbar.widget;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mrcrayfish.vehicle.client.screen.toolbar.IToolbarLabel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;
@@ -21,23 +21,23 @@ import javax.annotation.Nullable;
 public class IconButton extends Button implements IToolbarLabel
 {
     private IconProvider icon;
-    private ITextComponent label;
+    private Component label;
 
-    public IconButton(int width, int height, @Nullable IconProvider icon, ITextComponent label, IPressable onPress)
+    public IconButton(int width, int height, @Nullable IconProvider icon, Component label, IPressable onPress)
     {
-        super(0, 0, width, height, StringTextComponent.EMPTY, onPress);
+        super(0, 0, width, height, TextComponent.EMPTY, onPress);
         this.icon = icon;
         this.label = label;
     }
 
-    public IconButton setLabel(ITextComponent label)
+    public IconButton setLabel(Component label)
     {
         this.label = label;
         return this;
     }
 
     @Override
-    public ITextComponent getLabel()
+    public Component getLabel()
     {
         return this.label;
     }
@@ -49,7 +49,7 @@ public class IconButton extends Button implements IToolbarLabel
     }
 
     @Override
-    public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         super.renderButton(matrixStack, mouseX, mouseY, partialTicks);
         Minecraft mc = Minecraft.getInstance();
@@ -82,7 +82,7 @@ public class IconButton extends Button implements IToolbarLabel
         float vScale = 1.0F / 100.0F;
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuilder();
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+        buffer.begin(GL11.GL_QUADS, DefaultVertexFormat.POSITION_TEX);
         buffer.vertex(x, y + size, 0).uv(u * uScale, (v + size) * vScale).endVertex();
         buffer.vertex(x + size, y + size, 0).uv((u + size) * uScale, (v + size) * vScale).endVertex();
         buffer.vertex(x + size, y, 0).uv((u + size) * uScale, v * vScale).endVertex();

@@ -1,12 +1,12 @@
 package com.mrcrayfish.vehicle.client.render;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mrcrayfish.vehicle.common.entity.Transform;
 import com.mrcrayfish.vehicle.entity.PlaneEntity;
 import com.mrcrayfish.vehicle.entity.properties.VehicleProperties;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.entity.EntityType;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.world.entity.EntityType;
+import com.mojang.math.Vector3f;
 
 import javax.annotation.Nullable;
 
@@ -24,7 +24,7 @@ public abstract class AbstractPlaneRenderer<T extends PlaneEntity> extends Abstr
         super(type, defaultProperties);
     }
 
-    public void setupTransformsAndRender(@Nullable T vehicle, MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer, float partialTicks, int light)
+    public void setupTransformsAndRender(@Nullable T vehicle, PoseStack matrixStack, MultiBufferSource renderTypeBuffer, float partialTicks, int light)
     {
         matrixStack.pushPose();
 

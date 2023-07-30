@@ -2,8 +2,8 @@ package com.mrcrayfish.vehicle.network.message;
 
 import com.mrcrayfish.vehicle.network.play.ServerPlayHandler;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -19,13 +19,13 @@ public class MessageThrottle implements IMessage<MessageThrottle>
 	}
 
 	@Override
-	public void encode(MessageThrottle message, PacketBuffer buffer)
+	public void encode(MessageThrottle message, FriendlyByteBuf buffer)
 	{
 		buffer.writeFloat(message.power);
 	}
 
 	@Override
-	public MessageThrottle decode(PacketBuffer buffer)
+	public MessageThrottle decode(FriendlyByteBuf buffer)
 	{
 		return new MessageThrottle(buffer.readFloat());
 	}

@@ -1,16 +1,16 @@
 package com.mrcrayfish.vehicle.client.handler;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mrcrayfish.vehicle.Config;
 import com.mrcrayfish.vehicle.entity.LandVehicleEntity;
 import com.mrcrayfish.vehicle.entity.PoweredVehicleEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.loading.FMLLoader;
@@ -24,7 +24,7 @@ import java.util.List;
  */
 public class OverlayHandler
 {
-    private List<ITextComponent> stats = new ArrayList<>();
+    private List<Component> stats = new ArrayList<>();
 
     @SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event)
@@ -41,7 +41,7 @@ public class OverlayHandler
         if(!mc.isWindowActive() || mc.options.hideGui)
             return;
 
-        PlayerEntity player = mc.player;
+        Player player = mc.player;
         if(player == null)
             return;
 
@@ -67,7 +67,7 @@ public class OverlayHandler
                 String traction = format.format(landVehicle.getTraction());
                 this.addStat("Traction", traction);
 
-                Vector3d forward = Vector3d.directionFromRotation(landVehicle.getRotationVector());
+                Vec3 forward = Vec3.directionFromRotation(landVehicle.getRotationVector());
                 float side = (float) landVehicle.getVelocity().normalize().cross(forward.normalize()).length();
                 String sideString = format.format(side);
                 this.addStat("Side", sideString);
@@ -77,7 +77,7 @@ public class OverlayHandler
 
     private void addStat(String label, String value)
     {
-        this.stats.add(new StringTextComponent(label + ": ").withStyle(TextFormatting.BOLD).withStyle(TextFormatting.RESET).append(new StringTextComponent(value).withStyle(TextFormatting.YELLOW)));
+        this.stats.add(new TextComponent(label + ": ").withStyle(ChatFormatting.BOLD).withStyle(ChatFormatting.RESET).append(new TextComponent(value).withStyle(ChatFormatting.YELLOW)));
     }
 
     @SubscribeEvent
@@ -86,7 +86,7 @@ public class OverlayHandler
         if(event.phase != TickEvent.Phase.END)
             return;
 
-        MatrixStack stack = new MatrixStack();
+        PoseStack stack = new PoseStack();
         Minecraft mc = Minecraft.getInstance();
         for(int i = 0; i < this.stats.size(); i++)
         {

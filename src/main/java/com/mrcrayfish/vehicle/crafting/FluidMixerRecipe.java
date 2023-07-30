@@ -4,12 +4,12 @@ import com.mrcrayfish.vehicle.init.ModRecipeSerializers;
 import com.mrcrayfish.vehicle.tileentity.FluidMixerTileEntity;
 import com.mrcrayfish.vehicle.util.InventoryUtil;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.IRecipeType;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 
 import java.util.Objects;
 
@@ -89,7 +89,7 @@ public class FluidMixerRecipe implements IRecipe<FluidMixerTileEntity>
     }
 
     @Override
-    public boolean matches(FluidMixerTileEntity fluidMixer, World worldIn)
+    public boolean matches(FluidMixerTileEntity fluidMixer, Level worldIn)
     {
         if(fluidMixer.getEnderSapTank().isEmpty() || fluidMixer.getBlazeTank().isEmpty())
             return false;

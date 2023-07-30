@@ -4,32 +4,33 @@ import com.mrcrayfish.vehicle.init.ModSounds;
 import com.mrcrayfish.vehicle.tileentity.GasPumpTankTileEntity;
 import com.mrcrayfish.vehicle.tileentity.GasPumpTileEntity;
 import com.mrcrayfish.vehicle.util.VoxelShapeHelper;
-import net.minecraft.block.AbstractBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.loot.LootContext;
-import net.minecraft.loot.LootParameters;
-import net.minecraft.state.BooleanProperty;
-import net.minecraft.state.StateContainer;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Direction;
-import net.minecraft.util.Hand;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.shapes.ISelectionContext;
-import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.core.Direction;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.fluids.FluidUtil;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public class GasPumpBlock extends RotatedObjectBlock
 
     public GasPumpBlock()
     {
-        super(AbstractBlock.Properties.of(Material.HEAVY_METAL).strength(1.0F));
+        super(BlockBehaviour.Properties.of(Material.HEAVY_METAL).strength(1.0F));
         this.registerDefaultState(this.getStateDefinition().any().setValue(DIRECTION, Direction.NORTH).setValue(TOP, false));
     }
 
@@ -74,59 +75,59 @@ public class GasPumpBlock extends RotatedObjectBlock
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, IBlockReader reader, BlockPos pos, ISelectionContext context)
+    public @NotNull VoxelShape getShape(BlockState state, BlockGetter reader, BlockPos pos, CollisionContext context)
     {
         return this.getShape(state);
     }
 
     @Override
-    public ActionResultType use(BlockState state, World world, BlockPos pos, PlayerEntity playerEntity, Hand hand, BlockRayTraceResult result)
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player playerEntity, InteractionHand hand, BlockHitResult result)
     {
         if(world.isClientSide())
         {
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
 
         if(state.getValue(TOP))
         {
-            TileEntity tileEntity = world.getBlockEntity(pos);
+            BlockEntity tileEntity = world.getBlockEntity(pos);
             if(tileEntity instanceof GasPumpTileEntity)
             {
                 GasPumpTileEntity gasPump = (GasPumpTileEntity) tileEntity;
                 if(gasPump.getFuelingEntity() != null && gasPump.getFuelingEntity().getId() == playerEntity.getId())
                 {
                     gasPump.setFuelingEntity(null);
-                    world.playSound(null, pos, ModSounds.BLOCK_GAS_PUMP_NOZZLE_PUT_DOWN.get(), SoundCategory.BLOCKS, 1.0F, 1.0F);
+                    world.playSound(null, pos, ModSounds.BLOCK_GAS_PUMP_NOZZLE_PUT_DOWN.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
                 }
                 else if(state.getValue(DIRECTION).getClockWise().equals(result.getDirection()))
                 {
                     gasPump.setFuelingEntity(playerEntity);
-                    world.playSound(null, pos, ModSounds.BLOCK_GAS_PUMP_NOZZLE_PICK_UP.get(), SoundCategory.BLOCKS, 1.0F, 1.0F);
+                    world.playSound(null, pos, ModSounds.BLOCK_GAS_PUMP_NOZZLE_PICK_UP.get(), SoundSource.BLOCKS, 1.0F, 1.0F);
                 }
             }
-            return ActionResultType.SUCCESS;
+            return InteractionResult.SUCCESS;
         }
         else if(FluidUtil.interactWithFluidHandler(playerEntity, hand, world, pos, result.getDirection()))
         {
-            return ActionResultType.CONSUME;
+            return InteractionResult.CONSUME;
         }
-        return ActionResultType.FAIL;
+        return InteractionResult.FAIL;
     }
 
     @Override
-    public boolean canSurvive(BlockState state, IWorldReader reader, BlockPos pos)
+    public boolean canSurvive(BlockState state, LevelReader reader, BlockPos pos)
     {
         return reader.isEmptyBlock(pos) && reader.isEmptyBlock(pos.above());
     }
 
     @Override
-    public void setPlacedBy(World worldIn, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack)
+    public void setPlacedBy(Level worldIn, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack)
     {
         worldIn.setBlockAndUpdate(pos.above(), state.setValue(TOP, true));
     }
 
     @Override
-    public void playerWillDestroy(World world, BlockPos pos, BlockState state, PlayerEntity player)
+    public void playerWillDestroy(Level world, BlockPos pos, BlockState state, Player player)
     {
         if (!world.isClientSide())
         {
@@ -148,14 +149,14 @@ public class GasPumpBlock extends RotatedObjectBlock
     {
         if (state.getValue(TOP))
         {
-            Vector3d origin = builder.getOptionalParameter(LootParameters.ORIGIN);
+            Vec3 origin = builder.getOptionalParameter(LootContextParams.ORIGIN);
             if (origin != null)
             {
                 BlockPos pos = new BlockPos(origin);
-                TileEntity tileEntity = builder.getLevel().getBlockEntity(pos.below());
+                BlockEntity tileEntity = builder.getLevel().getBlockEntity(pos.below());
                 if (tileEntity != null)
                 {
-                    builder = builder.withParameter(LootParameters.BLOCK_ENTITY, tileEntity);
+                    builder = builder.withParameter(LootContextParams.BLOCK_ENTITY, tileEntity);
                 }
             }
         }
@@ -163,21 +164,21 @@ public class GasPumpBlock extends RotatedObjectBlock
     }
 
     @Override
-    protected void createBlockStateDefinition(StateContainer.Builder<Block, BlockState> builder)
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
     {
         super.createBlockStateDefinition(builder);
         builder.add(TOP);
     }
 
     @Override
-    public boolean hasTileEntity(BlockState state)
+    public boolean hasBlockEntity()
     {
         return true;
     }
 
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world)
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
     {
         if (state.getValue(TOP))
         {

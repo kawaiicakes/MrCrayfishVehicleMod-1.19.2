@@ -3,11 +3,11 @@ package com.mrcrayfish.vehicle.common;
 import com.mrcrayfish.vehicle.block.FluidPipeBlock;
 import com.mrcrayfish.vehicle.tileentity.PipeTileEntity;
 import com.mrcrayfish.vehicle.tileentity.PumpTileEntity;
-import net.minecraft.block.BlockState;
-import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.util.RegistryKey;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -37,7 +37,7 @@ public class FluidNetworkHandler
     }
 
     private boolean dirty = false;
-    private Map<RegistryKey<World>, Set<BlockPos>> pipeUpdateMap = new HashMap<>();
+    private Map<RegistryKey<Level>, Set<BlockPos>> pipeUpdateMap = new HashMap<>();
 
     private FluidNetworkHandler() {}
 
@@ -64,7 +64,7 @@ public class FluidNetworkHandler
         {
             positions.forEach(pos ->
             {
-                TileEntity tileEntity = event.world.getBlockEntity(pos);
+                BlockEntity tileEntity = event.world.getBlockEntity(pos);
                 if(tileEntity instanceof PipeTileEntity)
                 {
                     PipeTileEntity pipeTileEntity = (PipeTileEntity) tileEntity;

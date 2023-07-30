@@ -1,13 +1,13 @@
 package com.mrcrayfish.vehicle.tileentity;
 
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 
 /**
  * Author: MrCrayfish
  */
 public interface IFluidTankWriter
 {
-    void writeTanks(CompoundNBT compound);
+    void writeTanks(CompoundTag compound);
 
     boolean areTanksEmpty();
 }

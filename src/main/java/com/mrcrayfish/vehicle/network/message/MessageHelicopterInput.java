@@ -2,8 +2,8 @@ package com.mrcrayfish.vehicle.network.message;
 
 import com.mrcrayfish.vehicle.network.play.ServerPlayHandler;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -23,7 +23,7 @@ public class MessageHelicopterInput implements IMessage<MessageHelicopterInput>
 	}
 
 	@Override
-	public void encode(MessageHelicopterInput message, PacketBuffer buffer)
+	public void encode(MessageHelicopterInput message, FriendlyByteBuf buffer)
 	{
 		buffer.writeFloat(message.lift);
 		buffer.writeFloat(message.forward);
@@ -31,7 +31,7 @@ public class MessageHelicopterInput implements IMessage<MessageHelicopterInput>
 	}
 
 	@Override
-	public MessageHelicopterInput decode(PacketBuffer buffer)
+	public MessageHelicopterInput decode(FriendlyByteBuf buffer)
 	{
 		return new MessageHelicopterInput(buffer.readFloat(), buffer.readFloat(), buffer.readFloat());
 	}

@@ -7,13 +7,13 @@ import com.mrcrayfish.vehicle.network.PacketHandler;
 import com.mrcrayfish.vehicle.network.message.MessageAttachTrailer;
 import com.mrcrayfish.vehicle.network.message.MessageEntityFluid;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
@@ -42,26 +42,26 @@ public class FluidTrailerEntity extends TrailerEntity implements IEntityAddition
         }
     };
 
-    public FluidTrailerEntity(EntityType<? extends FluidTrailerEntity> type, World worldIn)
+    public FluidTrailerEntity(EntityType<? extends FluidTrailerEntity> type, Level worldIn)
     {
         super(type, worldIn);
     }
 
     @Override
-    public ActionResultType interact(PlayerEntity player, Hand hand)
+    public InteractionResult interact(Player player, InteractionHand hand)
     {
         if(!level.isClientSide && !player.isCrouching())
         {
             if(FluidUtil.interactWithFluidHandler(player, hand, tank))
             {
-                return ActionResultType.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
         }
         return super.interact(player, hand);
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundNBT compound)
+    protected void readAdditionalSaveData(CompoundTag compound)
     {
         super.readAdditionalSaveData(compound);
         if(compound.contains("Tank", Constants.NBT.TAG_COMPOUND))
@@ -71,10 +71,10 @@ public class FluidTrailerEntity extends TrailerEntity implements IEntityAddition
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundNBT compound)
+    protected void addAdditionalSaveData(CompoundTag compound)
     {
         super.addAdditionalSaveData(compound);
-        CompoundNBT tankTag = new CompoundNBT();
+        CompoundTag tankTag = new CompoundTag();
         this.tank.writeToNBT(tankTag);
         compound.put("Tank", tankTag);
     }
@@ -102,14 +102,14 @@ public class FluidTrailerEntity extends TrailerEntity implements IEntityAddition
     }
 
     @Override
-    public void writeSpawnData(PacketBuffer buffer)
+    public void writeSpawnData(FriendlyByteBuf buffer)
     {
         super.writeSpawnData(buffer);
-        buffer.writeNbt(this.tank.writeToNBT(new CompoundNBT()));
+        buffer.writeNbt(this.tank.writeToNBT(new CompoundTag()));
     }
 
     @Override
-    public void readSpawnData(PacketBuffer buffer)
+    public void readSpawnData(FriendlyByteBuf buffer)
     {
         super.readSpawnData(buffer);
         this.tank.readFromNBT(buffer.readNbt());
@@ -123,7 +123,7 @@ public class FluidTrailerEntity extends TrailerEntity implements IEntityAddition
         }, (entity, rightClick) -> {
             if(rightClick) {
                 PacketHandler.getPlayChannel().sendToServer(new MessageAttachTrailer(entity.getId()));
-                Minecraft.getInstance().player.swing(Hand.MAIN_HAND);
+                Minecraft.getInstance().player.swing(InteractionHand.MAIN_HAND);
             }
         }, entity -> true);
     }

@@ -9,7 +9,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mrcrayfish.vehicle.client.model.IComplexModel;
 import com.mrcrayfish.vehicle.client.render.complex.transforms.Rotate;
 import com.mrcrayfish.vehicle.client.render.complex.transforms.Transform;
@@ -19,13 +19,13 @@ import com.mrcrayfish.vehicle.client.render.complex.value.Static;
 import com.mrcrayfish.vehicle.entity.VehicleEntity;
 import com.mrcrayfish.vehicle.util.RenderUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.model.IBakedModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraftforge.client.extensions.IForgeBakedModel;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.IResource;
 import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.ResourceLocationException;
 
 import javax.annotation.Nullable;
@@ -58,7 +58,7 @@ public class ComplexModel
     private final ResourceLocation modelLocation;
     private final List<Transform> transforms;
     private final List<ComplexModel> children;
-    private IBakedModel cachedModel;
+    private IForgeBakedModel cachedModel;
 
     public ComplexModel(ResourceLocation modelLocation, List<Transform> transforms, List<ComplexModel> children)
     {
@@ -67,10 +67,10 @@ public class ComplexModel
         this.children = ImmutableList.copyOf(children);
     }
 
-    public void render(VehicleEntity entity, MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer, float partialTicks, int color, int light)
+    public void render(VehicleEntity entity, PoseStack matrixStack, MultiBufferSource renderTypeBuffer, float partialTicks, int color, int light)
     {
         this.transforms.forEach(transform -> transform.apply(entity, matrixStack, partialTicks));
-        RenderUtil.renderColoredModel(this.getModel(), ItemCameraTransforms.TransformType.NONE, false, matrixStack, renderTypeBuffer, color, light, OverlayTexture.NO_OVERLAY);
+        RenderUtil.renderColoredModel(this.getModel(), ItemTransforms.TransformType.NONE, false, matrixStack, renderTypeBuffer, color, light, OverlayTexture.NO_OVERLAY);
         this.children.forEach(model -> {
             matrixStack.pushPose();
             model.render(entity, matrixStack, renderTypeBuffer, partialTicks, color, light);
@@ -78,7 +78,7 @@ public class ComplexModel
         });
     }
 
-    public final IBakedModel getModel()
+    public final IForgeBakedModel getModel()
     {
         if(this.cachedModel == null)
         {

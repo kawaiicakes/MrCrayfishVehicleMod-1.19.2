@@ -8,8 +8,8 @@ import com.mrcrayfish.vehicle.entity.FuelFillerType;
 import com.mrcrayfish.vehicle.entity.IEngineType;
 import com.mrcrayfish.vehicle.util.ExtraJSONUtils;
 import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 
@@ -31,14 +31,14 @@ public final class PoweredProperties extends ExtendedProperties
     public static final Transform DEFAULT_ENGINE_TRANSFORM = Transform.DEFAULT;
     public static final Transform DEFAULT_EXHAUST_TRANSFORM = Transform.DEFAULT;
     public static final boolean DEFAULT_SHOW_EXHAUST_FUMES = false;
-    public static final Vector3d DEFAULT_EXHAUST_FUMES_POSITION = Vector3d.ZERO;
+    public static final Vec3 DEFAULT_EXHAUST_FUMES_POSITION = Vec3.ZERO;
     public static final Transform DEFAULT_FUEL_FILLER_TRANSFORM = Transform.DEFAULT;
     public static final FuelFillerType DEFAULT_FUEL_FILLER_TYPE = FuelFillerType.DEFAULT;
     public static final Transform DEFAULT_IGNITION_TRANSFORM = Transform.DEFAULT;
     public static final boolean DEFAULT_HAS_HORN = true;
     public static final boolean DEFAULT_CAN_LOCK_WITH_KEY = true;
-    public static final Vector3d DEFAULT_FRONT_AXLE_POSITION = Vector3d.ZERO;
-    public static final Vector3d DEFAULT_REAR_AXLE_POSITION = Vector3d.ZERO;
+    public static final Vec3 DEFAULT_FRONT_AXLE_POSITION = Vec3.ZERO;
+    public static final Vec3 DEFAULT_REAR_AXLE_POSITION = Vec3.ZERO;
     public static final ResourceLocation DEFAULT_ENGINE_SOUND = null;
     public static final ResourceLocation DEFAULT_HORN_SOUND = new ResourceLocation(Reference.MOD_ID, "entity.vehicle.horn");
 
@@ -55,14 +55,14 @@ public final class PoweredProperties extends ExtendedProperties
     private final Transform engineTransform;
     private final Transform exhaustTransform;
     private final boolean showExhaustFumes;
-    private final Vector3d exhaustFumesPosition;
+    private final Vec3 exhaustFumesPosition;
     private final Transform fuelFillerTransform;
     private final FuelFillerType fuelFillerType;
     private final Transform ignitionTransform;
     private final boolean hasHorn;
     private final boolean canLockWithKey;
-    private final Vector3d frontAxleOffset;
-    private final Vector3d rearAxleOffset;
+    private final Vec3 frontAxleOffset;
+    private final Vec3 rearAxleOffset;
     private final ResourceLocation engineSound;
     private final ResourceLocation hornSound;
 
@@ -87,13 +87,13 @@ public final class PoweredProperties extends ExtendedProperties
         this.ignitionTransform = ExtraJSONUtils.getAsTransform(object, "ignitionTransform", DEFAULT_IGNITION_TRANSFORM);
         this.hasHorn = JSONUtils.getAsBoolean(object, "hasHorn", DEFAULT_HAS_HORN);
         this.canLockWithKey = JSONUtils.getAsBoolean(object, "canLockWithKey", DEFAULT_CAN_LOCK_WITH_KEY);
-        this.frontAxleOffset = new Vector3d(0, 0, JSONUtils.getAsFloat(object, "frontAxleOffset", 0F));
-        this.rearAxleOffset = new Vector3d(0, 0, JSONUtils.getAsFloat(object, "rearAxleOffset", 0F));
+        this.frontAxleOffset = new Vec3(0, 0, JSONUtils.getAsFloat(object, "frontAxleOffset", 0F));
+        this.rearAxleOffset = new Vec3(0, 0, JSONUtils.getAsFloat(object, "rearAxleOffset", 0F));
         this.engineSound = ExtraJSONUtils.getAsResourceLocation(object, "engineSound", DEFAULT_ENGINE_SOUND);
         this.hornSound = ExtraJSONUtils.getAsResourceLocation(object, "hornSound", DEFAULT_HORN_SOUND);
     }
 
-    public PoweredProperties(boolean canDriveUpBlocks, float maxSteeringAngle, boolean requiresEnergy, float energyCapacity, float energyConsumptionPerTick, IEngineType engineType, float enginePower, float minEnginePitch, float maxEnginePitch, boolean renderEngine, Transform engineTransform, Transform exhaustTransform, boolean showExhaustFumes, Vector3d exhaustFumesPosition, Transform fuelFillerTransform, FuelFillerType fuelFillerType, Transform ignitionTransform, boolean hasHorn, boolean canLockWithKey, Vector3d frontAxleOffset, Vector3d rearAxleOffset, ResourceLocation engineSound, ResourceLocation hornSound)
+    public PoweredProperties(boolean canDriveUpBlocks, float maxSteeringAngle, boolean requiresEnergy, float energyCapacity, float energyConsumptionPerTick, IEngineType engineType, float enginePower, float minEnginePitch, float maxEnginePitch, boolean renderEngine, Transform engineTransform, Transform exhaustTransform, boolean showExhaustFumes, Vec3 exhaustFumesPosition, Transform fuelFillerTransform, FuelFillerType fuelFillerType, Transform ignitionTransform, boolean hasHorn, boolean canLockWithKey, Vec3 frontAxleOffset, Vec3 rearAxleOffset, ResourceLocation engineSound, ResourceLocation hornSound)
     {
         this.canDriveUpBlocks = canDriveUpBlocks;
         this.maxSteeringAngle = maxSteeringAngle;
@@ -185,7 +185,7 @@ public final class PoweredProperties extends ExtendedProperties
         return this.showExhaustFumes;
     }
 
-    public Vector3d getExhaustFumesPosition()
+    public Vec3 getExhaustFumesPosition()
     {
         return this.exhaustFumesPosition;
     }
@@ -215,12 +215,12 @@ public final class PoweredProperties extends ExtendedProperties
         return this.canLockWithKey;
     }
 
-    public Vector3d getFrontAxleOffset()
+    public Vec3 getFrontAxleOffset()
     {
         return this.frontAxleOffset;
     }
 
-    public Vector3d getRearAxleOffset()
+    public Vec3 getRearAxleOffset()
     {
         return this.rearAxleOffset;
     }
@@ -284,14 +284,14 @@ public final class PoweredProperties extends ExtendedProperties
         private Transform engineTransform = DEFAULT_ENGINE_TRANSFORM;
         private Transform exhaustTransform = DEFAULT_EXHAUST_TRANSFORM;
         private boolean showExhaustFumes = DEFAULT_SHOW_EXHAUST_FUMES;
-        private Vector3d exhaustFumesPosition = DEFAULT_EXHAUST_FUMES_POSITION;
+        private Vec3 exhaustFumesPosition = DEFAULT_EXHAUST_FUMES_POSITION;
         private Transform fuelFillerTransform = DEFAULT_FUEL_FILLER_TRANSFORM;
         private FuelFillerType fuelFillerType = DEFAULT_FUEL_FILLER_TYPE;
         private Transform ignitionTransform = DEFAULT_IGNITION_TRANSFORM;
         private boolean hasHorn = DEFAULT_HAS_HORN;
         private boolean canLockWithKey = DEFAULT_CAN_LOCK_WITH_KEY;
-        private Vector3d frontAxleOffset = DEFAULT_FRONT_AXLE_POSITION;
-        private Vector3d rearAxleOffset = DEFAULT_REAR_AXLE_POSITION;
+        private Vec3 frontAxleOffset = DEFAULT_FRONT_AXLE_POSITION;
+        private Vec3 rearAxleOffset = DEFAULT_REAR_AXLE_POSITION;
         private ResourceLocation engineSound = DEFAULT_ENGINE_SOUND;
         private ResourceLocation hornSound = DEFAULT_HORN_SOUND;
 
@@ -377,7 +377,7 @@ public final class PoweredProperties extends ExtendedProperties
 
         public Builder setExhaustFumesPosition(double x, double y, double z)
         {
-            this.exhaustFumesPosition = new Vector3d(x, y, z);
+            this.exhaustFumesPosition = new Vec3(x, y, z);
             return this;
         }
 
@@ -413,13 +413,13 @@ public final class PoweredProperties extends ExtendedProperties
 
         public Builder setFrontAxleOffset(double frontAxleOffset)
         {
-            this.frontAxleOffset = new Vector3d(0, 0, frontAxleOffset);
+            this.frontAxleOffset = new Vec3(0, 0, frontAxleOffset);
             return this;
         }
 
         public Builder setRearAxleOffset(double rearAxleOffset)
         {
-            this.rearAxleOffset = new Vector3d(0, 0, rearAxleOffset);
+            this.rearAxleOffset = new Vec3(0, 0, rearAxleOffset);
             return this;
         }
 

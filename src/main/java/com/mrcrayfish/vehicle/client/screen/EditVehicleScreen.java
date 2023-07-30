@@ -1,7 +1,7 @@
 package com.mrcrayfish.vehicle.client.screen;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mrcrayfish.vehicle.client.render.AbstractVehicleRenderer;
 import com.mrcrayfish.vehicle.client.render.Axis;
@@ -15,21 +15,21 @@ import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.WorldVertexBufferUploader;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Matrix4f;
+import net.minecraft.resources.ResourceLocation;
+import com.mojang.math.Matrix4f;
 import net.minecraft.util.math.vector.Quaternion;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.StringTextComponent;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.ChatFormatting;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 
@@ -56,7 +56,7 @@ public class EditVehicleScreen extends ContainerScreen<EditVehicleContainer>
     private int mouseGrabbedButton;
     private int mouseClickedX, mouseClickedY;
 
-    public EditVehicleScreen(EditVehicleContainer container, PlayerInventory playerInventory, ITextComponent title)
+    public EditVehicleScreen(EditVehicleContainer container, PlayerInventory playerInventory, Component title)
     {
         super(container, playerInventory, title);
         this.playerInventory = playerInventory;
@@ -66,7 +66,7 @@ public class EditVehicleScreen extends ContainerScreen<EditVehicleContainer>
     }
 
     @Override
-    protected void renderBg(MatrixStack matrixStack, float partialTicks, int mouseX, int mouseY)
+    protected void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY)
     {
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         Minecraft minecraft = Minecraft.getInstance();
@@ -107,7 +107,7 @@ public class EditVehicleScreen extends ContainerScreen<EditVehicleContainer>
             RenderSystem.disableCull();
             Matrix4f pose = matrixStack.last().pose();
             BufferBuilder builder = Tessellator.getInstance().getBuilder();
-            builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+            builder.begin(GL11.GL_QUADS, DefaultVertexFormat.POSITION_TEX);
             builder.vertex(pose, startX, startY, this.getBlitOffset()).uv(0, 1).endVertex();
             builder.vertex(pose, startX, startY + 70, this.getBlitOffset()).uv(0, 0).endVertex();
             builder.vertex(pose, startX + 142, startY + 70, this.getBlitOffset()).uv(1, 0).endVertex();
@@ -120,7 +120,7 @@ public class EditVehicleScreen extends ContainerScreen<EditVehicleContainer>
 
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
-    protected void renderLabels(MatrixStack matrixStack, int mouseX, int mouseY)
+    protected void renderLabels(PoseStack matrixStack, int mouseX, int mouseY)
     {
         Minecraft minecraft = Minecraft.getInstance();
         minecraft.font.draw(matrixStack, this.title.getString(), 8, 6, 4210752);
@@ -136,7 +136,7 @@ public class EditVehicleScreen extends ContainerScreen<EditVehicleContainer>
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void renderVehicleToBuffer(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    private void renderVehicleToBuffer(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         RenderSystem.matrixMode(GL11.GL_PROJECTION);
         RenderSystem.pushMatrix();
@@ -154,7 +154,7 @@ public class EditVehicleScreen extends ContainerScreen<EditVehicleContainer>
             this.bindFrameBuffer();
 
             matrixStack.pushPose();
-            MatrixStack.Entry last = matrixStack.last();
+            PoseStack.Entry last = matrixStack.last();
             last.pose().setIdentity();
             last.normal().setIdentity();
             matrixStack.translate(0, -20, -150);
@@ -177,7 +177,7 @@ public class EditVehicleScreen extends ContainerScreen<EditVehicleContainer>
             matrixStack.mulPose(Axis.POSITIVE_Z.rotationDegrees((float) position.getRotZ()));
             matrixStack.translate(position.getX(), position.getY(), position.getZ());
 
-            IRenderTypeBuffer.Impl renderTypeBuffer = Minecraft.getInstance().renderBuffers().bufferSource();
+            MultiBufferSource.Impl renderTypeBuffer = Minecraft.getInstance().renderBuffers().bufferSource();
             renderer.setupTransformsAndRender(this.menu.getVehicle(), matrixStack, renderTypeBuffer, Minecraft.getInstance().getFrameTime(), 15728880);
             renderTypeBuffer.endBatch();
 
@@ -258,7 +258,7 @@ public class EditVehicleScreen extends ContainerScreen<EditVehicleContainer>
     }
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         this.renderVehicleToBuffer(matrixStack, mouseX, mouseY, partialTicks);
         this.renderBackground(matrixStack);
@@ -275,11 +275,11 @@ public class EditVehicleScreen extends ContainerScreen<EditVehicleContainer>
             {
                 if(this.cachedVehicle.getProperties().getExtended(PoweredProperties.class).getEngineType() != EngineType.NONE)
                 {
-                    this.renderTooltip(matrixStack, Lists.transform(Collections.singletonList(new StringTextComponent("Engine")), ITextComponent::getVisualOrderText), mouseX, mouseY); //TODO localise
+                    this.renderTooltip(matrixStack, Lists.transform(Collections.singletonList(new TextComponent("Engine")), Component::getVisualOrderText), mouseX, mouseY); //TODO localise
                 }
                 else
                 {
-                    this.renderTooltip(matrixStack, Lists.transform(Arrays.asList(new StringTextComponent("Engine"), new StringTextComponent(TextFormatting.GRAY + "Not applicable")), ITextComponent::getVisualOrderText), mouseX, mouseY); //TODO localise
+                    this.renderTooltip(matrixStack, Lists.transform(Arrays.asList(new TextComponent("Engine"), new TextComponent(ChatFormatting.GRAY + "Not applicable")), Component::getVisualOrderText), mouseX, mouseY); //TODO localise
                 }
             }
         }
@@ -290,11 +290,11 @@ public class EditVehicleScreen extends ContainerScreen<EditVehicleContainer>
             {
                 if(this.cachedVehicle.getProperties().canChangeWheels())
                 {
-                    this.renderTooltip(matrixStack, Lists.transform(Collections.singletonList(new StringTextComponent("Wheels")), ITextComponent::getVisualOrderText), mouseX, mouseY);
+                    this.renderTooltip(matrixStack, Lists.transform(Collections.singletonList(new TextComponent("Wheels")), Component::getVisualOrderText), mouseX, mouseY);
                 }
                 else
                 {
-                    this.renderTooltip(matrixStack, Lists.transform(Arrays.asList(new StringTextComponent("Wheels"), new StringTextComponent(TextFormatting.GRAY + "Not applicable")), ITextComponent::getVisualOrderText), mouseX, mouseY);
+                    this.renderTooltip(matrixStack, Lists.transform(Arrays.asList(new TextComponent("Wheels"), new TextComponent(ChatFormatting.GRAY + "Not applicable")), Component::getVisualOrderText), mouseX, mouseY);
                 }
             }
         }

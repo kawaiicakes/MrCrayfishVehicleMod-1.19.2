@@ -5,17 +5,17 @@ import com.mrcrayfish.vehicle.entity.IWheelType;
 import com.mrcrayfish.vehicle.entity.PoweredVehicleEntity;
 import com.mrcrayfish.vehicle.entity.Wheel;
 import com.mrcrayfish.vehicle.entity.properties.VehicleProperties;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import static net.minecraft.block.material.Material.*;
+import static net.minecraft.world.level.material.Material.*;
 
 /**
  * Categories materials into a surface type to determine the
@@ -83,9 +83,9 @@ public class SurfaceHelper
             double wheelX = wheelPositions[i * 3];
             double wheelY = wheelPositions[i * 3 + 1];
             double wheelZ = wheelPositions[i * 3 + 2];
-            int x = MathHelper.floor(vehicle.getX() + wheelX);
-            int y = MathHelper.floor(vehicle.getY() + wheelY - 0.2D);
-            int z = MathHelper.floor(vehicle.getZ() + wheelZ);
+            int x = Mth.floor(vehicle.getX() + wheelX);
+            int y = Mth.floor(vehicle.getY() + wheelY - 0.2D);
+            int z = Mth.floor(vehicle.getZ() + wheelZ);
             BlockState state = vehicle.level.getBlockState(new BlockPos(x, y, z));
             SurfaceType surfaceType = getSurfaceTypeForMaterial(state.getMaterial());
             if(surfaceType == SurfaceType.NONE)

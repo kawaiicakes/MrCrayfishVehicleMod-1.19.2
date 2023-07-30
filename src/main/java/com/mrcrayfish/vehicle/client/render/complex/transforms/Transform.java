@@ -1,6 +1,6 @@
 package com.mrcrayfish.vehicle.client.render.complex.transforms;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mrcrayfish.vehicle.client.raytrace.MatrixTransform;
 import com.mrcrayfish.vehicle.entity.VehicleEntity;
 
@@ -9,7 +9,7 @@ import com.mrcrayfish.vehicle.entity.VehicleEntity;
  */
 public interface Transform
 {
-    void apply(VehicleEntity entity, MatrixStack stack, float partialTicks);
+    void apply(VehicleEntity entity, PoseStack stack, float partialTicks);
 
     MatrixTransform create(VehicleEntity entity, float partialTicks);
 }

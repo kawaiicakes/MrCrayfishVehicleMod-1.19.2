@@ -1,8 +1,8 @@
 package com.mrcrayfish.vehicle.client.screen.toolbar.widget;
 
 import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Locale;
@@ -15,7 +15,7 @@ public class EnumButton<T extends Enum<?>> extends IconButton
     private final Class<T> enumClass;
     private T currentEnum;
 
-    public EnumButton(int x, int y, int width, int height, ITextComponent label, Class<T> enumClass, T initialEnum, Button.IPressable onPress)
+    public EnumButton(int x, int y, int width, int height, Component label, Class<T> enumClass, T initialEnum, Button.IPressable onPress)
     {
         super(width, height, initialEnum instanceof IconProvider ? (IconProvider) initialEnum : null, label, onPress);
         this.enumClass = enumClass;
@@ -45,7 +45,7 @@ public class EnumButton<T extends Enum<?>> extends IconButton
     private void updateLabel()
     {
         String enumName = StringUtils.join(StringUtils.splitByCharacterTypeCamelCase(this.enumClass.getSimpleName()), "_").toLowerCase(Locale.ENGLISH);
-        this.setMessage(new TranslationTextComponent(".enum." + enumName + "." + this.currentEnum.name().toLowerCase()));
+        this.setMessage(new TranslatableContents(".enum." + enumName + "." + this.currentEnum.name().toLowerCase()));
         if(this.currentEnum instanceof IconProvider)
         {
             this.setIcon((IconProvider) this.currentEnum);

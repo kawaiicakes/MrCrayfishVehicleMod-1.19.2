@@ -1,6 +1,6 @@
 package com.mrcrayfish.vehicle.client.render;
 
-import net.minecraft.util.math.vector.Vector3f;
+import com.mojang.math.Vector3f;
 
 /**
  * Author: MrCrayfish

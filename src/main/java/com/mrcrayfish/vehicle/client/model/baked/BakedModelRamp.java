@@ -5,26 +5,26 @@ package com.mrcrayfish.vehicle.client.model.baked;
  */
 public class BakedModelRamp
 {
-    /*private static final ImmutableMap<ItemCameraTransforms.TransformType, Matrix4f> CAMERA_TRANSFORMATIONS;
+    /*private static final ImmutableMap<ItemTransforms.TransformType, Matrix4f> CAMERA_TRANSFORMATIONS;
 
     static
     {
-        ImmutableMap.Builder<ItemCameraTransforms.TransformType, Matrix4f> builder = ImmutableMap.builder();
-        builder.put(ItemCameraTransforms.TransformType.FIXED, new TransformationBuilder().setScale(0.5F).build().getMatrix());
-        builder.put(ItemCameraTransforms.TransformType.GUI, new TransformationBuilder().setTranslation(0.1F, 2, 0).setRotation(30.0F, 45.0F, 0).setScale(0.625F).build().getMatrix());
-        builder.put(ItemCameraTransforms.TransformType.GROUND, new TransformationBuilder().setTranslation(0, 1, 0).setScale(0.25F).build().getMatrix());
-        builder.put(ItemCameraTransforms.TransformType.FIRST_PERSON_LEFT_HAND, new TransformationBuilder().setTranslation(0, 4, 0).setRotation(0, -45, 0).setScale(0.4F).build().getMatrix());
-        builder.put(ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND, new TransformationBuilder().setTranslation(0, 4, 0).setRotation(0, 135, 0).setScale(0.4F).build().getMatrix());
-        builder.put(ItemCameraTransforms.TransformType.THIRD_PERSON_LEFT_HAND, new TransformationBuilder().setTranslation(0, 2.5F, 3.5F).setRotation(75, 315, 0).setScale(0.375F).build().getMatrix());
-        builder.put(ItemCameraTransforms.TransformType.THIRD_PERSON_RIGHT_HAND, new TransformationBuilder().setTranslation(0, 2.5F, 3.5F).setRotation(75, 135, 0).setScale(0.375F).build().getMatrix());
+        ImmutableMap.Builder<ItemTransforms.TransformType, Matrix4f> builder = ImmutableMap.builder();
+        builder.put(ItemTransforms.TransformType.FIXED, new TransformationBuilder().setScale(0.5F).build().getMatrix());
+        builder.put(ItemTransforms.TransformType.GUI, new TransformationBuilder().setTranslation(0.1F, 2, 0).setRotation(30.0F, 45.0F, 0).setScale(0.625F).build().getMatrix());
+        builder.put(ItemTransforms.TransformType.GROUND, new TransformationBuilder().setTranslation(0, 1, 0).setScale(0.25F).build().getMatrix());
+        builder.put(ItemTransforms.TransformType.FIRST_PERSON_LEFT_HAND, new TransformationBuilder().setTranslation(0, 4, 0).setRotation(0, -45, 0).setScale(0.4F).build().getMatrix());
+        builder.put(ItemTransforms.TransformType.FIRST_PERSON_RIGHT_HAND, new TransformationBuilder().setTranslation(0, 4, 0).setRotation(0, 135, 0).setScale(0.4F).build().getMatrix());
+        builder.put(ItemTransforms.TransformType.THIRD_PERSON_LEFT_HAND, new TransformationBuilder().setTranslation(0, 2.5F, 3.5F).setRotation(75, 315, 0).setScale(0.375F).build().getMatrix());
+        builder.put(ItemTransforms.TransformType.THIRD_PERSON_RIGHT_HAND, new TransformationBuilder().setTranslation(0, 2.5F, 3.5F).setRotation(75, 135, 0).setScale(0.375F).build().getMatrix());
         CAMERA_TRANSFORMATIONS = builder.build();
     }
 
-    private VertexFormat format;
+    private DefaultVertexFormat format;
     private TextureAtlasSprite mainTexture;
     private TextureAtlasSprite rampTexture;
 
-    public BakedModelRamp(VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter)
+    public BakedModelRamp(DefaultVertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter)
     {
         this.format = format;
         this.mainTexture = bakedTextureGetter.construct(new ResourceLocation("minecraft", "blocks/concrete_gray"));
@@ -167,7 +167,7 @@ public class BakedModelRamp
     }
 
     @Override
-    public Pair<? extends IBakedModel, Matrix4f> handlePerspective(ItemCameraTransforms.TransformType cameraTransformType)
+    public Pair<? extends IForgeBakedModel, Matrix4f> handlePerspective(ItemTransforms.TransformType cameraTransformType)
     {
         return Pair.of(this, CAMERA_TRANSFORMATIONS.get(cameraTransformType));
     }*/

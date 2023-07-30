@@ -1,11 +1,11 @@
 package com.mrcrayfish.vehicle.network.message;
 
 import com.mrcrayfish.vehicle.network.play.ClientPlayHandler;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
@@ -19,11 +19,11 @@ public class MessageSyncActionData implements IMessage<MessageSyncActionData>
 {
     private int entityId;
     private ResourceLocation cosmeticId;
-    private List<Pair<ResourceLocation, CompoundNBT>> actionData;
+    private List<Pair<ResourceLocation, CompoundTag>> actionData;
 
     public MessageSyncActionData() {}
 
-    public MessageSyncActionData(int entityId, ResourceLocation cosmeticId, List<Pair<ResourceLocation, CompoundNBT>> actionData)
+    public MessageSyncActionData(int entityId, ResourceLocation cosmeticId, List<Pair<ResourceLocation, CompoundTag>> actionData)
     {
         this.entityId = entityId;
         this.cosmeticId = cosmeticId;
@@ -31,7 +31,7 @@ public class MessageSyncActionData implements IMessage<MessageSyncActionData>
     }
 
     @Override
-    public void encode(MessageSyncActionData message, PacketBuffer buffer)
+    public void encode(MessageSyncActionData message, FriendlyByteBuf buffer)
     {
         buffer.writeInt(message.entityId);
         buffer.writeResourceLocation(message.cosmeticId);
@@ -43,16 +43,16 @@ public class MessageSyncActionData implements IMessage<MessageSyncActionData>
     }
 
     @Override
-    public MessageSyncActionData decode(PacketBuffer buffer)
+    public MessageSyncActionData decode(FriendlyByteBuf buffer)
     {
         int entityId = buffer.readInt();
         ResourceLocation cosmeticId = buffer.readResourceLocation();
-        List<Pair<ResourceLocation, CompoundNBT>> actionData = new ArrayList<>();
+        List<Pair<ResourceLocation, CompoundTag>> actionData = new ArrayList<>();
         int size = buffer.readInt();
         for(int i = 0; i < size; i++)
         {
             ResourceLocation actionId = buffer.readResourceLocation();
-            CompoundNBT data = buffer.readNbt();
+            CompoundTag data = buffer.readNbt();
             actionData.add(Pair.of(actionId, data));
         }
         return new MessageSyncActionData(entityId, cosmeticId, actionData);
@@ -77,7 +77,7 @@ public class MessageSyncActionData implements IMessage<MessageSyncActionData>
         return this.cosmeticId;
     }
 
-    public List<Pair<ResourceLocation, CompoundNBT>> getActionData()
+    public List<Pair<ResourceLocation, CompoundTag>> getActionData()
     {
         return this.actionData;
     }

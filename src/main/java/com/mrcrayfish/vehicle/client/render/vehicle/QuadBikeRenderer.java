@@ -1,6 +1,6 @@
 package com.mrcrayfish.vehicle.client.render.vehicle;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mrcrayfish.vehicle.client.model.VehicleModels;
 import com.mrcrayfish.vehicle.client.raytrace.MatrixTransform;
 import com.mrcrayfish.vehicle.client.raytrace.RayTraceTransforms;
@@ -11,11 +11,11 @@ import com.mrcrayfish.vehicle.entity.properties.PoweredProperties;
 import com.mrcrayfish.vehicle.entity.properties.VehicleProperties;
 import com.mrcrayfish.vehicle.entity.vehicle.QuadBikeEntity;
 import com.mrcrayfish.vehicle.init.ModEntities;
-import net.minecraft.client.entity.player.AbstractClientPlayerEntity;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.entity.model.PlayerModel;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.model.PlayerModel;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
 
 import javax.annotation.Nullable;
 
@@ -30,14 +30,14 @@ public class QuadBikeRenderer extends AbstractLandVehicleRenderer<QuadBikeEntity
     }
 
     @Override
-    protected void render(@Nullable QuadBikeEntity vehicle, MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer, float partialTicks, int light)
+    protected void render(@Nullable QuadBikeEntity vehicle, PoseStack matrixStack, MultiBufferSource renderTypeBuffer, float partialTicks, int light)
     {
         this.renderDamagedPart(vehicle, VehicleModels.QUAD_BIKE_BODY, matrixStack, renderTypeBuffer, light, partialTicks);
         this.renderSteeringWheel(vehicle, VehicleModels.QUAD_BIKE_HANDLES, 0.0, 6.0, 3.0, 1.0F, -35F, matrixStack, renderTypeBuffer, light, partialTicks);
     }
 
     @Override
-    public void applyPlayerModel(QuadBikeEntity entity, PlayerEntity player, PlayerModel<AbstractClientPlayerEntity> model, float partialTicks)
+    public void applyPlayerModel(QuadBikeEntity entity, Player player, PlayerModel<AbstractClientPlayer> model, float partialTicks)
     {
         float wheelAngle = this.wheelAngleProperty.get(entity, partialTicks);
         float maxSteeringAngle = this.vehiclePropertiesProperty.get(entity).getExtended(PoweredProperties.class).getMaxSteeringAngle();

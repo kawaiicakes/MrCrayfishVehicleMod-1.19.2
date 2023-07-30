@@ -1,7 +1,7 @@
 package com.mrcrayfish.vehicle.client.raytrace;
 
 import com.mrcrayfish.vehicle.client.raytrace.data.RayTraceData;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 
@@ -11,18 +11,18 @@ import javax.annotation.Nullable;
 class InterceptResult
 {
     private static final float EPSILON = 0.000001F;
-    private final Vector3d hitPos;
+    private final Vec3 hitPos;
     private final RayTraceData part;
     private final double distance;
 
-    public InterceptResult(RayTraceData part, float x, float y, float z, Vector3d eyePos)
+    public InterceptResult(RayTraceData part, float x, float y, float z, Vec3 eyePos)
     {
         this.part = part;
-        this.hitPos = new Vector3d(x, y, z);
+        this.hitPos = new Vec3(x, y, z);
         this.distance = eyePos.distanceTo(this.hitPos);
     }
 
-    public Vector3d getHitPos()
+    public Vec3 getHitPos()
     {
         return this.hitPos;
     }
@@ -48,7 +48,7 @@ class InterceptResult
      * @return new instance of this class, if the ray intersect the triangle - null if the ray does not
      */
     @Nullable
-    public static InterceptResult calculate(Vector3d entityPos, Vector3d eyePos, float[] direction, float[] data, RayTraceData part)
+    public static InterceptResult calculate(Vec3 entityPos, Vec3 eyePos, float[] direction, float[] data, RayTraceData part)
     {
         float[] eyes = new float[]{(float) eyePos.x, (float) eyePos.y, (float) eyePos.z};
         float[] vec0 = {data[0] + (float) entityPos.x, data[1] + (float) entityPos.y, data[2] + (float) entityPos.z};

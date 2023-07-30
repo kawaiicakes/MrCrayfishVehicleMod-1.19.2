@@ -10,10 +10,10 @@ import com.mrcrayfish.vehicle.init.ModEntities;
 import com.mrcrayfish.vehicle.network.PacketHandler;
 import com.mrcrayfish.vehicle.network.message.MessageOpenStorage;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.EntityType;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.Hand;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -29,7 +29,7 @@ public class SportsCarEntity extends LandVehicleEntity implements IStorage
 
     private final ImmutableMap<String, StorageInventory> storageMap;
 
-    public SportsCarEntity(EntityType<? extends LandVehicleEntity> type, World worldIn)
+    public SportsCarEntity(EntityType<? extends LandVehicleEntity> type, Level worldIn)
     {
         super(type, worldIn);
         ImmutableMap.Builder<String, StorageInventory> builder = ImmutableMap.builder();
@@ -39,14 +39,14 @@ public class SportsCarEntity extends LandVehicleEntity implements IStorage
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundNBT compound)
+    protected void readAdditionalSaveData(CompoundTag compound)
     {
         super.readAdditionalSaveData(compound);
         this.readInventories(compound);
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundNBT compound)
+    protected void addAdditionalSaveData(CompoundTag compound)
     {
         super.addAdditionalSaveData(compound);
         this.writeInventories(compound);
@@ -60,7 +60,7 @@ public class SportsCarEntity extends LandVehicleEntity implements IStorage
         }, (entity, rightClick) -> {
             if(rightClick) {
                 PacketHandler.getPlayChannel().sendToServer(new MessageOpenStorage(entity.getId(), GLOVE_BOX_STORAGE_KEY));
-                Minecraft.getInstance().player.swing(Hand.MAIN_HAND);
+                Minecraft.getInstance().player.swing(InteractionHand.MAIN_HAND);
             }
         }, entity -> true);
 
@@ -69,7 +69,7 @@ public class SportsCarEntity extends LandVehicleEntity implements IStorage
         }, (entity, rightClick) -> {
             if(rightClick) {
                 PacketHandler.getPlayChannel().sendToServer(new MessageOpenStorage(entity.getId(), TRUNK_STORAGE_KEY));
-                Minecraft.getInstance().player.swing(Hand.MAIN_HAND);
+                Minecraft.getInstance().player.swing(InteractionHand.MAIN_HAND);
             }
         }, entity -> true);
     }

@@ -1,7 +1,7 @@
 package com.mrcrayfish.vehicle.client.raytrace;
 
 import com.mrcrayfish.vehicle.client.raytrace.data.RayTraceData;
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 
 import java.util.List;
 

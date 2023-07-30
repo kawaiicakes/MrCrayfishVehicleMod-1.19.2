@@ -20,13 +20,13 @@ function initializeCoreMod() {
                 'type': 'METHOD',
                 'class': 'net.minecraft.client.renderer.GameRenderer',
                 'methodName': 'func_228378_a_',
-                'methodDesc': '(FJLcom/mojang/blaze3d/matrix/MatrixStack;)V'
+                'methodDesc': '(FJLcom/mojang/blaze3d/matrix/PoseStack;)V'
             },
             'transformer': function(method) {
                 var node = getFirstMatchingMethodNode(method, Opcodes.INVOKEVIRTUAL, "func_216778_f", "()F");
                 if(node !== null) {
                     var target = node.getNext().getNext().getNext().getNext();
-                    method.instructions.insert(target, new MethodInsnNode(Opcodes.INVOKESTATIC, "com/mrcrayfish/vehicle/client/handler/CameraHandler", "setupVehicleCamera", "(Lcom/mojang/blaze3d/matrix/MatrixStack;)V"));
+                    method.instructions.insert(target, new MethodInsnNode(Opcodes.INVOKESTATIC, "com/mrcrayfish/vehicle/client/handler/CameraHandler", "setupVehicleCamera", "(Lcom/mojang/blaze3d/matrix/PoseStack;)V"));
                     method.instructions.insert(target, new VarInsnNode(Opcodes.ALOAD, 4));
                 }
                 return method;
@@ -40,7 +40,7 @@ function initializeCoreMod() {
                 'methodDesc': '(Lnet/minecraft/client/renderer/ActiveRenderInfo;Lnet/minecraft/client/Minecraft;F)V'
             },
             'transformer': function(method) {
-                var node = getFirstMatchingMethodNode(method, Opcodes.INVOKEVIRTUAL, "func_216772_a", "(Lnet/minecraft/world/IBlockReader;Lnet/minecraft/entity/Entity;ZZF)V");
+                var node = getFirstMatchingMethodNode(method, Opcodes.INVOKEVIRTUAL, "func_216772_a", "(Lnet/minecraft/world/BlockGetter;Lnet/minecraft/entity/Entity;ZZF)V");
                 if(node !== null) {
                     method.instructions.insert(node, new MethodInsnNode(Opcodes.INVOKESTATIC, "com/mrcrayfish/vehicle/client/handler/CameraHandler", "setupShaderCamera", "(Lnet/minecraft/client/renderer/ActiveRenderInfo;F)V"));
                     method.instructions.insert(node, new VarInsnNode(Opcodes.FLOAD, 2));
@@ -52,7 +52,7 @@ function initializeCoreMod() {
         'view_offset': {
             'target': {
                 'type': 'METHOD',
-                'class': 'net.minecraft.entity.Entity',
+                'class': 'net.minecraft.world.entity.Entity',
                 'methodName': 'func_195049_a',
                 'methodDesc': '(DD)V'
             },

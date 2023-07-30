@@ -1,19 +1,19 @@
 package com.mrcrayfish.vehicle.client.handler;
 
 import com.google.common.collect.ImmutableMap;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mrcrayfish.vehicle.Config;
 import com.mrcrayfish.vehicle.client.CameraHelper;
 import com.mrcrayfish.vehicle.entity.VehicleEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.player.ClientPlayerEntity;
 import net.minecraft.client.renderer.ActiveRenderInfo;
-import net.minecraft.client.settings.PointOfView;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.client.CameraType;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.util.Util;
 import net.minecraft.util.math.vector.Quaternion;
-import net.minecraft.util.math.vector.Vector3f;
+import com.mojang.math.Vector3f;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.FOVUpdateEvent;
 import net.minecraftforge.client.event.InputEvent;
@@ -37,7 +37,7 @@ public class CameraHandler
     private static CameraHandler instance;
 
     @Nullable
-    private PointOfView originalPointOfView = null;
+    private CameraType originalPointOfView = null;
     private final CameraHelper cameraHelper = new CameraHelper();
 
     private CameraHandler() {}
@@ -70,13 +70,13 @@ public class CameraHandler
         if(event.isMounting())
         {
             this.originalPointOfView = Minecraft.getInstance().options.getCameraType();
-            Minecraft.getInstance().options.setCameraType(PointOfView.THIRD_PERSON_BACK);
+            Minecraft.getInstance().options.setCameraType(CameraType.THIRD_PERSON_BACK);
         }
         else
         {
             if(Config.CLIENT.forceFirstPersonOnExit.get())
             {
-                Minecraft.getInstance().options.setCameraType(PointOfView.FIRST_PERSON);
+                Minecraft.getInstance().options.setCameraType(CameraType.FIRST_PERSON);
             }
             else if(this.originalPointOfView != null)
             {
@@ -92,7 +92,7 @@ public class CameraHandler
         if(!Config.CLIENT.autoPerspective.get())
             return;
 
-        PlayerEntity player = Minecraft.getInstance().player;
+        Player player = Minecraft.getInstance().player;
         if(player == null)
             return;
 
@@ -109,7 +109,7 @@ public class CameraHandler
     @SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event)
     {
-        PlayerEntity player = Minecraft.getInstance().player;
+        Player player = Minecraft.getInstance().player;
         if(event.phase != TickEvent.Phase.END || player == null)
             return;
 
@@ -122,7 +122,7 @@ public class CameraHandler
     @SubscribeEvent
     public void onFovUpdate(FOVUpdateEvent event)
     {
-        PlayerEntity player = Minecraft.getInstance().player;
+        Player player = Minecraft.getInstance().player;
         if(player == null)
             return;
 
@@ -146,7 +146,7 @@ public class CameraHandler
             return;
 
         Entity entity = event.getEntityMounting();
-        if(!(entity instanceof PlayerEntity) || !((PlayerEntity) entity).isLocalPlayer())
+        if(!(entity instanceof Player) || !((Player) entity).isLocalPlayer())
             return;
 
         this.cameraHelper.load((VehicleEntity) event.getEntityBeingMounted());
@@ -195,7 +195,7 @@ public class CameraHandler
         if(!(player.getVehicle() instanceof VehicleEntity))
             return;
 
-        PointOfView pointOfView = minecraft.options.getCameraType();
+        CameraType pointOfView = minecraft.options.getCameraType();
         VehicleEntity vehicle = (VehicleEntity) player.getVehicle();
         this.cameraHelper.setupVanillaCamera(info, pointOfView, vehicle, player, partialTicks);
     }
@@ -204,14 +204,14 @@ public class CameraHandler
      * Called via transformer. Do not delete!
      */
     @SuppressWarnings("unused")
-    public static void setupVehicleCamera(MatrixStack matrixStack)
+    public static void setupVehicleCamera(PoseStack matrixStack)
     {
         if(!Config.CLIENT.immersiveCamera.get())
             return;
 
         ActiveRenderInfo info = Minecraft.getInstance().gameRenderer.getMainCamera();
         Entity entity = info.getEntity();
-        if(!(entity instanceof PlayerEntity) || !(entity.getVehicle() instanceof VehicleEntity))
+        if(!(entity instanceof Player) || !(entity.getVehicle() instanceof VehicleEntity))
             return;
 
         // Undo the rotations created by vanilla

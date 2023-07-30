@@ -2,9 +2,9 @@ package com.mrcrayfish.vehicle.crafting;
 
 import com.google.gson.JsonObject;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -65,13 +65,13 @@ public class FluidEntry
         return object;
     }
 
-    public void write(PacketBuffer buffer)
+    public void write(FriendlyByteBuf buffer)
     {
         buffer.writeUtf(this.fluid.getRegistryName().toString(), 256);
         buffer.writeInt(this.amount);
     }
 
-    public static FluidEntry read(PacketBuffer buffer)
+    public static FluidEntry read(FriendlyByteBuf buffer)
     {
         Fluid fluid = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(buffer.readUtf(256)));
         int amount = buffer.readInt();

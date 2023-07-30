@@ -3,12 +3,12 @@ package com.mrcrayfish.vehicle.crafting;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import net.minecraft.entity.EntityType;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
@@ -44,7 +44,7 @@ public class WorkstationRecipeSerializer extends net.minecraftforge.registries.F
 
     @Nullable
     @Override
-    public WorkstationRecipe fromNetwork(ResourceLocation recipeId, PacketBuffer buffer)
+    public WorkstationRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer)
     {
         EntityType<?> entityType = ForgeRegistries.ENTITIES.getValue(buffer.readResourceLocation());
         ImmutableList.Builder<WorkstationIngredient> builder = ImmutableList.builder();
@@ -57,7 +57,7 @@ public class WorkstationRecipeSerializer extends net.minecraftforge.registries.F
     }
 
     @Override
-    public void toNetwork(PacketBuffer buffer, WorkstationRecipe recipe)
+    public void toNetwork(FriendlyByteBuf buffer, WorkstationRecipe recipe)
     {
         buffer.writeResourceLocation(recipe.getVehicle().getRegistryName());
         buffer.writeVarInt(recipe.getMaterials().size());

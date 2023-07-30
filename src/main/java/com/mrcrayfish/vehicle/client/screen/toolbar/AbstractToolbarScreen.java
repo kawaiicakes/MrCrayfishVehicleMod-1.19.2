@@ -1,6 +1,6 @@
 package com.mrcrayfish.vehicle.client.screen.toolbar;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mrcrayfish.vehicle.Reference;
 import com.mrcrayfish.vehicle.client.screen.DashboardScreen;
@@ -8,14 +8,14 @@ import com.mrcrayfish.vehicle.client.screen.toolbar.widget.IconButton;
 import com.mrcrayfish.vehicle.client.screen.toolbar.widget.Spacer;
 import com.mrcrayfish.vehicle.util.CommonUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TranslationTextComponent;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import org.apache.commons.lang3.tuple.Pair;
 import org.lwjgl.opengl.GL11;
 
@@ -33,7 +33,7 @@ public abstract class AbstractToolbarScreen extends Screen
     private Screen parent;
     private int contentWidth;
 
-    protected AbstractToolbarScreen(ITextComponent titleIn, @Nullable Screen parent)
+    protected AbstractToolbarScreen(Component titleIn, @Nullable Screen parent)
     {
         super(titleIn);
         this.parent = parent;
@@ -45,7 +45,7 @@ public abstract class AbstractToolbarScreen extends Screen
         List<Widget> widgets = new ArrayList<>();
         if(this.parent != null)
         {
-            widgets.add(new IconButton(20, 20, DashboardScreen.Icons.BACK, new TranslationTextComponent("vehicle.toolbar.label.back"), onPress -> this.minecraft.setScreen(this.parent)));
+            widgets.add(new IconButton(20, 20, DashboardScreen.Icons.BACK, new TranslatableContents("vehicle.toolbar.label.back"), onPress -> this.minecraft.setScreen(this.parent)));
             widgets.add(Spacer.of(5));
         }
         this.loadWidgets(widgets);
@@ -80,7 +80,7 @@ public abstract class AbstractToolbarScreen extends Screen
     protected abstract void loadWidgets(List<Widget> widgets);
 
     @Override
-    public void render(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         this.fillGradient(matrixStack, 0, this.height / 2, this.width, this.height, 0x00000000, 0xAA000000);
 
@@ -102,7 +102,7 @@ public abstract class AbstractToolbarScreen extends Screen
 
         if(hoveredWidget instanceof IToolbarLabel)
         {
-            ITextComponent message = ((IToolbarLabel) hoveredWidget).getLabel();
+            Component message = ((IToolbarLabel) hoveredWidget).getLabel();
             int messageWidth = this.minecraft.font.width(message);
             drawString(matrixStack, this.minecraft.font, message, this.width / 2 - messageWidth / 2, startY - 12, 0xFFFFFF);
         }
@@ -137,7 +137,7 @@ public abstract class AbstractToolbarScreen extends Screen
         float vScale = 1.0F / 256.0F;
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder builder = tessellator.getBuilder();
-        builder.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX);
+        builder.begin(GL11.GL_QUADS, DefaultVertexFormat.POSITION_TEX);
         builder.vertex(x, y + height, 0).uv(u * uScale, (v + textureHeight) * vScale).endVertex();
         builder.vertex(x + width, y + height, 0).uv((u + textureWidth) * uScale, (v + textureHeight) * vScale).endVertex();
         builder.vertex(x + width, y, 0).uv((u + textureWidth) * uScale, v * vScale).endVertex();

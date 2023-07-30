@@ -2,7 +2,7 @@ package com.mrcrayfish.vehicle.tileentity;
 
 import com.mrcrayfish.vehicle.util.TileEntityUtil;
 import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.tileentity.TileEntityType;
@@ -46,7 +46,7 @@ public class TileFluidHandlerSynced extends TileFluidHandler
     {
         if(this.level != null && !this.level.isClientSide)
         {
-            CompoundNBT compound = new CompoundNBT();
+            CompoundTag compound = new CompoundTag();
             super.save(compound);
             TileEntityUtil.sendUpdatePacket(this, compound);
         }
@@ -56,16 +56,16 @@ public class TileFluidHandlerSynced extends TileFluidHandler
     {
         if(this.level != null && !this.level.isClientSide)
         {
-            CompoundNBT compound = new CompoundNBT();
+            CompoundTag compound = new CompoundTag();
             super.save(compound);
             TileEntityUtil.sendUpdatePacket(this, compound);
         }
     }
 
     @Override
-    public CompoundNBT getUpdateTag()
+    public CompoundTag getUpdateTag()
     {
-        return this.save(new CompoundNBT());
+        return this.save(new CompoundTag());
     }
 
     @Nullable

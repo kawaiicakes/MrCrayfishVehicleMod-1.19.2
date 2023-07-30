@@ -12,7 +12,7 @@ public class ModelRamp
     }
 
     @Override
-    public IBakedModel bake(IModelState state, VertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter)
+    public IForgeBakedModel bake(IModelState state, DefaultVertexFormat format, Function<ResourceLocation, TextureAtlasSprite> bakedTextureGetter)
     {
         return new BakedModelRamp(format, bakedTextureGetter);
     }*/

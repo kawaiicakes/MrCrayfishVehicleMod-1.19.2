@@ -2,14 +2,14 @@ package com.mrcrayfish.vehicle.crafting;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.network.PacketBuffer;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.tags.ITag;
 import net.minecraft.util.IItemProvider;
 import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.crafting.IIngredientSerializer;
 
 import java.util.Collection;
@@ -89,7 +89,7 @@ public class WorkstationIngredient extends Ingredient
         public static final WorkstationIngredient.Serializer INSTANCE = new WorkstationIngredient.Serializer();
 
         @Override
-        public WorkstationIngredient parse(PacketBuffer buffer)
+        public WorkstationIngredient parse(FriendlyByteBuf buffer)
         {
             int itemCount = buffer.readVarInt();
             int count = buffer.readVarInt();
@@ -105,7 +105,7 @@ public class WorkstationIngredient extends Ingredient
         }
 
         @Override
-        public void write(PacketBuffer buffer, WorkstationIngredient ingredient)
+        public void write(FriendlyByteBuf buffer, WorkstationIngredient ingredient)
         {
             buffer.writeVarInt(ingredient.getItems().length);
             buffer.writeVarInt(ingredient.count);

@@ -1,18 +1,18 @@
 package com.mrcrayfish.vehicle.client.render;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mrcrayfish.vehicle.common.entity.Transform;
 import com.mrcrayfish.vehicle.entity.MotorcycleEntity;
 import com.mrcrayfish.vehicle.entity.properties.LandProperties;
 import com.mrcrayfish.vehicle.entity.properties.PoweredProperties;
 import com.mrcrayfish.vehicle.entity.properties.VehicleProperties;
 import com.mrcrayfish.vehicle.util.RenderUtil;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.entity.EntityType;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.phys.Vec3;
+import com.mojang.math.Vector3f;
 
 import javax.annotation.Nullable;
 
@@ -27,7 +27,7 @@ public abstract class AbstractMotorcycleRenderer<T extends MotorcycleEntity> ext
     }
 
     @Override
-    public void setupTransformsAndRender(@Nullable T vehicle, MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer, float partialTicks, int light)
+    public void setupTransformsAndRender(@Nullable T vehicle, PoseStack matrixStack, MultiBufferSource renderTypeBuffer, float partialTicks, int light)
     {
         matrixStack.pushPose();
 
@@ -43,10 +43,10 @@ public abstract class AbstractMotorcycleRenderer<T extends MotorcycleEntity> ext
             matrixStack.pushPose();
             double inverseScale = 1.0 / bodyPosition.getScale();
             matrixStack.scale((float) inverseScale, (float) inverseScale, (float) inverseScale);
-            Vector3d towBarOffset = properties.getTowBarOffset().scale(bodyPosition.getScale());
+            Vec3 towBarOffset = properties.getTowBarOffset().scale(bodyPosition.getScale());
             matrixStack.translate(towBarOffset.x * 0.0625, towBarOffset.y * 0.0625 + 0.5, towBarOffset.z * 0.0625);
             matrixStack.mulPose(Vector3f.YP.rotationDegrees(180F));
-            RenderUtil.renderColoredModel(this.getTowBarModel().getBaseModel(), ItemCameraTransforms.TransformType.NONE, false, matrixStack, renderTypeBuffer, -1, light, OverlayTexture.NO_OVERLAY);
+            RenderUtil.renderColoredModel(this.getTowBarModel().getBaseModel(), ItemTransforms.TransformType.NONE, false, matrixStack, renderTypeBuffer, -1, light, OverlayTexture.NO_OVERLAY);
             matrixStack.popPose();
         }
 
@@ -62,7 +62,7 @@ public abstract class AbstractMotorcycleRenderer<T extends MotorcycleEntity> ext
         /* Rotates the wheel based relative to the rear axel to create a wheelie */
         if(properties.getExtended(LandProperties.class).canWheelie())
         {
-            Vector3d rearAxleOffset = properties.getExtended(PoweredProperties.class).getRearAxleOffset();
+            Vec3 rearAxleOffset = properties.getExtended(PoweredProperties.class).getRearAxleOffset();
             matrixStack.translate(0.0, -0.5, 0.0);
             matrixStack.translate(0.0, -properties.getAxleOffset() * 0.0625, 0.0);
             matrixStack.translate(0.0, 0.0, rearAxleOffset.z * 0.0625);

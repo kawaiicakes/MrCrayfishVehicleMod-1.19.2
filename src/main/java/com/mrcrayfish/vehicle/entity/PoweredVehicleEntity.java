@@ -25,41 +25,41 @@ import com.mrcrayfish.vehicle.tileentity.GasPumpTankTileEntity;
 import com.mrcrayfish.vehicle.tileentity.GasPumpTileEntity;
 import com.mrcrayfish.vehicle.util.CommonUtils;
 import com.mrcrayfish.vehicle.util.InventoryUtil;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.material.Material;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
 import net.minecraft.client.Minecraft;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.entity.MoverType;
-import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.IInventoryChangedListener;
-import net.minecraft.inventory.Inventory;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.INamedContainerProvider;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.particles.ParticleTypes;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.Hand;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.GameRules;
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
@@ -83,14 +83,14 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
 {
     protected static final int MAX_WHEELIE_TICKS = 10;
 
-    protected static final DataParameter<Float> THROTTLE = EntityDataManager.defineId(PoweredVehicleEntity.class, DataSerializers.FLOAT);
-    protected static final DataParameter<Boolean> HANDBRAKE = EntityDataManager.defineId(PoweredVehicleEntity.class, DataSerializers.BOOLEAN);
-    protected static final DataParameter<Float> STEERING_ANGLE = EntityDataManager.defineId(PoweredVehicleEntity.class, DataSerializers.FLOAT);
-    protected static final DataParameter<Boolean> HORN = EntityDataManager.defineId(PoweredVehicleEntity.class, DataSerializers.BOOLEAN);
-    protected static final DataParameter<Float> CURRENT_FUEL = EntityDataManager.defineId(PoweredVehicleEntity.class, DataSerializers.FLOAT);
-    protected static final DataParameter<Boolean> NEEDS_KEY = EntityDataManager.defineId(PoweredVehicleEntity.class, DataSerializers.BOOLEAN);
-    protected static final DataParameter<ItemStack> KEY_STACK = EntityDataManager.defineId(PoweredVehicleEntity.class, DataSerializers.ITEM_STACK);
-    protected static final DataParameter<ItemStack> ENGINE_STACK = EntityDataManager.defineId(PoweredVehicleEntity.class, DataSerializers.ITEM_STACK);
+    protected static final EntityDataAccessor<Float> THROTTLE = SynchedEntityData.defineId(PoweredVehicleEntity.class, EntityDataSerializers.FLOAT);
+    protected static final EntityDataAccessor<Boolean> HANDBRAKE = SynchedEntityData.defineId(PoweredVehicleEntity.class, EntityDataSerializers.BOOLEAN);
+    protected static final EntityDataAccessor<Float> STEERING_ANGLE = SynchedEntityData.defineId(PoweredVehicleEntity.class, EntityDataSerializers.FLOAT);
+    protected static final EntityDataAccessor<Boolean> HORN = SynchedEntityData.defineId(PoweredVehicleEntity.class, EntityDataSerializers.BOOLEAN);
+    protected static final EntityDataAccessor<Float> CURRENT_FUEL = SynchedEntityData.defineId(PoweredVehicleEntity.class, EntityDataSerializers.FLOAT);
+    protected static final EntityDataAccessor<Boolean> NEEDS_KEY = SynchedEntityData.defineId(PoweredVehicleEntity.class, EntityDataSerializers.BOOLEAN);
+    protected static final EntityDataAccessor<ItemStack> KEY_STACK = SynchedEntityData.defineId(PoweredVehicleEntity.class, EntityDataSerializers.ITEM_STACK);
+    protected static final EntityDataAccessor<ItemStack> ENGINE_STACK = SynchedEntityData.defineId(PoweredVehicleEntity.class, EntityDataSerializers.ITEM_STACK);
 
     // Sensitive variables used for physics
     private final VehicleDataValue<Float> throttle = new VehicleDataValue<>(this, THROTTLE);
@@ -109,8 +109,8 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
     protected float chargingAmount;
     private double[] wheelPositions;
     private boolean fueling;
-    protected Vector3d motion = Vector3d.ZERO;
-    private Inventory vehicleInventory;
+    protected Vec3 motion = Vec3.ZERO;
+    private SimpleContainer vehicleInventory;
 
     @OnlyIn(Dist.CLIENT)
     protected float renderWheelAngle;
@@ -121,13 +121,13 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
     @OnlyIn(Dist.CLIENT)
     protected float engineVolume;
 
-    protected PoweredVehicleEntity(EntityType<?> entityType, World worldIn)
+    protected PoweredVehicleEntity(EntityType<?> entityType, Level worldIn)
     {
         super(entityType, worldIn);
         this.maxUpStep = 1.0F;
     }
 
-    public PoweredVehicleEntity(EntityType<?> entityType, World worldIn, double posX, double posY, double posZ)
+    public PoweredVehicleEntity(EntityType<?> entityType, Level worldIn, double posX, double posY, double posZ)
     {
         this(entityType, worldIn);
         this.setPos(posX, posY, posZ);
@@ -185,12 +185,12 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
         return this.getPoweredProperties().getMaxEnginePitch();
     }
 
-    public void fuelVehicle(PlayerEntity player, Hand hand)
+    public void fuelVehicle(Player player, InteractionHand hand)
     {
         if(SyncedPlayerData.instance().get(player, ModDataKeys.GAS_PUMP).isPresent())
         {
             BlockPos pos = SyncedPlayerData.instance().get(player, ModDataKeys.GAS_PUMP).get();
-            TileEntity tileEntity = this.level.getBlockEntity(pos);
+            BlockEntity tileEntity = this.level.getBlockEntity(pos);
             if(!(tileEntity instanceof GasPumpTileEntity))
                 return;
 
@@ -237,7 +237,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
     }
 
     @Override
-    public ActionResultType interact(PlayerEntity player, Hand hand)
+    public InteractionResult interact(Player player, InteractionHand hand)
     {
         ItemStack stack = player.getItemInHand(hand);
         if(!level.isClientSide)
@@ -254,12 +254,12 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
                 if(!this.owner.equals(player.getUUID()))
                 {
                     CommonUtils.sendInfoMessage(player, "vehicle.status.invalid_owner");
-                    return ActionResultType.FAIL;
+                    return InteractionResult.FAIL;
                 }
 
                 if(this.isLockable())
                 {
-                    CompoundNBT tag = CommonUtils.getOrCreateStackTag(stack);
+                    CompoundTag tag = CommonUtils.getOrCreateStackTag(stack);
                     if(!tag.hasUUID("VehicleId") || this.getUUID().equals(tag.getUUID("VehicleId")))
                     {
                         tag.putUUID("VehicleId", this.getUUID());
@@ -272,13 +272,13 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
                         {
                             CommonUtils.sendInfoMessage(player, "vehicle.status.key_created");
                         }
-                        return ActionResultType.SUCCESS;
+                        return InteractionResult.SUCCESS;
                     }
                 }
                 else
                 {
                     CommonUtils.sendInfoMessage(player, "vehicle.status.not_lockable");
-                    return ActionResultType.FAIL;
+                    return InteractionResult.FAIL;
                 }
             }
             else if(stack.getItem() == ModItems.WRENCH.get() && this.getVehicle() instanceof EntityJack)
@@ -291,7 +291,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
                 {
                     CommonUtils.sendInfoMessage(player, "vehicle.status.invalid_owner");
                 }
-                return ActionResultType.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
         }
         return super.interact(player, hand);
@@ -371,7 +371,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
         this.checkInsideBlocks();
 
         //TODO improve fuel consumption logic
-        if(this.requiresEnergy() && controllingPassenger instanceof PlayerEntity && !((PlayerEntity) controllingPassenger).isCreative() && this.isEnginePowered())
+        if(this.requiresEnergy() && controllingPassenger instanceof Player && !((Player) controllingPassenger).isCreative() && this.isEnginePowered())
         {
             float currentFuel = this.getCurrentEnergy();
             currentFuel -= this.getEnergyConsumptionPerTick() * Config.SERVER.energyConsumptionFactor.get();
@@ -426,14 +426,14 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
                     double wheelX = wheelPositions[i * 3];
                     double wheelY = wheelPositions[i * 3 + 1];
                     double wheelZ = wheelPositions[i * 3 + 2];
-                    int x = MathHelper.floor(this.getX() + wheelX);
-                    int y = MathHelper.floor(this.getY() + wheelY - 0.2D);
-                    int z = MathHelper.floor(this.getZ() + wheelZ);
+                    int x = Mth.floor(this.getX() + wheelX);
+                    int y = Mth.floor(this.getY() + wheelY - 0.2D);
+                    int z = Mth.floor(this.getZ() + wheelZ);
                     BlockPos pos = new BlockPos(x, y, z);
                     BlockState state = this.level.getBlockState(pos);
                     if(state.getMaterial() != Material.AIR && state.getMaterial().isSolid())
                     {
-                        Vector3d dirVec = this.calculateViewVector(this.xRot, this.yRot + 180F).add(0, this.charging ? 0.5 : 1.0, 0);
+                        Vec3 dirVec = this.calculateViewVector(this.xRot, this.yRot + 180F).add(0, this.charging ? 0.5 : 1.0, 0);
                         if(this.charging)
                         {
                             dirVec = dirVec.scale(this.chargingAmount * this.getEnginePower() / 3F);
@@ -457,7 +457,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
         if(this.shouldShowExhaustFumes() && this.canDrive() && this.tickCount % 2 == 0)
         {
             //TODO maybe add more control of this
-            Vector3d fumePosition = this.getExhaustFumesPosition().scale(0.0625).yRot(-this.yRot * 0.017453292F);
+            Vec3 fumePosition = this.getExhaustFumesPosition().scale(0.0625).yRot(-this.yRot * 0.017453292F);
             this.level.addParticle(ParticleTypes.SMOKE, this.getX() + fumePosition.x, this.getY() + fumePosition.y, this.getZ() + fumePosition.z, -this.getDeltaMovement().x, 0.0D, -this.getDeltaMovement().z);
             if(this.charging && this.isMoving())
             {
@@ -509,7 +509,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundNBT compound)
+    protected void readAdditionalSaveData(CompoundTag compound)
     {
         super.readAdditionalSaveData(compound);
         if(compound.contains("Owner", Constants.NBT.TAG_COMPOUND))
@@ -536,7 +536,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundNBT compound)
+    protected void addAdditionalSaveData(CompoundTag compound)
     {
         super.addAdditionalSaveData(compound);
         if(this.owner != null)
@@ -603,7 +603,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
 
     public void setThrottle(float power)
     {
-        this.throttle.set(this, MathHelper.clamp(power, -1.0F, 1.0F));
+        this.throttle.set(this, Mth.clamp(power, -1.0F, 1.0F));
     }
 
     public float getThrottle()
@@ -648,7 +648,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
         return true;
     }
 
-    public final Vector3d getExhaustFumesPosition()
+    public final Vec3 getExhaustFumesPosition()
     {
         return this.getPoweredProperties().getExhaustFumesPosition();
     }
@@ -760,7 +760,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
     {
         if(!this.getKeyStack().isEmpty())
         {
-            Vector3d keyHole = this.getWorldPosition(this.getIgnitionTransform(), 1.0F);
+            Vec3 keyHole = this.getWorldPosition(this.getIgnitionTransform(), 1.0F);
             this.level.addFreshEntity(new ItemEntity(this.level, keyHole.x, keyHole.y, keyHole.z, this.getKeyStack()));
             this.setKeyStack(ItemStack.EMPTY);
         }
@@ -781,7 +781,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
         return (!this.canChangeWheels() || this.hasWheelStack()) && this.isEnginePowered();
     }
 
-    public boolean isOwner(PlayerEntity player)
+    public boolean isOwner(Player player)
     {
         return owner == null || player.getUUID().equals(owner);
     }
@@ -802,7 +802,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
     }
 
     @Override
-    public void onSyncedDataUpdated(DataParameter<?> key)
+    public void onSyncedDataUpdated(EntityDataAccessor<?> key)
     {
         super.onSyncedDataUpdated(key);
         if(level.isClientSide)
@@ -834,14 +834,14 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
     private boolean isControllingPassengerCreative()
     {
         Entity entity = this.getControllingPassenger();
-        if(entity instanceof PlayerEntity)
+        if(entity instanceof Player)
         {
-            return ((PlayerEntity) entity).isCreative();
+            return ((Player) entity).isCreative();
         }
         return false;
     }
 
-    private void openEditInventory(PlayerEntity player)
+    private void openEditInventory(Player player)
     {
         if(player instanceof ServerPlayerEntity)
         {
@@ -849,7 +849,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
         }
     }
 
-    public Inventory getVehicleInventory()
+    public SimpleContainer getVehicleInventory()
     {
         if(this.vehicleInventory == null)
         {
@@ -860,7 +860,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
 
     protected void initVehicleInventory()
     {
-        this.vehicleInventory = new Inventory(2);
+        this.vehicleInventory = new SimpleContainer(2);
 
         ItemStack engine = this.getEngineStack();
         if(this.getEngineType() != EngineType.NONE & !engine.isEmpty())
@@ -906,13 +906,13 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
                 {
                     if(!this.hasWheelStack())
                     {
-                        this.level.playSound(null, this.blockPosition(), ModSounds.BLOCK_JACK_AIR_WRENCH_GUN.get(), SoundCategory.BLOCKS, 1.0F, 1.1F);
+                        this.level.playSound(null, this.blockPosition(), ModSounds.BLOCK_JACK_AIR_WRENCH_GUN.get(), SoundSource.BLOCKS, 1.0F, 1.1F);
                         this.setWheelStack(wheel.copy());
                     }
                 }
                 else
                 {
-                    this.level.playSound(null, this.blockPosition(), ModSounds.BLOCK_JACK_AIR_WRENCH_GUN.get(), SoundCategory.BLOCKS, 1.0F, 0.8F);
+                    this.level.playSound(null, this.blockPosition(), ModSounds.BLOCK_JACK_AIR_WRENCH_GUN.get(), SoundSource.BLOCKS, 1.0F, 0.8F);
                     this.setWheelStack(ItemStack.EMPTY);
                 }
             }
@@ -929,7 +929,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
     protected void onVehicleDestroyed(LivingEntity entity)
     {
         super.onVehicleDestroyed(entity);
-        boolean isCreativeMode = entity instanceof PlayerEntity && ((PlayerEntity) entity).isCreative();
+        boolean isCreativeMode = entity instanceof Player && ((Player) entity).isCreative();
         if(!isCreativeMode && this.level.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS))
         {
             // Spawns the engine if the vehicle has one
@@ -994,7 +994,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
                 wheelY -= ((8 * 0.0625) / 2.0) * scale * wheel.getScaleY();
 
                 /* Update the wheel position */
-                Vector3d wheelVec = new Vector3d(wheelX, wheelY, wheelZ).yRot(-this.yRot * 0.017453292F);
+                Vec3 wheelVec = new Vec3(wheelX, wheelY, wheelZ).yRot(-this.yRot * 0.017453292F);
                 wheelPositions[i * 3] = wheelVec.x;
                 wheelPositions[i * 3 + 1] = wheelVec.y;
                 wheelPositions[i * 3 + 2] = wheelVec.z;
@@ -1005,13 +1005,13 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
     protected void releaseCharge(float strength)
     {
         this.boosting = true;
-        this.boostStrength = MathHelper.clamp(strength, 0.0F, 1.0F);
+        this.boostStrength = Mth.clamp(strength, 0.0F, 1.0F);
         this.boostTimer = (int) (20 * this.boostStrength);
         this.speedMultiplier = 0.5F * this.boostStrength;
     }
 
     @Override
-    public ItemStack getPickedResult(RayTraceResult target)
+    public ItemStack getPickedResult(HitResult target)
     {
         ItemStack engine = ItemStack.EMPTY;
         if(this.hasEngine())
@@ -1034,7 +1034,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
     }
 
     @Override
-    public ITextComponent getDisplayName()
+    public Component getDisplayName()
     {
         return this.getName();
     }
@@ -1046,7 +1046,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
 
     @Nullable
     @Override
-    public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity playerEntity)
+    public Container createMenu(int windowId, PlayerInventory playerInventory, Player playerEntity)
     {
         return new EditVehicleContainer(windowId, this.getVehicleInventory(), this, playerEntity, playerInventory);
     }
@@ -1087,12 +1087,12 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
         return this.getPoweredProperties().getIgnitionTransform();
     }
 
-    public final Vector3d getFrontAxleOffset()
+    public final Vec3 getFrontAxleOffset()
     {
         return this.getPoweredProperties().getFrontAxleOffset();
     }
 
-    public final Vector3d getRearAxleOffset()
+    public final Vec3 getRearAxleOffset()
     {
         return this.getPoweredProperties().getRearAxleOffset();
     }

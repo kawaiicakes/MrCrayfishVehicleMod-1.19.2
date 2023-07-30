@@ -1,17 +1,17 @@
 package com.mrcrayfish.vehicle.client.render.tileentity;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mrcrayfish.vehicle.block.RotatedObjectBlock;
 import com.mrcrayfish.vehicle.client.render.Axis;
 import com.mrcrayfish.vehicle.init.ModBlocks;
 import com.mrcrayfish.vehicle.tileentity.GasPumpTankTileEntity;
 import com.mrcrayfish.vehicle.util.FluidUtils;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.util.Direction;
-import net.minecraft.world.World;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 
 /**
@@ -27,9 +27,9 @@ public class GasPumpTankRenderer extends TileEntityRenderer<GasPumpTankTileEntit
     }
 
     @Override
-    public void render(GasPumpTankTileEntity gasPump, float partialTicks, MatrixStack matrixStack, IRenderTypeBuffer renderTypeBuffer, int light, int overlay)
+    public void render(GasPumpTankTileEntity gasPump, float partialTicks, PoseStack matrixStack, MultiBufferSource renderTypeBuffer, int light, int overlay)
     {
-        World world = gasPump.getLevel();
+        Level world = gasPump.getLevel();
         BlockState state = gasPump.getBlockState();
         if(state.getBlock() != ModBlocks.GAS_PUMP.get())
             return;

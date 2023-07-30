@@ -3,7 +3,7 @@ package com.mrcrayfish.vehicle.client;
 import com.google.gson.JsonObject;
 import com.mrcrayfish.vehicle.util.ExtraJSONUtils;
 import net.minecraft.util.JSONUtils;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.stream.Stream;
 
@@ -12,20 +12,20 @@ import java.util.stream.Stream;
  */
 public class CameraProperties
 {
-    public static final CameraProperties DEFAULT_CAMERA = new CameraProperties(Type.SMOOTH, 0.25F, new Vector3d(0, 1.5, 0), new Vector3d(10, 0, 0), 4.0);
+    public static final CameraProperties DEFAULT_CAMERA = new CameraProperties(Type.SMOOTH, 0.25F, new Vec3(0, 1.5, 0), new Vec3(10, 0, 0), 4.0);
     public static final Type DEFAULT_TYPE = Type.SMOOTH;
     public static final float DEFAULT_STRENGTH = 0.25F;
-    public static final Vector3d DEFAULT_POSITION = new Vector3d(0, 1.5, 0);
-    public static final Vector3d DEFAULT_ROTATION = new Vector3d(10, 0, 0);
+    public static final Vec3 DEFAULT_POSITION = new Vec3(0, 1.5, 0);
+    public static final Vec3 DEFAULT_ROTATION = new Vec3(10, 0, 0);
     public static final float DEFAULT_DISTANCE = 4.0F;
 
     private final Type type;
     private final float strength;
-    private final Vector3d position;
-    private final Vector3d rotation;
+    private final Vec3 position;
+    private final Vec3 rotation;
     private final double distance;
 
-    public CameraProperties(Type type, float strength, Vector3d position, Vector3d rotation, double distance)
+    public CameraProperties(Type type, float strength, Vec3 position, Vec3 rotation, double distance)
     {
         this.type = type;
         this.strength = strength;
@@ -44,12 +44,12 @@ public class CameraProperties
         return this.strength;
     }
 
-    public Vector3d getPosition()
+    public Vec3 getPosition()
     {
         return this.position;
     }
 
-    public Vector3d getRotation()
+    public Vec3 getRotation()
     {
         return this.rotation;
     }
@@ -74,8 +74,8 @@ public class CameraProperties
     {
         CameraProperties.Type type = ExtraJSONUtils.getAsEnum(object, "type", Type.class, DEFAULT_TYPE);
         float strength = JSONUtils.getAsFloat(object, "strength", DEFAULT_STRENGTH);
-        Vector3d position = ExtraJSONUtils.getAsVector3d(object, "position", DEFAULT_POSITION);
-        Vector3d rotation = ExtraJSONUtils.getAsVector3d(object, "rotation", DEFAULT_ROTATION);
+        Vec3 position = ExtraJSONUtils.getAsVector3d(object, "position", DEFAULT_POSITION);
+        Vec3 rotation = ExtraJSONUtils.getAsVector3d(object, "rotation", DEFAULT_ROTATION);
         double distance = JSONUtils.getAsFloat(object, "distance", DEFAULT_DISTANCE);
         return new CameraProperties(type, strength, position, rotation, distance);
     }
@@ -115,8 +115,8 @@ public class CameraProperties
     {
         private Type type = DEFAULT_TYPE;
         private float strength = DEFAULT_STRENGTH;
-        private Vector3d position = DEFAULT_POSITION;
-        private Vector3d rotation = DEFAULT_ROTATION;
+        private Vec3 position = DEFAULT_POSITION;
+        private Vec3 rotation = DEFAULT_ROTATION;
         private double distance = DEFAULT_DISTANCE;
 
         public Builder setType(Type type)
@@ -131,7 +131,7 @@ public class CameraProperties
             return this;
         }
 
-        public Builder setPosition(Vector3d position)
+        public Builder setPosition(Vec3 position)
         {
             this.position = position;
             return this;
@@ -139,11 +139,11 @@ public class CameraProperties
 
         public Builder setPosition(double x, double y, double z)
         {
-            this.position = new Vector3d(x, y, z);
+            this.position = new Vec3(x, y, z);
             return this;
         }
 
-        public Builder setRotation(Vector3d rotation)
+        public Builder setRotation(Vec3 rotation)
         {
             this.rotation = rotation;
             return this;
@@ -151,7 +151,7 @@ public class CameraProperties
 
         public Builder setRotation(double x, double y, double z)
         {
-            this.rotation = new Vector3d(x, y, z);
+            this.rotation = new Vec3(x, y, z);
             return this;
         }
 

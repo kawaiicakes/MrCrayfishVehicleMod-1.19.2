@@ -11,8 +11,8 @@ import com.mrcrayfish.vehicle.util.ExtraJSONUtils;
 import net.minecraft.resources.IResource;
 import net.minecraft.resources.IResourceManager;
 import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.IOException;
@@ -35,15 +35,15 @@ import java.util.stream.StreamSupport;
  */
 public class CosmeticProperties
 {
-    public static final Vector3d DEFAULT_OFFSET = Vector3d.ZERO;
+    public static final Vec3 DEFAULT_OFFSET = Vec3.ZERO;
 
     private final ResourceLocation id;
-    private final Vector3d offset;
+    private final Vec3 offset;
     private final List<Supplier<Action>> actions;
     private List<ResourceLocation> modelLocations = new ArrayList<>();
     private Map<ResourceLocation, List<ResourceLocation>> disabledCosmetics = new HashMap<>();
 
-    public CosmeticProperties(ResourceLocation id, Vector3d offset, List<Supplier<Action>> actions)
+    public CosmeticProperties(ResourceLocation id, Vec3 offset, List<Supplier<Action>> actions)
     {
         this.id = id;
         this.offset = offset;
@@ -71,7 +71,7 @@ public class CosmeticProperties
         return this.id;
     }
 
-    public Vector3d getOffset()
+    public Vec3 getOffset()
     {
         return this.offset;
     }
@@ -179,7 +179,7 @@ public class CosmeticProperties
     public static class Builder
     {
         private final ResourceLocation id;
-        private Vector3d offset = DEFAULT_OFFSET;
+        private Vec3 offset = DEFAULT_OFFSET;
         private List<ResourceLocation> models = new ArrayList<>();
         private Map<ResourceLocation, List<ResourceLocation>> disabledCosmetics = new HashMap<>();
         private List<Supplier<Action>> actions = new ArrayList<>();
@@ -189,7 +189,7 @@ public class CosmeticProperties
             this.id = id;
         }
 
-        public Builder setOffset(Vector3d offset)
+        public Builder setOffset(Vec3 offset)
         {
             this.offset = offset;
             return this;
@@ -197,7 +197,7 @@ public class CosmeticProperties
 
         public Builder setOffset(double x, double y, double z)
         {
-            this.offset = new Vector3d(x, y, z);
+            this.offset = new Vec3(x, y, z);
             return this;
         }
 

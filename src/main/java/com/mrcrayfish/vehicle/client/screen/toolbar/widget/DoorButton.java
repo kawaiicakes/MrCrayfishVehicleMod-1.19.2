@@ -1,7 +1,7 @@
 package com.mrcrayfish.vehicle.client.screen.toolbar.widget;
 
 import com.google.common.collect.ImmutableMap;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mrcrayfish.vehicle.Reference;
 import com.mrcrayfish.vehicle.client.screen.DashboardScreen;
 import com.mrcrayfish.vehicle.common.cosmetic.CosmeticProperties;
@@ -9,9 +9,9 @@ import com.mrcrayfish.vehicle.common.cosmetic.actions.OpenableAction;
 import com.mrcrayfish.vehicle.entity.VehicleEntity;
 import com.mrcrayfish.vehicle.network.PacketHandler;
 import com.mrcrayfish.vehicle.network.message.MessageInteractCosmetic;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Util;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.network.chat.contents.TranslatableContents;
 
 /**
  * Author: MrCrayfish
@@ -32,14 +32,14 @@ public class DoorButton extends IconButton
 
     public DoorButton(VehicleEntity entity, CosmeticProperties properties, OpenableAction action)
     {
-        super(20, 20, ICON_MAP.getOrDefault(properties.getId(), DashboardScreen.Icons.LEFT_DOOR), new TranslationTextComponent(properties.getId().getNamespace() + ".toolbar.label." + properties.getId().getPath()), onPress -> {
+        super(20, 20, ICON_MAP.getOrDefault(properties.getId(), DashboardScreen.Icons.LEFT_DOOR), new TranslatableContents(properties.getId().getNamespace() + ".toolbar.label." + properties.getId().getPath()), onPress -> {
             PacketHandler.getPlayChannel().sendToServer(new MessageInteractCosmetic(entity.getId(), properties.getId()));
         });
         this.action = action;
     }
 
     @Override
-    public void renderButton(MatrixStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         super.renderButton(matrixStack, mouseX, mouseY, partialTicks);
         int backgroundColor = this.action.isOpen() ? 0xFFFFB64C : 0xFF941400;

@@ -1,20 +1,20 @@
 package com.mrcrayfish.vehicle.util;
 
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.AABB;
 
 public class CollisionHelper
 {
-    public static AxisAlignedBB getBlockBounds(Direction facing, double x1, double y1, double z1, double x2, double y2, double z2)
+    public static AABB getBlockBounds(Direction facing, double x1, double y1, double z1, double x2, double y2, double z2)
     {
         double[] bounds = fixRotation(facing, x1, z1, x2, z2);
-        return new AxisAlignedBB(bounds[0], y1, bounds[1], bounds[2], y2, bounds[3]);
+        return new AABB(bounds[0], y1, bounds[1], bounds[2], y2, bounds[3]);
     }
 
-    public static AxisAlignedBB getBlockBounds(Direction facing, Bounds bounds)
+    public static AABB getBlockBounds(Direction facing, Bounds bounds)
     {
         double[] fixedBounds = fixRotation(facing, bounds.x1, bounds.z1, bounds.x2, bounds.z2);
-        return new AxisAlignedBB(fixedBounds[0], bounds.y1, fixedBounds[1], fixedBounds[2], bounds.y2, fixedBounds[3]);
+        return new AABB(fixedBounds[0], bounds.y1, fixedBounds[1], fixedBounds[2], bounds.y2, fixedBounds[3]);
     }
 
     public static double[] fixRotation(Direction facing, double x1, double z1, double x2, double z2)

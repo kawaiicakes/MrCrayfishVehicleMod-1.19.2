@@ -1,7 +1,7 @@
 package com.mrcrayfish.vehicle.client.util;
 
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.HashMap;
@@ -33,13 +33,13 @@ public class HermiteInterpolator
             double aX = angle(p1.pos.x, p2.pos.x, p1.control.x, p2.control.x, progress);
             double aY = angle(p1.pos.y, p2.pos.y, p1.control.y, p2.control.y, progress);
             double aZ = angle(p1.pos.z, p2.pos.z, p1.control.z, p2.control.z, progress);
-            return new Result(new Vector3d(pX, pY, pZ), new Vector3d(aX, aY, aZ));
+            return new Result(new Vec3(pX, pY, pZ), new Vec3(aX, aY, aZ));
         });
     }
 
     public Point getPoint(int index)
     {
-        return this.points[MathHelper.clamp(index, 0, this.points.length - 1)];
+        return this.points[Mth.clamp(index, 0, this.points.length - 1)];
     }
 
     public int getSize()
@@ -70,16 +70,16 @@ public class HermiteInterpolator
 
     public static class Point
     {
-        private final Vector3d pos;
-        private final Vector3d control;
+        private final Vec3 pos;
+        private final Vec3 control;
 
-        public Point(Vector3d pos)
+        public Point(Vec3 pos)
         {
             this.pos = pos;
             this.control = pos;
         }
 
-        public Point(Vector3d pos, Vector3d control)
+        public Point(Vec3 pos, Vec3 control)
         {
             this.pos = pos;
             this.control = control;
@@ -88,21 +88,21 @@ public class HermiteInterpolator
 
     public static class Result
     {
-        Vector3d point;
-        Vector3d direction;
+        Vec3 point;
+        Vec3 direction;
 
-        public Result(Vector3d point, Vector3d direction)
+        public Result(Vec3 point, Vec3 direction)
         {
             this.point = point;
             this.direction = direction;
         }
 
-        public Vector3d getPoint()
+        public Vec3 getPoint()
         {
             return point;
         }
 
-        public Vector3d getDir()
+        public Vec3 getDir()
         {
             return direction;
         }

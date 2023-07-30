@@ -7,9 +7,9 @@ import com.mrcrayfish.vehicle.common.VehicleRegistry;
 import com.mrcrayfish.vehicle.common.entity.Transform;
 import com.mrcrayfish.vehicle.entity.IEngineType;
 import net.minecraft.util.JSONUtils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.phys.Vec3;
+import com.mojang.math.Vector3f;
 
 import javax.annotation.Nullable;
 import java.text.DecimalFormat;
@@ -45,14 +45,14 @@ public class ExtraJSONUtils
         if(!transform.equals(defaultValue) || VERBOSE_MODE)
         {
             JsonObject transformObject = new JsonObject();
-            write(transformObject, "translate", transform.getTranslate(), Vector3d.ZERO);
-            write(transformObject, "rotation", transform.getRotation(), Vector3d.ZERO);
+            write(transformObject, "translate", transform.getTranslate(), Vec3.ZERO);
+            write(transformObject, "rotation", transform.getRotation(), Vec3.ZERO);
             write(transformObject, "scale", transform.getScale(), 1.0);
             object.add(key, transformObject);
         }
     }
 
-    public static void write(JsonObject object, String key, Vector3d vec, Vector3d defaultValue)
+    public static void write(JsonObject object, String key, Vec3 vec, Vec3 defaultValue)
     {
         if(!vec.equals(defaultValue) || VERBOSE_MODE)
         {
@@ -88,7 +88,7 @@ public class ExtraJSONUtils
         }
     }
 
-    public static Vector3d getAsVector3d(JsonObject object, String memberName, Vector3d defaultValue)
+    public static Vec3 getAsVector3d(JsonObject object, String memberName, Vec3 defaultValue)
     {
         if(object.has(memberName))
         {
@@ -102,7 +102,7 @@ public class ExtraJSONUtils
                 double x = JSONUtils.convertToFloat(jsonArray.get(0), memberName + "[0]");
                 double y = JSONUtils.convertToFloat(jsonArray.get(1), memberName + "[1]");
                 double z = JSONUtils.convertToFloat(jsonArray.get(2), memberName + "[2]");
-                return new Vector3d(x, y, z);
+                return new Vec3(x, y, z);
             }
         }
         return defaultValue;
@@ -128,8 +128,8 @@ public class ExtraJSONUtils
         if(object.has(key) && object.get(key).isJsonObject())
         {
             JsonObject transform = object.getAsJsonObject(key);
-            Vector3d translate = ExtraJSONUtils.getAsVector3d(transform, "translate", Vector3d.ZERO);
-            Vector3d rotation = ExtraJSONUtils.getAsVector3d(transform, "rotation", Vector3d.ZERO);
+            Vec3 translate = ExtraJSONUtils.getAsVector3d(transform, "translate", Vec3.ZERO);
+            Vec3 rotation = ExtraJSONUtils.getAsVector3d(transform, "rotation", Vec3.ZERO);
             double scale = JSONUtils.getAsFloat(transform, "scale", 1.0F);
             return Transform.create(translate, rotation, scale);
         }

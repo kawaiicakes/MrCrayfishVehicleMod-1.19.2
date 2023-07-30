@@ -1,7 +1,7 @@
 package com.mrcrayfish.vehicle.common.cosmetic;
 
 import com.mrcrayfish.vehicle.Reference;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Author: MrCrayfish

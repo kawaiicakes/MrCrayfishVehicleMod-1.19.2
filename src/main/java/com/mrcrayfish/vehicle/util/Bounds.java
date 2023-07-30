@@ -1,7 +1,7 @@
 package com.mrcrayfish.vehicle.util;
 
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.core.Direction;
+import net.minecraft.world.phys.AABB;
 
 /**
  * Author: MrCrayfish
@@ -31,22 +31,22 @@ public class Bounds
         this.z2 = z2 * 0.0625;
     }
 
-    public AxisAlignedBB toAABB()
+    public AABB toAABB()
     {
-        return new AxisAlignedBB(x1, y1, z1, x2, y2, z2);
+        return new AABB(x1, y1, z1, x2, y2, z2);
     }
 
-    public AxisAlignedBB getRotation(Direction facing)
+    public AABB getRotation(Direction facing)
     {
         return CollisionHelper.getBlockBounds(facing, this);
     }
 
-    public AxisAlignedBB[] getRotatedBounds()
+    public AABB[] getRotatedBounds()
     {
-        AxisAlignedBB boundsNorth = CollisionHelper.getBlockBounds(Direction.NORTH, this);
-        AxisAlignedBB boundsEast = CollisionHelper.getBlockBounds(Direction.EAST, this);
-        AxisAlignedBB boundsSouth = CollisionHelper.getBlockBounds(Direction.SOUTH, this);
-        AxisAlignedBB boundsWest = CollisionHelper.getBlockBounds(Direction.WEST, this);
-        return new AxisAlignedBB[] { boundsSouth, boundsWest, boundsNorth, boundsEast };
+        AABB boundsNorth = CollisionHelper.getBlockBounds(Direction.NORTH, this);
+        AABB boundsEast = CollisionHelper.getBlockBounds(Direction.EAST, this);
+        AABB boundsSouth = CollisionHelper.getBlockBounds(Direction.SOUTH, this);
+        AABB boundsWest = CollisionHelper.getBlockBounds(Direction.WEST, this);
+        return new AABB[] { boundsSouth, boundsWest, boundsNorth, boundsEast };
     }
 }

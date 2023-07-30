@@ -1,6 +1,6 @@
 package com.mrcrayfish.vehicle.client.handler;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mrcrayfish.obfuscate.client.event.PlayerModelEvent;
 import com.mrcrayfish.obfuscate.client.event.RenderItemEvent;
 import com.mrcrayfish.obfuscate.common.data.SyncedPlayerData;
@@ -13,16 +13,16 @@ import com.mrcrayfish.vehicle.init.ModDataKeys;
 import com.mrcrayfish.vehicle.init.ModSounds;
 import com.mrcrayfish.vehicle.util.RenderUtil;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.entity.model.PlayerModel;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.Hand;
-import net.minecraft.util.HandSide;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -39,7 +39,7 @@ public class FuelingHandler
     @SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event)
     {
-        PlayerEntity player = Minecraft.getInstance().player;
+        Player player = Minecraft.getInstance().player;
         if(event.phase != TickEvent.Phase.END || player == null)
             return;
 
@@ -53,8 +53,8 @@ public class FuelingHandler
         {
             if(this.fuelTickCounter % 20 == 0)
             {
-                Vector3d vec = result.getLocation();
-                player.level.playSound(player, vec.x(), vec.y(), vec.z(), ModSounds.ITEM_JERRY_CAN_LIQUID_GLUG.get(), SoundCategory.PLAYERS, 0.6F, 1.0F + 0.1F * player.level.random.nextFloat());
+                Vec3 vec = result.getLocation();
+                player.level.playSound(player, vec.x(), vec.y(), vec.z(), ModSounds.ITEM_JERRY_CAN_LIQUID_GLUG.get(), SoundSource.PLAYERS, 0.6F, 1.0F + 0.1F * player.level.random.nextFloat());
             }
             if(!this.fueling)
             {
@@ -68,9 +68,9 @@ public class FuelingHandler
         }
     }
 
-    static void applyFuelingPose(PlayerEntity player, PlayerModel<?> model)
+    static void applyFuelingPose(Player player, PlayerModel<?> model)
     {
-        boolean rightHanded = player.getMainArm() == HandSide.RIGHT;
+        boolean rightHanded = player.getMainArm() == HumanoidArm.RIGHT;
         if(rightHanded)
         {
             model.rightArm.xRot = (float) Math.toRadians(-20F);
@@ -88,7 +88,7 @@ public class FuelingHandler
     @SubscribeEvent
     public void onRenderHand(RenderHandEvent event)
     {
-        /*if(event.getHand() == Hand.OFF_HAND && this.fuelingHandOffset > -1)
+        /*if(event.getHand() == InteractionHand.OFF_HAND && this.fuelingHandOffset > -1)
         {
             double offset = Math.sin((this.fuelTickCounter + minecraft.getRenderPartialTicks()) / 3.0) * 0.1;
             matrixStack.rotate(Axis.POSITIVE_X.rotationDegrees(25F));
@@ -96,8 +96,8 @@ public class FuelingHandler
         }*/
 
         Minecraft minecraft = Minecraft.getInstance();
-        PlayerEntity player = minecraft.player;
-        MatrixStack matrixStack = event.getMatrixStack();
+        Player player = minecraft.player;
+        PoseStack matrixStack = event.getMatrixStack();
         VehicleRayTraceResult result = EntityRayTracer.instance().getContinuousInteraction();
         if(result != null && result.equalsContinuousInteraction(RayTraceFunction.FUNCTION_FUELING) && event.getHand() == EntityRayTracer.instance().getContinuousInteractionHand())
         {
@@ -113,23 +113,23 @@ public class FuelingHandler
                 this.renderNozzle = true;
             }
 
-            if(event.getHand() == Hand.MAIN_HAND && this.renderNozzle)
+            if(event.getHand() == InteractionHand.MAIN_HAND && this.renderNozzle)
             {
                 if(event.getSwingProgress() > 0 && event.getSwingProgress() <= 0.25) //WHAT IS THIS?
                     return;
 
                 event.setCanceled(true);
 
-                boolean mainHand = event.getHand() == Hand.MAIN_HAND;
-                HandSide handSide = mainHand ? player.getMainArm() : player.getMainArm().getOpposite();
-                int handOffset = handSide == HandSide.RIGHT ? 1 : -1;
-                IRenderTypeBuffer renderTypeBuffer = Minecraft.getInstance().renderBuffers().bufferSource();
+                boolean mainHand = event.getHand() == InteractionHand.MAIN_HAND;
+                HumanoidArm handSide = mainHand ? player.getMainArm() : player.getMainArm().getOpposite();
+                int handOffset = handSide == HumanoidArm.RIGHT ? 1 : -1;
+                MultiBufferSource renderTypeBuffer = Minecraft.getInstance().renderBuffers().bufferSource();
                 int light = minecraft.getEntityRenderDispatcher().getPackedLightCoords(player, event.getPartialTicks());
 
                 matrixStack.pushPose();
                 matrixStack.translate(handOffset * 0.65, -0.27, -0.72);
                 matrixStack.mulPose(Axis.POSITIVE_X.rotationDegrees(45F));
-                RenderUtil.renderColoredModel(VehicleModels.NOZZLE.getBaseModel(), ItemCameraTransforms.TransformType.NONE, false, matrixStack, renderTypeBuffer, -1, light, OverlayTexture.NO_OVERLAY); //TODO check
+                RenderUtil.renderColoredModel(VehicleModels.NOZZLE.getBaseModel(), ItemTransforms.TransformType.NONE, false, matrixStack, renderTypeBuffer, -1, light, OverlayTexture.NO_OVERLAY); //TODO check
                 matrixStack.popPose();
             }
         }
@@ -142,11 +142,11 @@ public class FuelingHandler
     @SubscribeEvent
     public void onModelRenderPost(PlayerModelEvent.Render.Post event)
     {
-        PlayerEntity player = event.getPlayer();
+        Player player = event.getPlayer();
         if(!SyncedPlayerData.instance().get(player, ModDataKeys.GAS_PUMP).isPresent())
             return;
 
-        MatrixStack matrixStack = event.getMatrixStack();
+        PoseStack matrixStack = event.getMatrixStack();
         matrixStack.pushPose();
 
         if(event.getModelPlayer().young)
@@ -160,15 +160,15 @@ public class FuelingHandler
             matrixStack.translate(0.0, 0.2, 0.0);
         }
 
-        event.getModelPlayer().translateToHand(HandSide.RIGHT, event.getMatrixStack());
+        event.getModelPlayer().translateToHand(HumanoidArm.RIGHT, event.getMatrixStack());
         matrixStack.mulPose(Axis.POSITIVE_X.rotationDegrees(180F));
         matrixStack.mulPose(Axis.POSITIVE_Y.rotationDegrees(180F));
-        boolean leftHanded = player.getMainArm() == HandSide.LEFT;
+        boolean leftHanded = player.getMainArm() == HumanoidArm.LEFT;
         matrixStack.translate((leftHanded ? -1 : 1) / 16.0, 0.125, -0.625);
         matrixStack.translate(0, -9 * 0.0625F, 5.75 * 0.0625F);
 
-        IRenderTypeBuffer renderTypeBuffer = Minecraft.getInstance().renderBuffers().bufferSource();
-        RenderUtil.renderColoredModel(VehicleModels.NOZZLE.getBaseModel(), ItemCameraTransforms.TransformType.NONE, false, matrixStack, renderTypeBuffer, -1, 15728880, OverlayTexture.NO_OVERLAY);
+        MultiBufferSource renderTypeBuffer = Minecraft.getInstance().renderBuffers().bufferSource();
+        RenderUtil.renderColoredModel(VehicleModels.NOZZLE.getBaseModel(), ItemTransforms.TransformType.NONE, false, matrixStack, renderTypeBuffer, -1, 15728880, OverlayTexture.NO_OVERLAY);
 
         matrixStack.popPose();
     }
@@ -177,7 +177,7 @@ public class FuelingHandler
     public void onRenderThirdPerson(RenderItemEvent.Held.Pre event)
     {
         Entity entity = event.getEntity();
-        if(entity instanceof PlayerEntity && SyncedPlayerData.instance().get((PlayerEntity) entity, ModDataKeys.GAS_PUMP).isPresent())
+        if(entity instanceof Player && SyncedPlayerData.instance().get((Player) entity, ModDataKeys.GAS_PUMP).isPresent())
         {
             event.setCanceled(true);
         }

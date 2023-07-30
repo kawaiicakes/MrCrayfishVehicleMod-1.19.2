@@ -5,12 +5,12 @@ import com.mrcrayfish.vehicle.entity.PoweredVehicleEntity;
 import com.mrcrayfish.vehicle.init.ModContainers;
 import com.mrcrayfish.vehicle.item.EngineItem;
 import com.mrcrayfish.vehicle.item.WheelItem;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Author: MrCrayfish
@@ -20,7 +20,7 @@ public class EditVehicleContainer extends Container
     private final IInventory vehicleInventory;
     private final PoweredVehicleEntity vehicle;
 
-    public EditVehicleContainer(int windowId, IInventory vehicleInventory, PoweredVehicleEntity vehicle, PlayerEntity player, PlayerInventory playerInventory)
+    public EditVehicleContainer(int windowId, IInventory vehicleInventory, PoweredVehicleEntity vehicle, Player player, PlayerInventory playerInventory)
     {
         super(ModContainers.EDIT_VEHICLE.get(), windowId);
         this.vehicleInventory = vehicleInventory;
@@ -83,13 +83,13 @@ public class EditVehicleContainer extends Container
     }
 
     @Override
-    public boolean stillValid(PlayerEntity player)
+    public boolean stillValid(Player player)
     {
         return vehicleInventory.stillValid(player) && vehicle.isAlive() && vehicle.distanceTo(player) < 8.0F;
     }
 
     @Override
-    public ItemStack quickMoveStack(PlayerEntity playerIn, int index)
+    public ItemStack quickMoveStack(Player playerIn, int index)
     {
         ItemStack stack = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
@@ -132,7 +132,7 @@ public class EditVehicleContainer extends Container
     }
 
     @Override
-    public void removed(PlayerEntity player)
+    public void removed(Player player)
     {
         super.removed(player);
         vehicleInventory.stopOpen(player);

@@ -1,6 +1,6 @@
 package com.mrcrayfish.vehicle.common.entity;
 
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.Objects;
 
@@ -11,11 +11,11 @@ public class Transform
 {
     public static final Transform DEFAULT = new Transform(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0);
 
-    private final Vector3d translate;
-    private final Vector3d rotation;
+    private final Vec3 translate;
+    private final Vec3 rotation;
     private final double scale;
 
-    private Transform(Vector3d translate, Vector3d rotation, double scale)
+    private Transform(Vec3 translate, Vec3 rotation, double scale)
     {
         this.translate = translate;
         this.rotation = rotation;
@@ -24,15 +24,15 @@ public class Transform
 
     private Transform(double x, double y, double z, double rx, double ry, double rz, double s)
     {
-        this(new Vector3d(x, y, z), new Vector3d(rx, ry, rz), s);
+        this(new Vec3(x, y, z), new Vec3(rx, ry, rz), s);
     }
 
-    public Vector3d getTranslate()
+    public Vec3 getTranslate()
     {
         return this.translate;
     }
 
-    public Vector3d getRotation()
+    public Vec3 getRotation()
     {
         return this.rotation;
     }
@@ -104,7 +104,7 @@ public class Transform
         return new Transform(x, y, z, rx, ry, rz, scale);
     }
 
-    public static Transform create(Vector3d translate, Vector3d rotation, double scale)
+    public static Transform create(Vec3 translate, Vec3 rotation, double scale)
     {
         return new Transform(translate, rotation, scale);
     }

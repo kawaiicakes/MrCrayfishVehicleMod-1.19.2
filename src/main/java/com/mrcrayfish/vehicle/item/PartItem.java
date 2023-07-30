@@ -1,6 +1,6 @@
 package com.mrcrayfish.vehicle.item;
 
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 
 /**
  * Author: MrCrayfish

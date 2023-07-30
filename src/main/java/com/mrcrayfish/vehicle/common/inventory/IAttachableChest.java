@@ -1,6 +1,6 @@
 package com.mrcrayfish.vehicle.common.inventory;
 
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 
 /**
  * Author: MrCrayfish
