@@ -12,7 +12,7 @@ import com.mrcrayfish.vehicle.network.message.MessageSyncActionData;
 import com.mrcrayfish.vehicle.network.message.MessageSyncCosmetics;
 import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -20,7 +20,7 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.loading.FMLLoader;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.network.PacketDistributor;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
@@ -161,7 +161,7 @@ public class CosmeticTracker
     public CompoundTag write()
     {
         CompoundTag tag = new CompoundTag();
-        ListNBT list = new ListNBT();
+        ListTag list = new ListTag();
         this.selectedCosmetics.forEach((cosmeticId, entry) -> {
             CompoundTag cosmeticTag = new CompoundTag();
             cosmeticTag.putString("Id", cosmeticId.toString());
@@ -180,9 +180,9 @@ public class CosmeticTracker
 
     public void read(CompoundTag tag)
     {
-        if(tag.contains("Cosmetics", Constants.NBT.TAG_LIST))
+        if(tag.contains("Cosmetics", Tag.TAG_LIST))
         {
-            ListNBT list = tag.getList("Cosmetics", Constants.NBT.TAG_COMPOUND);
+            ListTag list = tag.getList("Cosmetics", Tag.TAG_COMPOUND);
             list.forEach(nbt -> {
                 CompoundTag cosmeticTag = (CompoundTag) nbt;
                 ResourceLocation cosmeticId = new ResourceLocation(cosmeticTag.getString("Id"));

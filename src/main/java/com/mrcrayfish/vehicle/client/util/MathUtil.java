@@ -1,7 +1,7 @@
 package com.mrcrayfish.vehicle.client.util;
 
 import net.minecraft.util.Mth;
-import net.minecraft.util.math.vector.Quaternion;
+import com.mojang.math.Quaternion;
 
 public class MathUtil
 {

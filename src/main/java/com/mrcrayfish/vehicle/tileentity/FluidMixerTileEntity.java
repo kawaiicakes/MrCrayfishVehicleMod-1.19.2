@@ -13,12 +13,12 @@ import com.mrcrayfish.vehicle.util.InventoryUtil;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.fluid.Fluid;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tileentity.ITickableTileEntity;
@@ -26,7 +26,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.IIntArray;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -35,7 +35,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
 /**
  * Author: MrCrayfish
  */
-public class FluidMixerTileEntity extends TileEntitySynced implements IInventory, ITickableTileEntity, INamedContainerProvider, IFluidTankWriter
+public class FluidMixerTileEntity extends TileEntitySynced implements IInventory, ITickableTileEntity, MenuProvider, IFluidTankWriter
 {
     private NonNullList<ItemStack> inventory = NonNullList.withSize(7, ItemStack.EMPTY);
 
@@ -87,11 +87,11 @@ public class FluidMixerTileEntity extends TileEntitySynced implements IInventory
                 case 5:
                     return tankFuelium.getFluidAmount();
                 case 6:
-                    return tankBlaze.getFluid().getFluid().getRegistryName().hashCode();
+                    return tankBlaze.getFluid().getFluid().builtInRegistryHolder().key().location().hashCode();
                 case 7:
-                    return tankEnderSap.getFluid().getFluid().getRegistryName().hashCode();
+                    return tankEnderSap.getFluid().getFluid().builtInRegistryHolder().key().location().hashCode();
                 case 8:
-                    return tankFuelium.getFluid().getFluid().getRegistryName().hashCode();
+                    return tankFuelium.getFluid().getFluid().builtInRegistryHolder().key().location().hashCode();
             }
             return 0;
         }
@@ -354,28 +354,28 @@ public class FluidMixerTileEntity extends TileEntitySynced implements IInventory
     public void load(BlockState state, CompoundTag compound)
     {
         super.load(state, compound);
-        if(compound.contains("Items", Constants.NBT.TAG_LIST))
+        if(compound.contains("Items", Tag.TAG_LIST))
         {
             this.inventory = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
             ItemStackHelper.loadAllItems(compound, this.inventory);
         }
-        if(compound.contains("CustomName", Constants.NBT.TAG_STRING))
+        if(compound.contains("CustomName", Tag.TAG_STRING))
         {
             this.customName = compound.getString("CustomName");
         }
-        if(compound.contains("TankBlaze", Constants.NBT.TAG_COMPOUND))
+        if(compound.contains("TankBlaze", Tag.TAG_COMPOUND))
         {
             CompoundTag tagCompound = compound.getCompound("TankBlaze");
             //FluidUtils.fixEmptyTag(tagCompound); //TODO might not need
             this.tankBlaze.readFromNBT(tagCompound);
         }
-        if(compound.contains("TankEnderSap", Constants.NBT.TAG_COMPOUND))
+        if(compound.contains("TankEnderSap", Tag.TAG_COMPOUND))
         {
             CompoundTag tagCompound = compound.getCompound("TankEnderSap");
             //FluidUtils.fixEmptyTag(tagCompound);
             this.tankEnderSap.readFromNBT(tagCompound);
         }
-        if(compound.contains("TankFuelium", Constants.NBT.TAG_COMPOUND))
+        if(compound.contains("TankFuelium", Tag.TAG_COMPOUND))
         {
             CompoundTag tagCompound = compound.getCompound("TankFuelium");
             //FluidUtils.fixEmptyTag(tagCompound);
@@ -458,7 +458,7 @@ public class FluidMixerTileEntity extends TileEntitySynced implements IInventory
     @Override
     public Component getDisplayName()
     {
-        return this.hasCustomName() ? new TextComponent(this.getName()) : new TranslatableContents(this.getName());
+        return this.hasCustomName() ? MutableComponent.create(new LiteralContents(this.getName()) : new TranslatableContents(this.getName());
     }
 
     @Nullable
@@ -523,7 +523,7 @@ public class FluidMixerTileEntity extends TileEntitySynced implements IInventory
 
     public void updateFluid(FluidTank tank, int fluidHash)
     {
-        Optional<Fluid> optional = ForgeRegistries.FLUIDS.getValues().stream().filter(fluid -> fluid.getRegistryName().hashCode() == fluidHash).findFirst();
+        Optional<Fluid> optional = ForgeRegistries.FLUIDS.getValues().stream().filter(fluid -> fluid.builtInRegistryHolder().key().location().hashCode() == fluidHash).findFirst();
         optional.ifPresent(fluid -> tank.setFluid(new FluidStack(fluid, tank.getFluidAmount())));
     }
 

@@ -5,7 +5,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mrcrayfish.vehicle.entity.PlaneEntity;
 import com.mrcrayfish.vehicle.entity.VehicleEntity;
 import com.mrcrayfish.vehicle.util.Axis;
-import net.minecraft.util.JSONUtils;
+import net.minecraft.util.GsonHelper;
 
 import javax.annotation.Nullable;
 import java.util.Arrays;
@@ -44,9 +44,9 @@ public class RotateAction extends Action
 
     public static Supplier<RotateAction> createSupplier(JsonObject object)
     {
-        Source source = Source.fromKey(JSONUtils.getAsString(object, "source"));
-        Axis axis = Axis.fromKey(JSONUtils.getAsString(object, "axis"));
-        float scale = JSONUtils.getAsFloat(object, "scale", 1.0F);
+        Source source = Source.fromKey(GsonHelper.getAsString(object, "source"));
+        Axis axis = Axis.fromKey(GsonHelper.getAsString(object, "axis"));
+        float scale = GsonHelper.getAsFloat(object, "scale", 1.0F);
         return () -> new RotateAction(source, axis, scale);
     }
 

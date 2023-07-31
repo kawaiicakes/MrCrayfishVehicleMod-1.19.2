@@ -7,7 +7,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.level.Level;
@@ -47,7 +47,7 @@ public class EngineItem extends PartItem
     @OnlyIn(Dist.CLIENT)
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn)
     {
-        tooltip.add(new TranslatableContents("vehicle.engine_info.acceleration").append(": ").withStyle(ChatFormatting.YELLOW).append(new TextComponent(this.tier.getPowerMultiplier() + "x").withStyle(ChatFormatting.GRAY)));
-        tooltip.add(new TranslatableContents("vehicle.engine_info.additional_max_speed").append(": ").withStyle(ChatFormatting.YELLOW).append(new TextComponent((this.tier.getAdditionalMaxSpeed()) + "bps").withStyle(ChatFormatting.GRAY)));
+        tooltip.add(new TranslatableContents("vehicle.engine_info.acceleration").append(": ")).withStyle(ChatFormatting.YELLOW).append(MutableComponent.create(new LiteralContents(this.tier.getPowerMultiplier() + "x")).withStyle(ChatFormatting.GRAY)));
+        tooltip.add(new TranslatableContents("vehicle.engine_info.additional_max_speed").append(": ")).withStyle(ChatFormatting.YELLOW).append(MutableComponent.create(new LiteralContents((this.tier.getAdditionalMaxSpeed()) + "bps")).withStyle(ChatFormatting.GRAY)));
     }
 }

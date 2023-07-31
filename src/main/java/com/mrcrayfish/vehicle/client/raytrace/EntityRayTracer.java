@@ -22,6 +22,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.util.RandomSource;
 import net.minecraftforge.client.extensions.IForgeBakedModel;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.world.entity.Entity;
@@ -240,13 +241,13 @@ public class EntityRayTracer
         List<Triangle> triangles = new ArrayList<>();
         try
         {
-            Random random = new Random();
+            RandomSource random = RandomSource.create();
             random.setSeed(42L);
-            createTrianglesFromBakedModel(model.getQuads(null, null, random, null), matrix, triangles);
+            createTrianglesFromBakedModel(model.getQuads(null, null, random, model, null), matrix, triangles);
             for(Direction facing : Direction.values())
             {
                 random.setSeed(42L);
-                createTrianglesFromBakedModel(model.getQuads(null, facing, random, null), matrix, triangles);
+                createTrianglesFromBakedModel(model.getQuads(null, facing, random, model, null), matrix, triangles);
             }
         }
         catch(Exception ignored){}
@@ -353,14 +354,14 @@ public class EntityRayTracer
     }
 
     @SubscribeEvent
-    public void onClientConnect(ClientPlayerNetworkEvent.LoggedInEvent event)
+    public void onClientConnect(ClientPlayerNetworkEvent.LoggingIn event)
     {
         // Clear cache when player logs in as the server may have datapacks
         this.clearDataForReregistration();
     }
 
     @SubscribeEvent
-    public void onClientTick(InputEvent.KeyInputEvent event)
+    public void onClientTick(InputEvent.Key event)
     {
         Minecraft mc = Minecraft.getInstance();
         if(mc.player == null)
@@ -376,7 +377,7 @@ public class EntityRayTracer
      * @param event mouse event
      */
     @SubscribeEvent
-    public void onMouseEvent(InputEvent.RawMouseEvent event)
+    public void onMouseEvent(InputEvent.MouseButton event)
     {
         Minecraft mc = Minecraft.getInstance();
         if(mc.getOverlay() != null || mc.screen != null || mc.player == null || !mc.mouseHandler.isMouseGrabbed())
@@ -456,7 +457,7 @@ public class EntityRayTracer
             }
             else
             {
-                VehicleMod.LOGGER.warn("The vehicle '" + type.getRegistryName() + "' does not have any registered ray trace transforms.");
+                VehicleMod.LOGGER.warn("The vehicle '" + type.builtInRegistryHolder().key().location() + "' does not have any registered ray trace transforms.");
             }
         }
         if(closestRayTraceResult != null)

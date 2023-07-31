@@ -13,7 +13,7 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.widget.Widget;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.TranslatableContents;
 
 import javax.annotation.Nullable;
@@ -29,7 +29,7 @@ public class DashboardScreen extends AbstractToolbarScreen
 
     public DashboardScreen(@Nullable Screen parent, VehicleEntity vehicle)
     {
-        super(new TextComponent("Dashboard"), parent);
+        super(MutableComponent.create(new LiteralContents("Dashboard"), parent);
         this.vehicleRef = new WeakReference<>(vehicle);
     }
 
@@ -54,7 +54,7 @@ public class DashboardScreen extends AbstractToolbarScreen
     {
         private DoorScreen(@Nullable Screen parent, VehicleEntity vehicle)
         {
-            super(parent, new TextComponent("Doors"), vehicle);
+            super(parent, MutableComponent.create(new LiteralContents("Doors"), vehicle);
         }
 
         @Override
@@ -77,7 +77,7 @@ public class DashboardScreen extends AbstractToolbarScreen
     {
         private SeatScreen(@Nullable Screen parent, VehicleEntity vehicle)
         {
-            super(parent, new TextComponent("Seats"), vehicle);
+            super(parent, MutableComponent.create(new LiteralContents("Seats"), vehicle);
         }
 
         @Override

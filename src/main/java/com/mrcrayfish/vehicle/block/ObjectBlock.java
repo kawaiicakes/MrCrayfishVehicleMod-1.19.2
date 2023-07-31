@@ -33,7 +33,7 @@ public class ObjectBlock extends Block
         }
         else
         {
-            list.add(Component.translatable("vehicle.info_help").withStyle(ChatFormatting.YELLOW));
+            list.add(Component.translatable("vehicle.info_help")).withStyle(ChatFormatting.YELLOW));
         }
     }
 }

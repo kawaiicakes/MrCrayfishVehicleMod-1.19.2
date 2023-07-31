@@ -2,7 +2,7 @@ package com.mrcrayfish.vehicle.entity.properties;
 
 import com.google.gson.JsonObject;
 import com.mrcrayfish.vehicle.util.ExtraJSONUtils;
-import net.minecraft.util.JSONUtils;
+import net.minecraft.util.GsonHelper;
 
 /**
  * Author: MrCrayfish
@@ -15,7 +15,7 @@ public final class MotorcycleProperties extends ExtendedProperties
 
     public MotorcycleProperties(JsonObject object)
     {
-        this.maxLeanAngle = JSONUtils.getAsFloat(object, "maxLeanAngle", DEFAULT_LEAN_ANGLE);
+        this.maxLeanAngle = GsonHelper.getAsFloat(object, "maxLeanAngle", DEFAULT_LEAN_ANGLE);
     }
 
     public MotorcycleProperties(float leanAngle)

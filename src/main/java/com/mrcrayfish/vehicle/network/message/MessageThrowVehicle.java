@@ -1,9 +1,9 @@
 package com.mrcrayfish.vehicle.network.message;
 
 import com.mrcrayfish.vehicle.network.play.ServerPlayHandler;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -26,7 +26,7 @@ public class MessageThrowVehicle implements IMessage<MessageThrowVehicle>
     {
         supplier.get().enqueueWork(() ->
         {
-            ServerPlayerEntity player = supplier.get().getSender();
+            ServerPlayer player = supplier.get().getSender();
             if(player != null)
             {
                 ServerPlayHandler.handleThrowVehicle(player, message);

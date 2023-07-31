@@ -20,12 +20,12 @@ import net.minecraft.client.resources.ReloadListener;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.profiler.IProfiler;
-import net.minecraft.resources.IResource;
-import net.minecraft.resources.IResourceManager;
-import net.minecraft.util.JSONUtils;
+import net.minecraft.server.packs.resources.Resource;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.InputEvent;
@@ -245,7 +245,7 @@ public class VehicleProperties
     {
         for(EntityType<? extends VehicleEntity> entityType : VehicleRegistry.getRegisteredVehicleTypes())
         {
-            DEFAULT_VEHICLE_PROPERTIES.computeIfAbsent(entityType.getRegistryName(), VehicleProperties::loadDefaultProperties);
+            DEFAULT_VEHICLE_PROPERTIES.computeIfAbsent(entityType.builtInRegistryHolder().key().location(), VehicleProperties::loadDefaultProperties);
         }
     }
 
@@ -301,7 +301,7 @@ public class VehicleProperties
 
     public static VehicleProperties get(EntityType<?> entityType)
     {
-        return get(entityType.getRegistryName());
+        return get(entityType.builtInRegistryHolder().key().location());
     }
 
     public static VehicleProperties get(ResourceLocation id)
@@ -374,7 +374,7 @@ public class VehicleProperties
     }
 
     @SubscribeEvent
-    public static void onKeyPress(InputEvent.KeyInputEvent event)
+    public static void onKeyPress(InputEvent.Key event)
     {
         if(FMLEnvironment.production)
             return;
@@ -391,7 +391,7 @@ public class VehicleProperties
             provider.getVehiclePropertiesMap().forEach(NETWORK_VEHICLE_PROPERTIES::put);
         });
 
-        Minecraft.getInstance().gui.setOverlayMessage(new TextComponent("Refreshed vehicle properties!"), false);
+        Minecraft.getInstance().gui.setOverlayMessage(MutableComponent.create(new LiteralContents("Refreshed vehicle properties!"), false);
     }
 
     public static class Serializer implements JsonDeserializer<VehicleProperties>, JsonSerializer<VehicleProperties>
@@ -423,17 +423,17 @@ public class VehicleProperties
         @Override
         public VehicleProperties deserialize(JsonElement element, Type type, JsonDeserializationContext context) throws JsonParseException
         {
-            JsonObject object = JSONUtils.convertToJsonObject(element, "vehicle property");
+            JsonObject object = GsonHelper.convertToJsonObject(element, "vehicle property");
             VehicleProperties.Builder builder = VehicleProperties.builder();
-            builder.setCanBePainted(JSONUtils.getAsBoolean(object, "canBePainted", DEFAULT_CAN_BE_PAINTED));
-            builder.setCanChangeWheels(JSONUtils.getAsBoolean(object, "canChangeWheels", DEFAULT_CAN_CHANGE_WHEELS));
-            builder.setImmuneToFallDamage(JSONUtils.getAsBoolean(object, "immuneToFallDamage", DEFAULT_IMMUNE_TO_FALL_DAMAGE));
-            builder.setCanPlayerCarry(JSONUtils.getAsBoolean(object, "canPlayerCarry", DEFAULT_CAN_PLAYER_CARRY));
-            builder.setCanFitInTrailer(JSONUtils.getAsBoolean(object, "canFitInTrailer", DEFAULT_CAN_FIT_IN_TRAILER));
-            builder.setAxleOffset(JSONUtils.getAsFloat(object, "offsetToGround", DEFAULT_AXLE_OFFSET));
+            builder.setCanBePainted(GsonHelper.getAsBoolean(object, "canBePainted", DEFAULT_CAN_BE_PAINTED));
+            builder.setCanChangeWheels(GsonHelper.getAsBoolean(object, "canChangeWheels", DEFAULT_CAN_CHANGE_WHEELS));
+            builder.setImmuneToFallDamage(GsonHelper.getAsBoolean(object, "immuneToFallDamage", DEFAULT_IMMUNE_TO_FALL_DAMAGE));
+            builder.setCanPlayerCarry(GsonHelper.getAsBoolean(object, "canPlayerCarry", DEFAULT_CAN_PLAYER_CARRY));
+            builder.setCanFitInTrailer(GsonHelper.getAsBoolean(object, "canFitInTrailer", DEFAULT_CAN_FIT_IN_TRAILER));
+            builder.setAxleOffset(GsonHelper.getAsFloat(object, "offsetToGround", DEFAULT_AXLE_OFFSET));
             builder.setHeldOffset(ExtraJSONUtils.getAsVector3d(object, "heldOffset", DEFAULT_HELD_OFFSET));
             builder.setTrailerOffset(ExtraJSONUtils.getAsVector3d(object, "trailerOffset", DEFAULT_TRAILER_OFFSET));
-            builder.setCanTowTrailers(JSONUtils.getAsBoolean(object, "canTowTrailers", DEFAULT_CAN_TOW_TRAILERS));
+            builder.setCanTowTrailers(GsonHelper.getAsBoolean(object, "canTowTrailers", DEFAULT_CAN_TOW_TRAILERS));
             builder.setTowBarOffset(ExtraJSONUtils.getAsVector3d(object, "towBarOffset", DEFAULT_TOW_BAR_OFFSET));
             builder.setDisplayTransform(ExtraJSONUtils.getAsTransform(object, "displayTransform", DEFAULT_DISPLAY_TRANSFORM));
             builder.setBodyTransform(ExtraJSONUtils.getAsTransform(object, "bodyTransform", DEFAULT_BODY_TRANSFORM));
@@ -449,7 +449,7 @@ public class VehicleProperties
         {
             if(object.has("wheels"))
             {
-                JsonArray wheelArray = JSONUtils.getAsJsonArray(object, "wheels");
+                JsonArray wheelArray = GsonHelper.getAsJsonArray(object, "wheels");
                 for(JsonElement wheelElement : wheelArray)
                 {
                     JsonObject wheelObject = wheelElement.getAsJsonObject();
@@ -475,7 +475,7 @@ public class VehicleProperties
         {
             if(object.has("seats"))
             {
-                JsonArray jsonArray = JSONUtils.getAsJsonArray(object, "seats");
+                JsonArray jsonArray = GsonHelper.getAsJsonArray(object, "seats");
                 for(JsonElement element : jsonArray)
                 {
                     JsonObject seatObject = element.getAsJsonObject();
@@ -501,7 +501,7 @@ public class VehicleProperties
         {
             if(object.has("camera"))
             {
-                JsonObject cameraObject = JSONUtils.getAsJsonObject(object, "camera", new JsonObject());
+                JsonObject cameraObject = GsonHelper.getAsJsonObject(object, "camera", new JsonObject());
                 builder.setCamera(CameraProperties.fromJsonObject(cameraObject));
             }
         }
@@ -520,7 +520,7 @@ public class VehicleProperties
 
         private void readExtended(VehicleProperties.Builder builder, JsonObject object)
         {
-            JsonObject extended = JSONUtils.getAsJsonObject(object, "extended", new JsonObject());
+            JsonObject extended = GsonHelper.getAsJsonObject(object, "extended", new JsonObject());
             extended.entrySet().stream().filter(entry -> entry.getValue().isJsonObject()).forEach(entry -> {
                 ResourceLocation id = ResourceLocation.tryParse(entry.getKey());
                 JsonObject content = entry.getValue().getAsJsonObject();
@@ -544,7 +544,7 @@ public class VehicleProperties
 
         private void readCosmetics(VehicleProperties.Builder builder, JsonObject object)
         {
-            JsonArray cosmetics = JSONUtils.getAsJsonArray(object, "cosmetics", new JsonArray());
+            JsonArray cosmetics = GsonHelper.getAsJsonArray(object, "cosmetics", new JsonArray());
             if(cosmetics != null)
             {
                 StreamSupport.stream(cosmetics.spliterator(), false).filter(JsonElement::isJsonObject).forEach(element -> {
@@ -793,7 +793,7 @@ public class VehicleProperties
         private Map<ResourceLocation, VehicleProperties> vehicleProperties;
 
         @Override
-        protected Map<ResourceLocation, VehicleProperties> prepare(IResourceManager manager, IProfiler profiler)
+        protected Map<ResourceLocation, VehicleProperties> prepare(ResourceManager manager, IProfiler profiler)
         {
             Map<ResourceLocation, VehicleProperties> propertiesMap = new HashMap<>();
             manager.listResources(PROPERTIES_DIRECTORY, location -> location.endsWith(FILE_SUFFIX))
@@ -802,7 +802,7 @@ public class VehicleProperties
                 .forEach(location -> {
                     try
                     {
-                        IResource resource = manager.getResource(location);
+                        Resource resource = manager.getResource(location);
                         InputStream stream = resource.getInputStream();
                         VehicleProperties properties = loadPropertiesFromStream(stream);
                         propertiesMap.put(format(location, PROPERTIES_DIRECTORY), properties);
@@ -846,7 +846,7 @@ public class VehicleProperties
         }
 
         @Override
-        protected void apply(Map<ResourceLocation, VehicleProperties> propertiesMap, IResourceManager manager, IProfiler profiler)
+        protected void apply(Map<ResourceLocation, VehicleProperties> propertiesMap, ResourceManager manager, IProfiler profiler)
         {
             this.vehicleProperties = ImmutableMap.copyOf(propertiesMap);
         }

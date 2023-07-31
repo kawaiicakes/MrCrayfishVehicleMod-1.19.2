@@ -3,7 +3,7 @@ package com.mrcrayfish.vehicle.client.screen.toolbar.widget;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.AbstractGui;
 import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.MutableComponent;
 
 /**
  * Author: MrCrayfish

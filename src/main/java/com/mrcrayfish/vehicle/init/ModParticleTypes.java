@@ -1,9 +1,9 @@
 package com.mrcrayfish.vehicle.init;
 
 import com.mrcrayfish.vehicle.Reference;
-import net.minecraft.particles.BasicParticleType;
-import net.minecraft.particles.ParticleType;
-import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraft.core.particles.SimpleParticleType;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -14,6 +14,6 @@ public class ModParticleTypes
 {
     public static final DeferredRegister<ParticleType<?>> REGISTER = DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, Reference.MOD_ID);
 
-    public static final RegistryObject<BasicParticleType> TYRE_SMOKE = REGISTER.register("tyre_smoke", () -> new BasicParticleType(true));
-    public static final RegistryObject<BasicParticleType> DUST = REGISTER.register("dust", () -> new BasicParticleType(true));
+    public static final RegistryObject<SimpleParticleType> TYRE_SMOKE = REGISTER.register("tyre_smoke", () -> new SimpleParticleType(true));
+    public static final RegistryObject<SimpleParticleType> DUST = REGISTER.register("dust", () -> new SimpleParticleType(true));
 }

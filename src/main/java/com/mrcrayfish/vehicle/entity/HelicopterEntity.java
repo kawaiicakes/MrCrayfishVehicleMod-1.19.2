@@ -7,7 +7,7 @@ import com.mrcrayfish.vehicle.network.datasync.VehicleDataValue;
 import com.mrcrayfish.vehicle.network.message.MessageHelicopterInput;
 import com.mrcrayfish.vehicle.util.CommonUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
+import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.nbt.CompoundTag;
@@ -210,7 +210,7 @@ public abstract class HelicopterEntity extends PoweredVehicleEntity
         Entity entity = this.getControllingPassenger();
         if(entity != null && entity.equals(Minecraft.getInstance().player))
         {
-            ClientPlayerEntity player = (ClientPlayerEntity) entity;
+            AbstractClientPlayer player = (AbstractClientPlayer) entity;
             float lift = VehicleHelper.getLift();
             this.setLift(lift);
             this.setForwardInput(player.zza);

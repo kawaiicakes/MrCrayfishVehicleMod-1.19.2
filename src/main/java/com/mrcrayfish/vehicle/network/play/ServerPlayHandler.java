@@ -36,12 +36,12 @@ import net.minecraft.block.SoundType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.inventory.container.SimpleNamedContainerProvider;
 import net.minecraft.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.world.item.Items;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.resources.ResourceLocation;
@@ -51,7 +51,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeMod;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
@@ -63,7 +63,7 @@ import java.util.UUID;
  */
 public class ServerPlayHandler
 {
-    public static void handleAttachChestMessage(ServerPlayerEntity player, MessageAttachChest message)
+    public static void handleAttachChestMessage(ServerPlayer player, MessageAttachChest message)
     {
         Level world = player.level;
         Entity targetEntity = world.getEntity(message.getEntityId());
@@ -86,7 +86,7 @@ public class ServerPlayHandler
         }
     }
 
-    public static void handleAttachTrailerMessage(ServerPlayerEntity player, MessageAttachTrailer message)
+    public static void handleAttachTrailerMessage(ServerPlayer player, MessageAttachTrailer message)
     {
         Entity trailerEntity = player.level.getEntity(message.getTrailerId());
         if(trailerEntity instanceof TrailerEntity)
@@ -100,7 +100,7 @@ public class ServerPlayHandler
         }
     }
 
-    public static void handleCraftVehicleMessage(ServerPlayerEntity player, MessageCraftVehicle message)
+    public static void handleCraftVehicleMessage(ServerPlayer player, MessageCraftVehicle message)
     {
         Level world = player.level;
         if(!(player.containerMenu instanceof WorkstationContainer))
@@ -198,7 +198,7 @@ public class ServerPlayHandler
         world.addFreshEntity(new ItemEntity(world, message.getPos().getX() + 0.5, message.getPos().getY() + 1.125, message.getPos().getZ() + 0.5, stack));
     }
 
-    public static void handleCycleSeatsMessage(ServerPlayerEntity player, MessageCycleSeats message)
+    public static void handleCycleSeatsMessage(ServerPlayer player, MessageCycleSeats message)
     {
         Entity entity = player.getVehicle();
         if(!(entity instanceof VehicleEntity))
@@ -225,7 +225,7 @@ public class ServerPlayHandler
         }
     }
 
-    public static void handleSetSeatMessage(ServerPlayerEntity player, MessageSetSeat message)
+    public static void handleSetSeatMessage(ServerPlayer player, MessageSetSeat message)
     {
         Entity entity = player.getVehicle();
         if(!(entity instanceof VehicleEntity))
@@ -241,7 +241,7 @@ public class ServerPlayHandler
         vehicle.onPlayerChangeSeat(player, seatIndex, message.getIndex());
     }
 
-    public static void handleFuelVehicleMessage(ServerPlayerEntity player, MessageFuelVehicle message)
+    public static void handleFuelVehicleMessage(ServerPlayer player, MessageFuelVehicle message)
     {
         Entity targetEntity = player.level.getEntity(message.getEntityId());
         if(targetEntity instanceof PoweredVehicleEntity)
@@ -250,7 +250,7 @@ public class ServerPlayHandler
         }
     }
 
-    public static void handleHandbrakeMessage(ServerPlayerEntity player, MessageHandbrake message)
+    public static void handleHandbrakeMessage(ServerPlayer player, MessageHandbrake message)
     {
         Entity riding = player.getVehicle();
         if(riding instanceof PoweredVehicleEntity)
@@ -259,7 +259,7 @@ public class ServerPlayHandler
         }
     }
 
-    public static void handleHelicopterInputMessage(ServerPlayerEntity player, MessageHelicopterInput message)
+    public static void handleHelicopterInputMessage(ServerPlayer player, MessageHelicopterInput message)
     {
         Entity riding = player.getVehicle();
         if(riding instanceof HelicopterEntity)
@@ -271,7 +271,7 @@ public class ServerPlayHandler
         }
     }
 
-    public static void handleHitchTrailerMessage(ServerPlayerEntity player, MessageHitchTrailer message)
+    public static void handleHitchTrailerMessage(ServerPlayer player, MessageHitchTrailer message)
     {
         if(!(player.getVehicle() instanceof VehicleEntity))
             return;
@@ -317,7 +317,7 @@ public class ServerPlayHandler
         }
     }
 
-    public static void handleHornMessage(ServerPlayerEntity player, MessageHorn message)
+    public static void handleHornMessage(ServerPlayer player, MessageHorn message)
     {
         Entity riding = player.getVehicle();
         if(riding instanceof PoweredVehicleEntity && ((PoweredVehicleEntity) riding).hasHorn())
@@ -326,7 +326,7 @@ public class ServerPlayHandler
         }
     }
 
-    public static void handleInteractKeyMessage(ServerPlayerEntity player, MessageInteractKey message)
+    public static void handleInteractKeyMessage(ServerPlayer player, MessageInteractKey message)
     {
         Entity targetEntity = player.level.getEntity(message.getEntityId());
         if(targetEntity instanceof PoweredVehicleEntity)
@@ -373,7 +373,7 @@ public class ServerPlayHandler
         }
     }
 
-    public static void handlePickupVehicleMessage(ServerPlayerEntity player, MessagePickupVehicle message)
+    public static void handlePickupVehicleMessage(ServerPlayer player, MessagePickupVehicle message)
     {
         if(player.isCrouching())
         {
@@ -385,7 +385,7 @@ public class ServerPlayHandler
         }
     }
 
-    public static void handlePlaneInputMessage(ServerPlayerEntity player, MessagePlaneInput message)
+    public static void handlePlaneInputMessage(ServerPlayer player, MessagePlaneInput message)
     {
         Entity riding = player.getVehicle();
         if(riding instanceof PlaneEntity)
@@ -397,7 +397,7 @@ public class ServerPlayHandler
         }
     }
 
-    public static void handleThrottleMessage(ServerPlayerEntity player, MessageThrottle message)
+    public static void handleThrottleMessage(ServerPlayer player, MessageThrottle message)
     {
         Entity riding = player.getVehicle();
         if(riding instanceof PoweredVehicleEntity)
@@ -406,7 +406,7 @@ public class ServerPlayHandler
         }
     }
 
-    public static void handleThrowVehicle(ServerPlayerEntity player, MessageThrowVehicle message)
+    public static void handleThrowVehicle(ServerPlayer player, MessageThrowVehicle message)
     {
         if(!player.isCrouching())
             return;
@@ -448,7 +448,7 @@ public class ServerPlayHandler
         }
     }
 
-    public static void handleTurnAngleMessage(ServerPlayerEntity player, MessageTurnAngle message)
+    public static void handleTurnAngleMessage(ServerPlayer player, MessageTurnAngle message)
     {
         Entity riding = player.getVehicle();
         if(riding instanceof PoweredVehicleEntity)
@@ -457,7 +457,7 @@ public class ServerPlayHandler
         }
     }
 
-    public static void handleInteractCosmeticMessage(ServerPlayerEntity player, MessageInteractCosmetic message)
+    public static void handleInteractCosmeticMessage(ServerPlayer player, MessageInteractCosmetic message)
     {
         Entity targetEntity = player.level.getEntity(message.getEntityId());
         if(!(targetEntity instanceof VehicleEntity))
@@ -473,7 +473,7 @@ public class ServerPlayHandler
         tracker.getActions(message.getCosmeticId()).forEach(action -> action.onInteract(vehicle, player));
     }
 
-    public static void handleOpenStorageMessage(ServerPlayerEntity player, MessageOpenStorage message)
+    public static void handleOpenStorageMessage(ServerPlayer player, MessageOpenStorage message)
     {
         Level world = player.level;
         Entity targetEntity = world.getEntity(message.getEntityId());
@@ -509,7 +509,7 @@ public class ServerPlayHandler
             }
         }
 
-        NetworkHooks.openGui(player, new SimpleNamedContainerProvider((windowId, playerInventory, playerEntity) -> {
+        NetworkHooks.openScreen(player, new SimpleNamedContainerProvider((windowId, playerInventory, playerEntity) -> {
             return new StorageContainer(windowId, playerInventory, inventory, playerEntity);
         }, inventory.getDisplayName()), buffer -> {
             buffer.writeVarInt(message.getEntityId());

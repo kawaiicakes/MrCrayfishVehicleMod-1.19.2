@@ -3,7 +3,7 @@ package com.mrcrayfish.vehicle.crafting;
 import com.mrcrayfish.vehicle.init.ModRecipeSerializers;
 import com.mrcrayfish.vehicle.tileentity.FluidMixerTileEntity;
 import com.mrcrayfish.vehicle.util.InventoryUtil;
-import net.minecraft.fluid.Fluid;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
@@ -83,7 +83,7 @@ public class FluidMixerRecipe implements IRecipe<FluidMixerTileEntity>
     {
         if(this.hashCode == 0)
         {
-            this.hashCode = Objects.hash(this.inputs[0].getFluid().getRegistryName(), this.inputs[1].getFluid().getRegistryName(), this.ingredient.getItem().getRegistryName());
+            this.hashCode = Objects.hash(this.inputs[0].getFluid().builtInRegistryHolder().key().location(), this.inputs[1].getFluid().builtInRegistryHolder().key().location(), this.ingredient.getItem().builtInRegistryHolder().key().location());
         }
         return this.hashCode;
     }

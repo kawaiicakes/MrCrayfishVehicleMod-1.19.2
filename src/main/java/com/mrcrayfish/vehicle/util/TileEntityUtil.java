@@ -1,6 +1,6 @@
 package com.mrcrayfish.vehicle.util;
 
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -49,7 +49,7 @@ public class TileEntityUtil
      * @param tileEntity the tile entity to update
      * @param player the player to send the update to
      */
-    public static void sendUpdatePacket(BlockEntity tileEntity, ServerPlayerEntity player)
+    public static void sendUpdatePacket(BlockEntity tileEntity, ServerPlayer player)
     {
         sendUpdatePacket(tileEntity, tileEntity.getUpdateTag(), player);
     }
@@ -63,7 +63,7 @@ public class TileEntityUtil
      * @param compound the update tag to send
      * @param player the player to send the update to
      */
-    public static void sendUpdatePacket(BlockEntity tileEntity, CompoundTag compound, ServerPlayerEntity player)
+    public static void sendUpdatePacket(BlockEntity tileEntity, CompoundTag compound, ServerPlayer player)
     {
         SUpdateTileEntityPacket packet = new SUpdateTileEntityPacket(tileEntity.getBlockPos(), 0, compound);
         player.connection.send(packet);
@@ -74,7 +74,7 @@ public class TileEntityUtil
         if(world instanceof ServerLevel)
         {
             ServerLevel server = (ServerLevel) world;
-            Stream<ServerPlayerEntity> players = server.getChunkSource().chunkMap.getPlayers(new ChunkPos(pos), false);
+            Stream<ServerPlayer> players = server.getChunkSource().chunkMap.getPlayers(new ChunkPos(pos), false);
             players.forEach(player -> player.connection.send(packet));
         }
     }

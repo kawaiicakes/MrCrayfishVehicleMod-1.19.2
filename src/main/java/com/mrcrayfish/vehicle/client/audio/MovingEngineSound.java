@@ -1,30 +1,28 @@
 package com.mrcrayfish.vehicle.client.audio;
 
 import com.mrcrayfish.vehicle.entity.PoweredVehicleEntity;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.TickableSound;
+import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
 import java.lang.ref.WeakReference;
-import java.util.function.Predicate;
 
 /**
  * Author: MrCrayfish
  */
 @OnlyIn(Dist.CLIENT)
-public class MovingEngineSound extends TickableSound
+public class MovingEngineSound extends AbstractTickableSoundInstance
 {
     private final WeakReference<Player> playerRef;
     private final WeakReference<PoweredVehicleEntity> vehicleRef;
 
     public MovingEngineSound(Player player, PoweredVehicleEntity vehicle)
     {
-        super(vehicle.getEngineSound(), SoundSource.NEUTRAL);
+        super(vehicle.getEngineSound(), SoundSource.NEUTRAL, RandomSource.create());
         this.playerRef = new WeakReference<>(player);
         this.vehicleRef = new WeakReference<>(vehicle);
         this.volume = 0.0F;
@@ -56,7 +54,7 @@ public class MovingEngineSound extends TickableSound
 
         this.volume = Mth.lerp(0.2F, this.volume, vehicle.getEngineVolume());
         this.pitch = Mth.lerp(0.2F, this.pitch, vehicle.getEnginePitch());
-        this.attenuation = vehicle.equals(player.getVehicle()) ? AttenuationType.NONE : AttenuationType.LINEAR;
+        this.attenuation = vehicle.equals(player.getVehicle()) ? Attenuation.NONE : Attenuation.LINEAR;
 
         if(!vehicle.equals(player.getVehicle()))
         {

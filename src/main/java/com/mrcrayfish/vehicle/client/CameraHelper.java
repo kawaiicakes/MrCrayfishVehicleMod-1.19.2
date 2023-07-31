@@ -5,17 +5,17 @@ import com.mrcrayfish.vehicle.client.util.MathUtil;
 import com.mrcrayfish.vehicle.common.Seat;
 import com.mrcrayfish.vehicle.entity.VehicleEntity;
 import com.mrcrayfish.vehicle.entity.properties.VehicleProperties;
-import net.minecraft.client.entity.player.ClientPlayerEntity;
-import net.minecraft.client.renderer.ActiveRenderInfo;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
 import net.minecraft.util.Mth;
-import net.minecraft.util.math.vector.Quaternion;
+import com.mojang.math.Quaternion;
 import net.minecraft.world.phys.Vec3;
 import com.mojang.math.Vector3f;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.model.TransformationHelper;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -29,10 +29,10 @@ import java.lang.reflect.Method;
 @OnlyIn(Dist.CLIENT)
 public class CameraHelper
 {
-    private static final Method SET_POSITION_METHOD = ObfuscationReflectionHelper.findMethod(ActiveRenderInfo.class, "func_216775_b", double.class, double.class, double.class);
-    private static final Method MOVE_METHOD = ObfuscationReflectionHelper.findMethod(ActiveRenderInfo.class, "func_216782_a", double.class, double.class, double.class);
-    private static final Method GET_MAX_MOVE_METHOD = ObfuscationReflectionHelper.findMethod(ActiveRenderInfo.class, "func_216779_a", double.class);
-    private static final Field LEFT_FIELD = ObfuscationReflectionHelper.findField(ActiveRenderInfo.class, "field_216796_h");
+    private static final Method SET_POSITION_METHOD = ObfuscationReflectionHelper.findMethod(Camera.class, "func_216775_b", double.class, double.class, double.class);
+    private static final Method MOVE_METHOD = ObfuscationReflectionHelper.findMethod(Camera.class, "func_216782_a", double.class, double.class, double.class);
+    private static final Method GET_MAX_MOVE_METHOD = ObfuscationReflectionHelper.findMethod(Camera.class, "func_216779_a", double.class);
+    private static final Field LEFT_FIELD = ObfuscationReflectionHelper.findField(Camera.class, "field_216796_h");
 
     private VehicleProperties properties;
     private Quaternion currentRotation;
@@ -74,7 +74,7 @@ public class CameraHelper
         return (!Config.CLIENT.debugCamera.get() || this.debugEnableStrength) && pov == CameraType.THIRD_PERSON_BACK && this.properties.getCamera().getType() != CameraProperties.Type.LOCKED ? this.properties.getCamera().getStrength() : 1.0F;
     }
 
-    public void setupVanillaCamera(ActiveRenderInfo info, CameraType pov, VehicleEntity vehicle, ClientPlayerEntity player, float partialTicks)
+    public void setupVanillaCamera(Camera info, CameraType pov, VehicleEntity vehicle, AbstractClientPlayer player, float partialTicks)
     {
         switch(pov)
         {
@@ -90,7 +90,7 @@ public class CameraHelper
         }
     }
 
-    private void setupFirstPersonCamera(ActiveRenderInfo info, VehicleEntity vehicle, ClientPlayerEntity player, float partialTicks)
+    private void setupFirstPersonCamera(Camera info, VehicleEntity vehicle, AbstractClientPlayer player, float partialTicks)
     {
         try
         {
@@ -119,7 +119,7 @@ public class CameraHelper
         }
     }
 
-    private void setupThirdPersonCamera(ActiveRenderInfo info, VehicleEntity vehicle, ClientPlayerEntity player, float partialTicks, boolean front)
+    private void setupThirdPersonCamera(Camera info, VehicleEntity vehicle, AbstractClientPlayer player, float partialTicks, boolean front)
     {
         try
         {
@@ -165,7 +165,7 @@ public class CameraHelper
         }
     }
 
-    private void setVehicleRotation(ActiveRenderInfo info, VehicleEntity vehicle, ClientPlayerEntity player, float partialTicks)
+    private void setVehicleRotation(Camera info, VehicleEntity vehicle, AbstractClientPlayer player, float partialTicks)
     {
         try
         {

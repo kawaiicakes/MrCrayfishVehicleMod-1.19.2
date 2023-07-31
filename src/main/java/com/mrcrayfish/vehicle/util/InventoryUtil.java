@@ -1,13 +1,13 @@
 package com.mrcrayfish.vehicle.util;
 
-import com.mrcrayfish.vehicle.crafting.WorkstationIngredient;
+import net.minecraftforge.common.crafting.CompoundIngredient;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.util.Constants;
 
@@ -22,7 +22,7 @@ public class InventoryUtil
 
     public static void writeInventoryToNBT(CompoundTag compound, String tagName, IInventory inventory)
     {
-        ListNBT tagList = new ListNBT();
+        ListTag tagList = new ListTag();
         for(int i = 0; i < inventory.getContainerSize(); i++)
         {
             ItemStack stack = inventory.getItem(i);
@@ -39,9 +39,9 @@ public class InventoryUtil
 
     public static <T extends IInventory> T readInventoryToNBT(CompoundTag compound, String tagName, T t)
     {
-        if(compound.contains(tagName, Constants.NBT.TAG_LIST))
+        if(compound.contains(tagName, Tag.TAG_LIST))
         {
-            ListNBT tagList = compound.getList(tagName, Constants.NBT.TAG_COMPOUND);
+            ListTag tagList = compound.getList(tagName, Tag.TAG_COMPOUND);
             for(int i = 0; i < tagList.size(); i++)
             {
                 CompoundTag tagCompound = tagList.getCompound(i);
@@ -162,7 +162,7 @@ public class InventoryUtil
         return find.getCount() <= count;
     }
 
-    public static boolean hasWorkstationIngredient(Player player, WorkstationIngredient find)
+    public static boolean hasWorkstationIngredient(Player player, CompoundIngredient find)
     {
         int count = 0;
         for(ItemStack stack : player.getInventory().items)
@@ -199,7 +199,7 @@ public class InventoryUtil
         return false;
     }
 
-    public static boolean removeWorkstationIngredient(Player player, WorkstationIngredient find)
+    public static boolean removeWorkstationIngredient(Player player, CompoundIngredient find)
     {
         int amount = find.getCount();
         for(int i = 0; i < player.getInventory().getContainerSize(); i++)

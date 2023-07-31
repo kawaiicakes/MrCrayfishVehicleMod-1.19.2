@@ -20,7 +20,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.particles.ParticleTypes;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
@@ -198,7 +198,7 @@ public class VehicleCrateTileEntity extends TileEntitySynced implements ITickabl
     public void load(BlockState state, CompoundTag compound)
     {
         super.load(state, compound);
-        if(compound.contains("Vehicle", Constants.NBT.TAG_STRING))
+        if(compound.contains("Vehicle", Tag.TAG_STRING))
         {
             this.entityId = new ResourceLocation(compound.getString("Vehicle"));
         }
@@ -206,7 +206,7 @@ public class VehicleCrateTileEntity extends TileEntitySynced implements ITickabl
         {
             this.color = compound.getInt("Color");
         }
-        if(compound.contains("EngineStack", Constants.NBT.TAG_COMPOUND))
+        if(compound.contains("EngineStack", Tag.TAG_COMPOUND))
         {
             this.engineStack = ItemStack.of(compound.getCompound("EngineStack"));
         }
@@ -216,7 +216,7 @@ public class VehicleCrateTileEntity extends TileEntitySynced implements ITickabl
             EngineItem engineItem = VehicleRegistry.getEngineItem(properties.getExtended(PoweredProperties.class).getEngineType(), EngineTier.IRON);
             this.engineStack = engineItem != null ? new ItemStack(engineItem) : ItemStack.EMPTY;
         }
-        if(compound.contains("WheelStack", Constants.NBT.TAG_COMPOUND))
+        if(compound.contains("WheelStack", Tag.TAG_COMPOUND))
         {
             this.wheelStack = ItemStack.of(compound.getCompound("WheelStack"));
         }
@@ -224,11 +224,11 @@ public class VehicleCrateTileEntity extends TileEntitySynced implements ITickabl
         {
             this.wheelStack = new ItemStack(ModItems.STANDARD_WHEEL.get());
         }
-        if(compound.contains("Opener", Constants.NBT.TAG_STRING))
+        if(compound.contains("Opener", Tag.TAG_STRING))
         {
             this.opener = compound.getUUID("Opener");
         }
-        if(compound.contains("Opened", Constants.NBT.TAG_BYTE))
+        if(compound.contains("Opened", Tag.TAG_BYTE))
         {
             this.opened = compound.getBoolean("Opened");
         }

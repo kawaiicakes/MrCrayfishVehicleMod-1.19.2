@@ -4,7 +4,7 @@ import com.mrcrayfish.vehicle.Reference;
 import com.mrcrayfish.vehicle.init.ModBlocks;
 import com.mrcrayfish.vehicle.init.ModFluids;
 import com.mrcrayfish.vehicle.init.ModItems;
-import net.minecraft.fluid.Fluid;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.state.StateDefinition;

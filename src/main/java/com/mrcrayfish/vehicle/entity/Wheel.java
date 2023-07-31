@@ -2,7 +2,7 @@ package com.mrcrayfish.vehicle.entity;
 
 import com.google.gson.JsonObject;
 import com.mrcrayfish.vehicle.util.ExtraJSONUtils;
-import net.minecraft.util.JSONUtils;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -156,9 +156,9 @@ public class Wheel
         Vec3 scale = ExtraJSONUtils.getAsVector3d(object, "scale", DEFAULT_SCALE);
         Wheel.Side side = ExtraJSONUtils.getAsEnum(object, "side", Wheel.Side.class, DEFAULT_SIDE);
         Wheel.Position position = ExtraJSONUtils.getAsEnum(object, "axle", Wheel.Position.class, DEFAULT_POSITION);
-        boolean autoScale = JSONUtils.getAsBoolean(object, "autoScale", DEFAULT_AUTO_SCALE);
-        boolean particles = JSONUtils.getAsBoolean(object, "particles", DEFAULT_PARTICLES);
-        boolean render = JSONUtils.getAsBoolean(object, "render", DEFAULT_RENDER);
+        boolean autoScale = GsonHelper.getAsBoolean(object, "autoScale", DEFAULT_AUTO_SCALE);
+        boolean particles = GsonHelper.getAsBoolean(object, "particles", DEFAULT_PARTICLES);
+        boolean render = GsonHelper.getAsBoolean(object, "render", DEFAULT_RENDER);
         return new Wheel(offset, scale, 4.0F, side, position, autoScale, particles, render);
     }
 

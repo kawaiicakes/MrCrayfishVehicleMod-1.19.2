@@ -32,7 +32,7 @@ public class BoostTileEntity extends TileEntitySynced
     public void load(BlockState state, CompoundTag compound)
     {
         super.load(state, compound);
-        if(compound.contains("SpeedMultiplier", Constants.NBT.TAG_FLOAT))
+        if(compound.contains("SpeedMultiplier", Tag.TAG_FLOAT))
         {
             this.speedMultiplier = compound.getFloat("SpeedMultiplier");
         }

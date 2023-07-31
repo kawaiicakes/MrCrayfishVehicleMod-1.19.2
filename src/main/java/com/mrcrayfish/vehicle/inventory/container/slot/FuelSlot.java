@@ -3,7 +3,7 @@ package com.mrcrayfish.vehicle.inventory.container.slot;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.world.item.Items;
 import net.minecraft.tileentity.AbstractFurnaceTileEntity;
 
 /**

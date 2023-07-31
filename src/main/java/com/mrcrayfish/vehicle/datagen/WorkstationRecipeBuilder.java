@@ -2,9 +2,9 @@ package com.mrcrayfish.vehicle.datagen;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.mrcrayfish.vehicle.crafting.WorkstationIngredient;
+import net.minecraftforge.common.crafting.CompoundIngredient;
 import com.mrcrayfish.vehicle.init.ModRecipeSerializers;
-import net.minecraft.data.IFinishedRecipe;
+import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
@@ -22,17 +22,17 @@ public class WorkstationRecipeBuilder
 {
     private final IRecipeSerializer<?> serializer;
     private final ResourceLocation entityId;
-    private final List<WorkstationIngredient> ingredients;
+    private final List<CompoundIngredient> ingredients;
     private final List<ICondition> conditions = new ArrayList<>();
 
-    public WorkstationRecipeBuilder(IRecipeSerializer<?> serializer, ResourceLocation entityId, List<WorkstationIngredient> ingredients)
+    public WorkstationRecipeBuilder(IRecipeSerializer<?> serializer, ResourceLocation entityId, List<CompoundIngredient> ingredients)
     {
         this.serializer = serializer;
         this.entityId = entityId;
         this.ingredients = ingredients;
     }
 
-    public static WorkstationRecipeBuilder crafting(ResourceLocation entityId, List<WorkstationIngredient> ingredients)
+    public static WorkstationRecipeBuilder crafting(ResourceLocation entityId, List<CompoundIngredient> ingredients)
     {
         return new WorkstationRecipeBuilder(ModRecipeSerializers.WORKSTATION.get(), entityId, ingredients);
     }
@@ -43,25 +43,25 @@ public class WorkstationRecipeBuilder
         return this;
     }
 
-    public void save(Consumer<IFinishedRecipe> consumer, String name)
+    public void save(Consumer<FinishedRecipe> consumer, String name)
     {
         this.save(consumer, new ResourceLocation(name));
     }
 
-    public void save(Consumer<IFinishedRecipe> consumer, ResourceLocation id)
+    public void save(Consumer<FinishedRecipe> consumer, ResourceLocation id)
     {
         consumer.accept(new Result(id, this.serializer, this.entityId, this.ingredients, this.conditions));
     }
 
-    public static class Result implements IFinishedRecipe
+    public static class Result implements FinishedRecipe
     {
         private final ResourceLocation id;
         private final ResourceLocation entityId;
-        private final List<WorkstationIngredient> ingredients;
+        private final List<CompoundIngredient> ingredients;
         private final List<ICondition> conditions;
         private final IRecipeSerializer<?> serializer;
 
-        private Result(ResourceLocation id, IRecipeSerializer<?> serializer, ResourceLocation entityId, List<WorkstationIngredient> ingredients, List<ICondition> conditions)
+        private Result(ResourceLocation id, IRecipeSerializer<?> serializer, ResourceLocation entityId, List<CompoundIngredient> ingredients, List<ICondition> conditions)
         {
             this.id = id;
             this.serializer = serializer;

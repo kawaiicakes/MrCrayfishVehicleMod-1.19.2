@@ -3,7 +3,7 @@ package com.mrcrayfish.vehicle.client.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mrcrayfish.vehicle.entity.EntityJack;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererManager;
 import net.minecraft.resources.ResourceLocation;
 

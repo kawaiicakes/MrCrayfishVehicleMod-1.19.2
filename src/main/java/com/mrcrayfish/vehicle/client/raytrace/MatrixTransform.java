@@ -2,7 +2,7 @@ package com.mrcrayfish.vehicle.client.raytrace;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix4f;
-import net.minecraft.util.math.vector.Quaternion;
+import com.mojang.math.Quaternion;
 
 /**
  * Matrix transformation that corresponds to one of the three supported GL operations that might be performed on a rendered item part

@@ -17,7 +17,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.core.BlockPos;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 
@@ -55,13 +55,12 @@ public interface RayTraceFunction
                 break gasPump;
 
             tileEntity = player.level.getBlockEntity(pos.below());
-            if(!(tileEntity instanceof GasPumpTankTileEntity))
+            if(!(tileEntity instanceof GasPumpTankTileEntity gasPumpTank))
                 break gasPump;
 
-            GasPumpTankTileEntity gasPumpTank = (GasPumpTankTileEntity) tileEntity;
             FluidTank tank = gasPumpTank.getFluidTank();
             FluidStack stack = tank.getFluid();
-            if(stack.isEmpty() || !Config.SERVER.validFuels.get().contains(stack.getFluid().getRegistryName().toString()))
+            if(stack.isEmpty() || !Config.SERVER.validFuels.get().contains(stack.getFluid().builtInRegistryHolder().key().location().toString()))
                 break gasPump;
 
             if(rayTracer.getContinuousInteractionTickCounter() % 2 == 0)
@@ -77,13 +76,13 @@ public interface RayTraceFunction
             if(stack.isEmpty() || !(stack.getItem() instanceof JerryCanItem) || !ControllerHandler.isRightClicking())
                 continue;
 
-            Optional<IFluidHandlerItem> optional = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).resolve();
+            Optional<IFluidHandlerItem> optional = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).resolve();
             if(!optional.isPresent())
                 continue;
 
             IFluidHandlerItem handler = optional.get();
             FluidStack fluidStack = handler.getFluidInTank(0);
-            if(fluidStack.isEmpty() || !Config.SERVER.validFuels.get().contains(fluidStack.getFluid().getRegistryName().toString()))
+            if(fluidStack.isEmpty() || !Config.SERVER.validFuels.get().contains(fluidStack.getFluid().builtInRegistryHolder().key().location().toString()))
                 continue;
 
             if(rayTracer.getContinuousInteractionTickCounter() % 2 == 0)

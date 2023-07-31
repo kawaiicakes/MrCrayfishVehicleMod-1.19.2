@@ -34,7 +34,7 @@ public class HammerItem extends SwordItem
         }
         else
         {
-            list.add(new TranslatableContents("vehicle.info_help").withStyle(ChatFormatting.YELLOW));
+            list.add(new TranslatableContents("vehicle.info_help")).withStyle(ChatFormatting.YELLOW));
         }
     }
 }

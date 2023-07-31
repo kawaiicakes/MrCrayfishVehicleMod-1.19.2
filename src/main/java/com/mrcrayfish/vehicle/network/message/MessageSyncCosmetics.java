@@ -3,8 +3,8 @@ package com.mrcrayfish.vehicle.network.message;
 import com.mrcrayfish.vehicle.network.play.ClientPlayHandler;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fml.network.NetworkDirection;
-import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.network.NetworkDirection;
+import net.minecraftforge.network.NetworkEvent;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;

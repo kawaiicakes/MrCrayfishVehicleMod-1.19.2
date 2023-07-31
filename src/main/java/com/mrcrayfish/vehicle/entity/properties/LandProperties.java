@@ -2,7 +2,7 @@ package com.mrcrayfish.vehicle.entity.properties;
 
 import com.google.gson.JsonObject;
 import com.mrcrayfish.vehicle.util.ExtraJSONUtils;
-import net.minecraft.util.JSONUtils;
+import net.minecraft.util.GsonHelper;
 
 /**
  * Author: MrCrayfish
@@ -23,11 +23,11 @@ public final class LandProperties extends ExtendedProperties
 
     public LandProperties(JsonObject object)
     {
-        this.canCharge = JSONUtils.getAsBoolean(object, "canCharge", DEFAULT_CAN_CHARGE);
-        this.canWheelie = JSONUtils.getAsBoolean(object, "canWheelie", DEFAULT_CAN_WHEELIE);
-        this.canSlide = JSONUtils.getAsBoolean(object, "canSlide", DEFAULT_CAN_SLIDE);
-        this.brakePower = JSONUtils.getAsFloat(object, "brakePower", DEFAULT_BRAKE_POWER);
-        this.maxReverseSpeed = JSONUtils.getAsFloat(object, "maxReverseSpeed", DEFAULT_MAX_REVERSE_SPEED);
+        this.canCharge = GsonHelper.getAsBoolean(object, "canCharge", DEFAULT_CAN_CHARGE);
+        this.canWheelie = GsonHelper.getAsBoolean(object, "canWheelie", DEFAULT_CAN_WHEELIE);
+        this.canSlide = GsonHelper.getAsBoolean(object, "canSlide", DEFAULT_CAN_SLIDE);
+        this.brakePower = GsonHelper.getAsFloat(object, "brakePower", DEFAULT_BRAKE_POWER);
+        this.maxReverseSpeed = GsonHelper.getAsFloat(object, "maxReverseSpeed", DEFAULT_MAX_REVERSE_SPEED);
     }
 
     public LandProperties(boolean canCharge, boolean canWheelie, boolean canSlide, float brakePower, float maxReverseSpeed)

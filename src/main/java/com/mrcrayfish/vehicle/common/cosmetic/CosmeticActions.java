@@ -7,7 +7,7 @@ import com.mrcrayfish.vehicle.common.cosmetic.actions.OpenableAction;
 import com.mrcrayfish.vehicle.common.cosmetic.actions.RotateAction;
 import com.mrcrayfish.vehicle.util.Axis;
 import com.mrcrayfish.vehicle.util.ExtraJSONUtils;
-import net.minecraft.util.JSONUtils;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
@@ -28,9 +28,9 @@ public class CosmeticActions
     {
         register(new ResourceLocation(Reference.MOD_ID, "openable"), OpenableAction.class, object -> {
             JsonObject rotation = object.getAsJsonObject("rotation");
-            Axis axis = Axis.fromKey(JSONUtils.getAsString(rotation, "axis", "x"));
-            float angle = JSONUtils.getAsFloat(rotation, "angle", 0F);
-            int animationLength = JSONUtils.getAsInt(rotation, "animationLength", 12);
+            Axis axis = Axis.fromKey(GsonHelper.getAsString(rotation, "axis", "x"));
+            float angle = GsonHelper.getAsFloat(rotation, "angle", 0F);
+            int animationLength = GsonHelper.getAsInt(rotation, "animationLength", 12);
             JsonObject sound = object.getAsJsonObject("sound");
             ResourceLocation openSound = ExtraJSONUtils.getAsResourceLocation(sound, "open", null);
             ResourceLocation closeSound = ExtraJSONUtils.getAsResourceLocation(sound, "close", null);

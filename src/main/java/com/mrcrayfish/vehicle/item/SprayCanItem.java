@@ -12,7 +12,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.NonNullList;
 import net.minecraft.util.Mth;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.level.Level;
@@ -52,13 +52,13 @@ public class SprayCanItem extends Item implements IDyeable
         {
             if(this.hasColor(stack))
             {
-                tooltip.add(new TextComponent(String.format("#%06X", this.getColor(stack))).withStyle(ChatFormatting.BLUE));
+                tooltip.add(MutableComponent.create(new LiteralContents(String.format("#%06X", this.getColor(stack)))).withStyle(ChatFormatting.BLUE));
             }
             else
             {
-                tooltip.add(new TranslatableContents(this.getDescriptionId() + ".empty").withStyle(ChatFormatting.RED));
+                tooltip.add(new TranslatableContents(this.getDescriptionId() + ".empty")).withStyle(ChatFormatting.RED));
             }
-            tooltip.add(new TranslatableContents("vehicle.info_help").withStyle(ChatFormatting.YELLOW));
+            tooltip.add(new TranslatableContents("vehicle.info_help")).withStyle(ChatFormatting.YELLOW));
         }
     }
 

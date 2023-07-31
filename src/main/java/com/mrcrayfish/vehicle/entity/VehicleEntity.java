@@ -23,20 +23,20 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.IPacket;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.network.play.server.SAnimateHandPacket;
-import net.minecraft.particles.ParticleTypes;
+import net.minecraft.network.protocol.game.ClientboundAnimatePacket;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.util.DamageSource;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.util.IndirectEntityDamageSource;
+import net.minecraft.world.damagesource.IndirectEntityDamageSource;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.sounds.SoundEvents;
@@ -44,16 +44,16 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.HitResult;
-import net.minecraft.util.math.vector.Vector2f;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.GameRules;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraft.nbt.Tag;
+import net.minecraftforge.entity.IEntityAdditionalSpawnData;
+import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -105,6 +105,8 @@ public abstract class VehicleEntity extends Entity implements IEntityAdditionalS
     protected float passengerYawOffset;
     @OnlyIn(Dist.CLIENT)
     protected float passengerPitchOffset;
+    private float yRot = this.getYRot();
+    private float xRot = this.getXRot();
 
     public VehicleEntity(EntityType<?> entityType, Level worldIn)
     {
@@ -212,9 +214,9 @@ public abstract class VehicleEntity extends Entity implements IEntityAdditionalS
                     this.setHealth(this.getHealth() + 5F);
                     this.level.playSound(null, this.getX(), this.getY(), this.getZ(), ModSounds.ENTITY_VEHICLE_THUD.get(), SoundSource.PLAYERS, 1.0F, 0.8F + 0.4F * random.nextFloat());
                     player.swing(hand);
-                    if(player instanceof ServerPlayerEntity)
+                    if(player instanceof ServerPlayer)
                     {
-                        ((ServerPlayerEntity) player).connection.send(new SAnimateHandPacket(player, hand == InteractionHand.MAIN_HAND ? 0 : 3));
+                        ((ServerPlayer) player).connection.send(new ClientboundAnimatePacket(player, hand == InteractionHand.MAIN_HAND ? 0 : 3));
                     }
                     if(this.getHealth() == this.getMaxHealth())
                     {
@@ -263,7 +265,7 @@ public abstract class VehicleEntity extends Entity implements IEntityAdditionalS
     @Override
     protected void readAdditionalSaveData(CompoundTag compound)
     {
-        if(compound.contains("Color", Constants.NBT.TAG_INT_ARRAY))
+        if(compound.contains("Color", Tag.TAG_INT_ARRAY))
         {
             int[] c = compound.getIntArray("Color");
             if(c.length == 3)
@@ -272,7 +274,7 @@ public abstract class VehicleEntity extends Entity implements IEntityAdditionalS
                 this.setColor(color);
             }
         }
-        if(compound.contains("Health", Constants.NBT.TAG_FLOAT))
+        if(compound.contains("Health", Tag.TAG_FLOAT))
         {
             this.setHealth(compound.getFloat("Health"));
         }
@@ -280,15 +282,15 @@ public abstract class VehicleEntity extends Entity implements IEntityAdditionalS
         {
             this.trailerId = compound.getUUID("Trailer");
         }
-        if(compound.contains("SeatTracker", Constants.NBT.TAG_COMPOUND))
+        if(compound.contains("SeatTracker", Tag.TAG_COMPOUND))
         {
             this.seatTracker.read(compound.getCompound("SeatTracker"));
         }
-        if(compound.contains("CosmeticTracker", Constants.NBT.TAG_COMPOUND))
+        if(compound.contains("CosmeticTracker", Tag.TAG_COMPOUND))
         {
             this.cosmeticTracker.read(compound.getCompound("CosmeticTracker"));
         }
-        if(compound.contains("WheelStack", Constants.NBT.TAG_COMPOUND))
+        if(compound.contains("WheelStack", Tag.TAG_COMPOUND))
         {
             this.setWheelStack(ItemStack.of(compound.getCompound("WheelStack")));
         }
@@ -447,7 +449,7 @@ public abstract class VehicleEntity extends Entity implements IEntityAdditionalS
                 if(isCreativeMode || this.getHealth() < 0.0F)
                 {
                     this.onVehicleDestroyed((LivingEntity) trueSource);
-                    this.remove();
+                    this.remove(RemovalReason.KILLED);
                 }
 
                 return true;
@@ -760,7 +762,7 @@ public abstract class VehicleEntity extends Entity implements IEntityAdditionalS
     @Override
     public ItemStack getPickedResult(HitResult target)
     {
-        ResourceLocation entityId = this.getType().getRegistryName();
+        ResourceLocation entityId = this.getType().builtInRegistryHolder().key().location();
         if(entityId != null)
         {
             ItemStack wheel = ItemStack.EMPTY;
@@ -774,7 +776,7 @@ public abstract class VehicleEntity extends Entity implements IEntityAdditionalS
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket()
+    public Packet<?> getAddEntityPacket()
     {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
@@ -924,8 +926,8 @@ public abstract class VehicleEntity extends Entity implements IEntityAdditionalS
     {
         int seatIndex = this.getSeatTracker().getSeatIndex(passenger.getUUID());
         float seatYawOffset = seatIndex != -1 ? this.getProperties().getSeats().get(seatIndex).getYawOffset() : 0F;
-        Vec3 vehicleForward = Vec3.directionFromRotation(new Vector2f(0, this.yRot));
-        Vec3 passengerForward = Vec3.directionFromRotation(new Vector2f(passenger.xRot, passenger.getYHeadRot()));
+        Vec3 vehicleForward = Vec3.directionFromRotation(new Vec2(0, this.yRot));
+        Vec3 passengerForward = Vec3.directionFromRotation(new Vec2(passenger.xRot, passenger.getYHeadRot()));
         this.passengerPitchOffset = Mth.degreesDifference(CommonUtils.pitch(passengerForward), CommonUtils.pitch(vehicleForward)) - this.xRot;
 
         if(!this.canApplyYawOffset(passenger))

@@ -21,7 +21,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.inventory.container.SimpleNamedContainerProvider;
 import net.minecraft.item.BlockNamedItem;
@@ -31,14 +31,14 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.network.NetworkHooks;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.network.NetworkHooks;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.util.Map;
 
@@ -68,9 +68,9 @@ public class SeederTrailerEntity extends TrailerEntity implements IStorage
     public InteractionResult interact(Player player, InteractionHand hand)
     {
         ItemStack heldItem = player.getItemInHand(hand);
-        if((heldItem.isEmpty() || !(heldItem.getItem() instanceof SprayCanItem)) && player instanceof ServerPlayerEntity)
+        if((heldItem.isEmpty() || !(heldItem.getItem() instanceof SprayCanItem)) && player instanceof ServerPlayer)
         {
-            IStorage.openStorage((ServerPlayerEntity) player, this, INVENTORY_STORAGE_KEY);
+            IStorage.openStorage((ServerPlayer) player, this, INVENTORY_STORAGE_KEY);
             return InteractionResult.SUCCESS;
         }
         return super.interact(player, hand);
@@ -164,7 +164,7 @@ public class SeederTrailerEntity extends TrailerEntity implements IStorage
     protected void readAdditionalSaveData(CompoundTag compound)
     {
         super.readAdditionalSaveData(compound);
-        if(compound.contains(INVENTORY_STORAGE_KEY, Constants.NBT.TAG_LIST))
+        if(compound.contains(INVENTORY_STORAGE_KEY, Tag.TAG_LIST))
         {
             this.initInventory();
             InventoryUtil.readInventoryToNBT(compound, INVENTORY_STORAGE_KEY, this.inventory);

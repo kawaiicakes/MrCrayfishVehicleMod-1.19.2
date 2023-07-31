@@ -11,7 +11,7 @@ import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.item.BlockItem;
 import net.minecraft.world.item.Item;
-import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 

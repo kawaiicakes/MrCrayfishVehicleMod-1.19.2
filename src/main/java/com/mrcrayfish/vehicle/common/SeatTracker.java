@@ -5,13 +5,13 @@ import com.mrcrayfish.vehicle.entity.VehicleEntity;
 import com.mrcrayfish.vehicle.entity.properties.VehicleProperties;
 import com.mrcrayfish.vehicle.network.PacketHandler;
 import com.mrcrayfish.vehicle.network.message.MessageSyncPlayerSeat;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.network.PacketDistributor;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -97,7 +97,7 @@ public class SeatTracker
             List<Seat> seats = properties.getSeats();
             for(int i = 0; i < seats.size(); i++)
             {
-                if(!this.playerSeatMap.values().contains(i))
+                if(!this.playerSeatMap.containsValue(i))
                 {
                     return i;
                 }
@@ -134,7 +134,7 @@ public class SeatTracker
                 /* Get the real world distance to the seat and check if it's the closest */
                 Seat seat = seats.get(i);
                 Vec3 seatVec = seat.getPosition().add(0, properties.getAxleOffset() + properties.getWheelOffset(), 0).scale(properties.getBodyTransform().getScale()).multiply(-1, 1, 1).scale(0.0625);
-                seatVec = seatVec.yRot(-(vehicle.yRot) * 0.017453292F);
+                seatVec = seatVec.yRot(-(vehicle.getYRot()) * 0.017453292F);
                 seatVec = seatVec.add(vehicle.position());
                 double distance = player.distanceToSqr(seatVec.x, seatVec.y - player.getBbHeight() / 2F, seatVec.z);
                 if(closestSeatIndex == -1 || distance < closestDistance)
@@ -151,7 +151,7 @@ public class SeatTracker
     public CompoundTag write()
     {
         CompoundTag compound = new CompoundTag();
-        ListNBT list = new ListNBT();
+        ListTag list = new ListTag();
         this.playerSeatMap.forEach((uuid, seatIndex) -> {
             CompoundTag seatTag = new CompoundTag();
             seatTag.putUUID("UUID", uuid);
@@ -164,10 +164,10 @@ public class SeatTracker
 
     public void read(CompoundTag compound)
     {
-        if(compound.contains("PlayerSeatMap", Constants.NBT.TAG_LIST))
+        if(compound.contains("PlayerSeatMap", Tag.TAG_LIST))
         {
             this.playerSeatMap.clear();
-            ListNBT list = compound.getList("PlayerSeatMap", Constants.NBT.TAG_COMPOUND);
+            ListTag list = compound.getList("PlayerSeatMap", Tag.TAG_COMPOUND);
             list.forEach(nbt -> {
                 CompoundTag seatTag = (CompoundTag) nbt;
                 UUID uuid = seatTag.getUUID("UUID");

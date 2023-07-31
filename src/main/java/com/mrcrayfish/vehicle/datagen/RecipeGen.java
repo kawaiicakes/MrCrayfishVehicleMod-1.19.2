@@ -1,26 +1,26 @@
 package com.mrcrayfish.vehicle.datagen;
 
 import com.mrcrayfish.vehicle.crafting.FluidEntry;
-import com.mrcrayfish.vehicle.crafting.WorkstationIngredient;
+import net.minecraftforge.common.crafting.CompoundIngredient;
 import com.mrcrayfish.vehicle.entity.VehicleEntity;
 import com.mrcrayfish.vehicle.init.ModBlocks;
 import com.mrcrayfish.vehicle.init.ModEntities;
 import com.mrcrayfish.vehicle.init.ModFluids;
 import com.mrcrayfish.vehicle.init.ModItems;
 import com.mrcrayfish.vehicle.init.ModRecipeSerializers;
-import net.minecraft.data.CustomRecipeBuilder;
+import net.minecraft.data.recipes.SpecialRecipeBuilder;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.IFinishedRecipe;
-import net.minecraft.data.RecipeProvider;
-import net.minecraft.data.ShapedRecipeBuilder;
-import net.minecraft.data.SmithingRecipeBuilder;
+import net.minecraft.data.recipes.FinishedRecipe;
+import net.minecraft.data.recipes.RecipeProvider;
+import net.minecraft.data.recipes.ShapedRecipeBuilder;
+import net.minecraft.data.recipes.UpgradeRecipeBuilder;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
-import net.minecraft.item.Items;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.IItemProvider;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.level.ItemLike;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.conditions.ModLoadedCondition;
 
@@ -39,9 +39,9 @@ public class RecipeGen extends RecipeProvider
     }
 
     @Override
-    protected void buildShapelessRecipes(Consumer<IFinishedRecipe> consumer)
+    protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer)
     {
-        netheriteSmithing(consumer, ModItems.DIAMOND_ELECTRIC_ENGINE.get(), ModItems.NETHERITE_ELECTRIC_ENGINE.get());
+        smithing(consumer, ModItems.DIAMOND_ELECTRIC_ENGINE.get(), ModItems.NETHERITE_ELECTRIC_ENGINE.get());
 
         ShapedRecipeBuilder.shaped(ModItems.DIAMOND_ELECTRIC_ENGINE.get())
                 .pattern(" U ")
@@ -79,7 +79,7 @@ public class RecipeGen extends RecipeProvider
                 .unlockedBy("has_redstone_block", has(Items.REDSTONE_BLOCK))
                 .save(consumer);
 
-        netheriteSmithing(consumer, ModItems.DIAMOND_SMALL_ENGINE.get(), ModItems.NETHERITE_SMALL_ENGINE.get());
+        smithing(consumer, ModItems.DIAMOND_SMALL_ENGINE.get(), ModItems.NETHERITE_SMALL_ENGINE.get());
 
         ShapedRecipeBuilder.shaped(ModItems.DIAMOND_SMALL_ENGINE.get())
                 .pattern(" U ")
@@ -116,7 +116,7 @@ public class RecipeGen extends RecipeProvider
                 .unlockedBy("has_furnace", has(Items.FURNACE))
                 .save(consumer);
 
-        netheriteSmithing(consumer, ModItems.DIAMOND_LARGE_ENGINE.get(), ModItems.NETHERITE_LARGE_ENGINE.get());
+        smithing(consumer, ModItems.DIAMOND_LARGE_ENGINE.get(), ModItems.NETHERITE_LARGE_ENGINE.get());
 
         ShapedRecipeBuilder.shaped(ModItems.DIAMOND_LARGE_ENGINE.get())
                 .pattern(" U ")
@@ -358,63 +358,63 @@ public class RecipeGen extends RecipeProvider
 
         //TODO crafting wheels, boost ramp and pads,
 
-        CustomRecipeBuilder.special(ModRecipeSerializers.COLOR_SPRAY_CAN.get()).save(consumer, "vehicle:color_spray_can");
-        CustomRecipeBuilder.special(ModRecipeSerializers.REFILL_SPRAY_CAN.get()).save(consumer, "vehicle:refill_spray_can");
+        SpecialRecipeBuilder.special(ModRecipeSerializers.COLOR_SPRAY_CAN.get()).save(consumer, "vehicle:color_spray_can");
+        SpecialRecipeBuilder.special(ModRecipeSerializers.REFILL_SPRAY_CAN.get()).save(consumer, "vehicle:refill_spray_can");
 
         // Vehicles
-        workstationCrafting(consumer, ModEntities.QUAD_BIKE.get(), WorkstationIngredient.of(Tags.Items.INGOTS_IRON, 80), WorkstationIngredient.of(Items.IRON_BARS, 4), WorkstationIngredient.of(Items.BLACK_WOOL, 4), WorkstationIngredient.of(Items.REDSTONE, 6), WorkstationIngredient.of(ModItems.PANEL.get(), 8));
-        workstationCrafting(consumer, ModEntities.DIRT_BIKE.get(), WorkstationIngredient.of(Tags.Items.INGOTS_IRON, 32), WorkstationIngredient.of(ModItems.PANEL.get(), 2), WorkstationIngredient.of(Items.GRAY_WOOL, 2));
-        workstationCrafting(consumer, ModEntities.GO_KART.get(), WorkstationIngredient.of(Tags.Items.INGOTS_IRON, 48), WorkstationIngredient.of(ModItems.PANEL.get(), 4));
-        workstationCrafting(consumer, ModEntities.GOLF_CART.get(), WorkstationIngredient.of(Tags.Items.INGOTS_IRON, 80), WorkstationIngredient.of(Items.IRON_BARS, 4), WorkstationIngredient.of(Items.WHITE_WOOL, 8), WorkstationIngredient.of(Items.REDSTONE, 12), WorkstationIngredient.of(ModItems.PANEL.get(), 16));
-        workstationCrafting(consumer, ModEntities.JET_SKI.get(), WorkstationIngredient.of(Tags.Items.INGOTS_IRON, 64), WorkstationIngredient.of(ModItems.PANEL.get(), 10));
-        workstationCrafting(consumer, ModEntities.LAWN_MOWER.get(), WorkstationIngredient.of(Tags.Items.INGOTS_IRON, 48), WorkstationIngredient.of(Items.BLACK_WOOL, 4), WorkstationIngredient.of(ModItems.PANEL.get(), 8));
-        workstationCrafting(consumer, ModEntities.MINI_BUS.get(), WorkstationIngredient.of(Tags.Items.INGOTS_IRON, 128), WorkstationIngredient.of(Items.GRAY_WOOL, 5), WorkstationIngredient.of(Tags.Items.GLASS_PANES, 9), WorkstationIngredient.of(Items.REDSTONE, 12), WorkstationIngredient.of(ModItems.PANEL.get(), 16));
-        workstationCrafting(consumer, ModEntities.MOPED.get(), WorkstationIngredient.of(Tags.Items.INGOTS_IRON, 36), WorkstationIngredient.of(Items.IRON_BARS, 2), WorkstationIngredient.of(Items.BLACK_WOOL, 4), WorkstationIngredient.of(ModItems.PANEL.get(), 6));
-        workstationCrafting(consumer, ModEntities.OFF_ROADER.get(), WorkstationIngredient.of(Tags.Items.INGOTS_IRON, 128), WorkstationIngredient.of(Items.BLACK_WOOL, 8), WorkstationIngredient.of(Tags.Items.GLASS_PANES, 6), WorkstationIngredient.of(Items.REDSTONE, 12), WorkstationIngredient.of(ModItems.PANEL.get(), 24));
-        workstationCrafting(consumer, ModEntities.SPORTS_PLANE.get(), WorkstationIngredient.of(Tags.Items.INGOTS_IRON, 180), WorkstationIngredient.of(Tags.Items.GLASS_PANES, 16), WorkstationIngredient.of(Items.REDSTONE, 18), WorkstationIngredient.of(ModItems.PANEL.get(), 32));
-        workstationCrafting(consumer, ModEntities.TRACTOR.get(), WorkstationIngredient.of(Tags.Items.INGOTS_IRON, 128), WorkstationIngredient.of(Items.BLACK_WOOL, 4), WorkstationIngredient.of(Items.REDSTONE, 8), WorkstationIngredient.of(ModItems.PANEL.get(), 16));
+        workstationCrafting(consumer, ModEntities.QUAD_BIKE.get(), CompoundIngredient.of(Tags.Items.INGOTS_IRON, 80), CompoundIngredient.of(Items.IRON_BARS, 4), CompoundIngredient.of(Items.BLACK_WOOL, 4), CompoundIngredient.of(Items.REDSTONE, 6), CompoundIngredient.of(ModItems.PANEL.get(), 8));
+        workstationCrafting(consumer, ModEntities.DIRT_BIKE.get(), CompoundIngredient.of(Tags.Items.INGOTS_IRON, 32), CompoundIngredient.of(ModItems.PANEL.get(), 2), CompoundIngredient.of(Items.GRAY_WOOL, 2));
+        workstationCrafting(consumer, ModEntities.GO_KART.get(), CompoundIngredient.of(Tags.Items.INGOTS_IRON, 48), CompoundIngredient.of(ModItems.PANEL.get(), 4));
+        workstationCrafting(consumer, ModEntities.GOLF_CART.get(), CompoundIngredient.of(Tags.Items.INGOTS_IRON, 80), CompoundIngredient.of(Items.IRON_BARS, 4), CompoundIngredient.of(Items.WHITE_WOOL, 8), CompoundIngredient.of(Items.REDSTONE, 12), CompoundIngredient.of(ModItems.PANEL.get(), 16));
+        workstationCrafting(consumer, ModEntities.JET_SKI.get(), CompoundIngredient.of(Tags.Items.INGOTS_IRON, 64), CompoundIngredient.of(ModItems.PANEL.get(), 10));
+        workstationCrafting(consumer, ModEntities.LAWN_MOWER.get(), CompoundIngredient.of(Tags.Items.INGOTS_IRON, 48), CompoundIngredient.of(Items.BLACK_WOOL, 4), CompoundIngredient.of(ModItems.PANEL.get(), 8));
+        workstationCrafting(consumer, ModEntities.MINI_BUS.get(), CompoundIngredient.of(Tags.Items.INGOTS_IRON, 128), CompoundIngredient.of(Items.GRAY_WOOL, 5), CompoundIngredient.of(Tags.Items.GLASS_PANES, 9), CompoundIngredient.of(Items.REDSTONE, 12), CompoundIngredient.of(ModItems.PANEL.get(), 16));
+        workstationCrafting(consumer, ModEntities.MOPED.get(), CompoundIngredient.of(Tags.Items.INGOTS_IRON, 36), CompoundIngredient.of(Items.IRON_BARS, 2), CompoundIngredient.of(Items.BLACK_WOOL, 4), CompoundIngredient.of(ModItems.PANEL.get(), 6));
+        workstationCrafting(consumer, ModEntities.OFF_ROADER.get(), CompoundIngredient.of(Tags.Items.INGOTS_IRON, 128), CompoundIngredient.of(Items.BLACK_WOOL, 8), CompoundIngredient.of(Tags.Items.GLASS_PANES, 6), CompoundIngredient.of(Items.REDSTONE, 12), CompoundIngredient.of(ModItems.PANEL.get(), 24));
+        workstationCrafting(consumer, ModEntities.SPORTS_PLANE.get(), CompoundIngredient.of(Tags.Items.INGOTS_IRON, 180), CompoundIngredient.of(Tags.Items.GLASS_PANES, 16), CompoundIngredient.of(Items.REDSTONE, 18), CompoundIngredient.of(ModItems.PANEL.get(), 32));
+        workstationCrafting(consumer, ModEntities.TRACTOR.get(), CompoundIngredient.of(Tags.Items.INGOTS_IRON, 128), CompoundIngredient.of(Items.BLACK_WOOL, 4), CompoundIngredient.of(Items.REDSTONE, 8), CompoundIngredient.of(ModItems.PANEL.get(), 16));
 
         // Trailers
-        workstationCrafting(consumer, ModEntities.FERTILIZER.get(), WorkstationIngredient.of(Tags.Items.INGOTS_IRON, 36), WorkstationIngredient.of(ModItems.PANEL.get(), 8));
-        workstationCrafting(consumer, ModEntities.FLUID_TRAILER.get(), WorkstationIngredient.of(Tags.Items.INGOTS_IRON, 48), WorkstationIngredient.of(ModItems.PANEL.get(), 8));
-        workstationCrafting(consumer, ModEntities.SEEDER.get(), WorkstationIngredient.of(Tags.Items.INGOTS_IRON, 42), WorkstationIngredient.of(ModItems.PANEL.get(), 8));
-        workstationCrafting(consumer, ModEntities.STORAGE_TRAILER.get(), WorkstationIngredient.of(Tags.Items.INGOTS_IRON, 36), WorkstationIngredient.of(ModItems.PANEL.get(), 2), WorkstationIngredient.of(Items.CHEST, 1));
-        workstationCrafting(consumer, ModEntities.VEHICLE_TRAILER.get(), WorkstationIngredient.of(Tags.Items.INGOTS_IRON, 48), WorkstationIngredient.of(ModItems.PANEL.get(), 2));
+        workstationCrafting(consumer, ModEntities.FERTILIZER.get(), CompoundIngredient.of(Tags.Items.INGOTS_IRON, 36), CompoundIngredient.of(ModItems.PANEL.get(), 8));
+        workstationCrafting(consumer, ModEntities.FLUID_TRAILER.get(), CompoundIngredient.of(Tags.Items.INGOTS_IRON, 48), CompoundIngredient.of(ModItems.PANEL.get(), 8));
+        workstationCrafting(consumer, ModEntities.SEEDER.get(), CompoundIngredient.of(Tags.Items.INGOTS_IRON, 42), CompoundIngredient.of(ModItems.PANEL.get(), 8));
+        workstationCrafting(consumer, ModEntities.STORAGE_TRAILER.get(), CompoundIngredient.of(Tags.Items.INGOTS_IRON, 36), CompoundIngredient.of(ModItems.PANEL.get(), 2), CompoundIngredient.of(Items.CHEST, 1));
+        workstationCrafting(consumer, ModEntities.VEHICLE_TRAILER.get(), CompoundIngredient.of(Tags.Items.INGOTS_IRON, 48), CompoundIngredient.of(ModItems.PANEL.get(), 2));
 
         // Furniture
-        //workstationCrafting(consumer, new ResourceLocation("cfm:sofacopter"), WorkstationIngredient.of(Tags.Items.INGOTS_IRON, 80), WorkstationIngredient.of(ModItems.PANEL.get(), 10));
+        //workstationCrafting(consumer, new ResourceLocation("cfm:sofacopter"), CompoundIngredient.of(Tags.Items.INGOTS_IRON, 80), CompoundIngredient.of(ModItems.PANEL.get(), 10));
 
         fluidExtracting(consumer, Items.BLAZE_ROD, FluidEntry.of(ModFluids.BLAZE_JUICE.get(), 450));
         fluidExtracting(consumer, Items.ENDER_PEARL, FluidEntry.of(ModFluids.ENDER_SAP.get(), 600));
         fluidMixing(consumer, FluidEntry.of(ModFluids.ENDER_SAP.get(), 200),  FluidEntry.of(ModFluids.BLAZE_JUICE.get(), 200), Items.GLOWSTONE_DUST, FluidEntry.of(ModFluids.FUELIUM.get(), 400));
     }
 
-    private static void netheriteSmithing(Consumer<IFinishedRecipe> consumer, Item inputItem, Item resultItem)
+    private static void smithing(Consumer<FinishedRecipe> consumer, Item inputItem, Item resultItem)
     {
         ResourceLocation id = Registry.ITEM.getKey(resultItem.asItem());
-        SmithingRecipeBuilder.smithing(Ingredient.of(inputItem), Ingredient.of(Items.NETHERITE_INGOT), resultItem).unlocks("has_netherite_ingot", has(Items.NETHERITE_INGOT)).save(consumer, new ResourceLocation(id.getNamespace(), id.getPath() + "_smithing"));
+        UpgradeRecipeBuilder.smithing(Ingredient.of(inputItem), Ingredient.of(Items.NETHERITE_INGOT), resultItem).unlocks("has_netherite_ingot", has(Items.NETHERITE_INGOT)).save(consumer, new ResourceLocation(id.getNamespace(), id.getPath() + "_smithing"));
     }
 
-    private static void workstationCrafting(Consumer<IFinishedRecipe> consumer, EntityType<? extends VehicleEntity> type, WorkstationIngredient ... materials)
+    private static void workstationCrafting(Consumer<FinishedRecipe> consumer, EntityType<? extends VehicleEntity> type, CompoundIngredient ... materials)
     {
-        ResourceLocation entityId = Objects.requireNonNull(type.getRegistryName());
+        ResourceLocation entityId = Objects.requireNonNull(type.builtInRegistryHolder().key().location());
         WorkstationRecipeBuilder.crafting(entityId, Arrays.asList(materials)).save(consumer, new ResourceLocation(entityId.getNamespace(), entityId.getPath() + "_crafting"));
     }
 
-    private static void dependantWorkstationCrafting(Consumer<IFinishedRecipe> consumer, String modId, ResourceLocation entityId, WorkstationIngredient ... materials)
+    private static void dependantWorkstationCrafting(Consumer<FinishedRecipe> consumer, String modId, ResourceLocation entityId, CompoundIngredient ... materials)
     {
         WorkstationRecipeBuilder.crafting(entityId, Arrays.asList(materials)).addCondition(new ModLoadedCondition(modId)).save(consumer, new ResourceLocation(entityId.getNamespace(), entityId.getPath() + "_crafting"));
     }
 
-    private static void fluidExtracting(Consumer<IFinishedRecipe> consumer, IItemProvider provider, FluidEntry output)
+    private static void fluidExtracting(Consumer<FinishedRecipe> consumer, ItemLike provider, FluidEntry output)
     {
-        ResourceLocation id = Objects.requireNonNull(output.getFluid().getRegistryName());
+        ResourceLocation id = Objects.requireNonNull(output.getFluid().builtInRegistryHolder().key().location());
         FluidExtractorRecipeBuilder.extracting(Ingredient.of(provider), output).save(consumer, new ResourceLocation(id.getNamespace(), id.getPath() + "_extracting"));
     }
 
-    private static void fluidMixing(Consumer<IFinishedRecipe> consumer, FluidEntry inputOne, FluidEntry inputTwo, IItemProvider provider, FluidEntry output)
+    private static void fluidMixing(Consumer<FinishedRecipe> consumer, FluidEntry inputOne, FluidEntry inputTwo, ItemLike provider, FluidEntry output)
     {
-        ResourceLocation id = Objects.requireNonNull(output.getFluid().getRegistryName());
+        ResourceLocation id = Objects.requireNonNull(output.getFluid().builtInRegistryHolder().key().location());
         FluidMixerRecipeBuilder.mixing(inputOne, inputTwo, Ingredient.of(provider), output).save(consumer, new ResourceLocation(id.getNamespace(), id.getPath() + "_mixing"));
     }
 }

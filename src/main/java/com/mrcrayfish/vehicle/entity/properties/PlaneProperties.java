@@ -2,7 +2,7 @@ package com.mrcrayfish.vehicle.entity.properties;
 
 import com.google.gson.JsonObject;
 import com.mrcrayfish.vehicle.util.ExtraJSONUtils;
-import net.minecraft.util.JSONUtils;
+import net.minecraft.util.GsonHelper;
 
 /**
  * Author: MrCrayfish
@@ -29,14 +29,14 @@ public final class PlaneProperties extends ExtendedProperties
 
     public PlaneProperties(JsonObject object)
     {
-        this.minimumSpeedToTakeOff = JSONUtils.getAsFloat(object, "minimumSpeedToTakeOff", DEFAULT_MINIMUM_SPEED_TO_TAKE_OFF); //TODO specify the defaults somewhere
-        this.maxFlapAngle = JSONUtils.getAsFloat(object, "maxFlapAngle", DEFAULT_MAX_FLAP_ANGLE);
-        this.flapStrength = JSONUtils.getAsFloat(object, "flapStrength", DEFAULT_FLAP_STRENGTH);
-        this.flapSensitivity = JSONUtils.getAsFloat(object, "flapSensitivity", DEFAULT_FLAP_SENSITIVITY);
-        this.maxElevatorAngle = JSONUtils.getAsFloat(object, "maxElevatorAngle", DEFAULT_MAX_ELEVATOR_ANGLE);
-        this.elevatorStrength = JSONUtils.getAsFloat(object, "elevatorStrength", DEFAULT_ELEVATOR_STRENGTH);
-        this.elevatorSensitivity = JSONUtils.getAsFloat(object, "elevatorSensitivity", DEFAULT_ELEVATOR_SENSITIVITY);
-        this.maxTurnAngle = JSONUtils.getAsFloat(object, "maxTurnAngle", DEFAULT_MAX_TURN_ANGLE);
+        this.minimumSpeedToTakeOff = GsonHelper.getAsFloat(object, "minimumSpeedToTakeOff", DEFAULT_MINIMUM_SPEED_TO_TAKE_OFF); //TODO specify the defaults somewhere
+        this.maxFlapAngle = GsonHelper.getAsFloat(object, "maxFlapAngle", DEFAULT_MAX_FLAP_ANGLE);
+        this.flapStrength = GsonHelper.getAsFloat(object, "flapStrength", DEFAULT_FLAP_STRENGTH);
+        this.flapSensitivity = GsonHelper.getAsFloat(object, "flapSensitivity", DEFAULT_FLAP_SENSITIVITY);
+        this.maxElevatorAngle = GsonHelper.getAsFloat(object, "maxElevatorAngle", DEFAULT_MAX_ELEVATOR_ANGLE);
+        this.elevatorStrength = GsonHelper.getAsFloat(object, "elevatorStrength", DEFAULT_ELEVATOR_STRENGTH);
+        this.elevatorSensitivity = GsonHelper.getAsFloat(object, "elevatorSensitivity", DEFAULT_ELEVATOR_SENSITIVITY);
+        this.maxTurnAngle = GsonHelper.getAsFloat(object, "maxTurnAngle", DEFAULT_MAX_TURN_ANGLE);
     }
 
     public PlaneProperties(float minimumSpeedToTakeOff, float maxFlapAngle, float flapStrength, float flapSensitivity, float maxElevatorAngle, float elevatorStrength, float elevatorSensitivity, float maxTurnAngle)

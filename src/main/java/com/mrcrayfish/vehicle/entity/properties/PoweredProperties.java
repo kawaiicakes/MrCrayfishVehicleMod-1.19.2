@@ -7,7 +7,7 @@ import com.mrcrayfish.vehicle.entity.EngineType;
 import com.mrcrayfish.vehicle.entity.FuelFillerType;
 import com.mrcrayfish.vehicle.entity.IEngineType;
 import com.mrcrayfish.vehicle.util.ExtraJSONUtils;
-import net.minecraft.util.JSONUtils;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 
@@ -68,27 +68,27 @@ public final class PoweredProperties extends ExtendedProperties
 
     public PoweredProperties(JsonObject object)
     {
-        this.canDriveUpBlocks = JSONUtils.getAsBoolean(object, "canDriveUpBlocks", DEFAULT_CAN_DRIVE_UP_BLOCKS);
-        this.maxSteeringAngle = JSONUtils.getAsFloat(object, "maxSteeringAngle", DEFAULT_MAX_STEERING_ANGLE);
-        this.requiresEnergy = JSONUtils.getAsBoolean(object, "requiresEnergy", DEFAULT_REQUIRES_ENERGY);
-        this.energyCapacity = JSONUtils.getAsFloat(object, "energyCapacity", DEFAULT_ENERGY_CAPACITY);
-        this.energyConsumptionPerTick = JSONUtils.getAsFloat(object, "energyConsumptionPerTick", DEFAULT_ENERGY_CONSUMPTION_PER_TICK);
+        this.canDriveUpBlocks = GsonHelper.getAsBoolean(object, "canDriveUpBlocks", DEFAULT_CAN_DRIVE_UP_BLOCKS);
+        this.maxSteeringAngle = GsonHelper.getAsFloat(object, "maxSteeringAngle", DEFAULT_MAX_STEERING_ANGLE);
+        this.requiresEnergy = GsonHelper.getAsBoolean(object, "requiresEnergy", DEFAULT_REQUIRES_ENERGY);
+        this.energyCapacity = GsonHelper.getAsFloat(object, "energyCapacity", DEFAULT_ENERGY_CAPACITY);
+        this.energyConsumptionPerTick = GsonHelper.getAsFloat(object, "energyConsumptionPerTick", DEFAULT_ENERGY_CONSUMPTION_PER_TICK);
         this.engineType = ExtraJSONUtils.getAsEngineType(object, "engineType", DEFAULT_ENGINE_TYPE);
-        this.enginePower = JSONUtils.getAsFloat(object, "enginePower", DEFAULT_ENGINE_POWER);
-        this.minEnginePitch = JSONUtils.getAsFloat(object, "minEnginePitch", DEFAULT_MIN_ENGINE_PITCH);
-        this.maxEnginePitch = JSONUtils.getAsFloat(object, "maxEnginePitch", DEFAULT_MAX_ENGINE_PITCH);
-        this.renderEngine = JSONUtils.getAsBoolean(object, "renderEngine", DEFAULT_RENDER_ENGINE);
+        this.enginePower = GsonHelper.getAsFloat(object, "enginePower", DEFAULT_ENGINE_POWER);
+        this.minEnginePitch = GsonHelper.getAsFloat(object, "minEnginePitch", DEFAULT_MIN_ENGINE_PITCH);
+        this.maxEnginePitch = GsonHelper.getAsFloat(object, "maxEnginePitch", DEFAULT_MAX_ENGINE_PITCH);
+        this.renderEngine = GsonHelper.getAsBoolean(object, "renderEngine", DEFAULT_RENDER_ENGINE);
         this.engineTransform = ExtraJSONUtils.getAsTransform(object, "engineTransform", DEFAULT_ENGINE_TRANSFORM);
         this.exhaustTransform = ExtraJSONUtils.getAsTransform(object, "exhaustTransform", DEFAULT_EXHAUST_TRANSFORM);
-        this.showExhaustFumes = JSONUtils.getAsBoolean(object, "showExhaustFumes", DEFAULT_SHOW_EXHAUST_FUMES);
+        this.showExhaustFumes = GsonHelper.getAsBoolean(object, "showExhaustFumes", DEFAULT_SHOW_EXHAUST_FUMES);
         this.exhaustFumesPosition = ExtraJSONUtils.getAsVector3d(object, "exhaustFumesPosition", DEFAULT_EXHAUST_FUMES_POSITION);
         this.fuelFillerTransform = ExtraJSONUtils.getAsTransform(object, "fuelFillerTransform", DEFAULT_FUEL_FILLER_TRANSFORM);
         this.fuelFillerType = ExtraJSONUtils.getAsEnum(object, "fuelFillerType", FuelFillerType.class, FuelFillerType.DEFAULT);
         this.ignitionTransform = ExtraJSONUtils.getAsTransform(object, "ignitionTransform", DEFAULT_IGNITION_TRANSFORM);
-        this.hasHorn = JSONUtils.getAsBoolean(object, "hasHorn", DEFAULT_HAS_HORN);
-        this.canLockWithKey = JSONUtils.getAsBoolean(object, "canLockWithKey", DEFAULT_CAN_LOCK_WITH_KEY);
-        this.frontAxleOffset = new Vec3(0, 0, JSONUtils.getAsFloat(object, "frontAxleOffset", 0F));
-        this.rearAxleOffset = new Vec3(0, 0, JSONUtils.getAsFloat(object, "rearAxleOffset", 0F));
+        this.hasHorn = GsonHelper.getAsBoolean(object, "hasHorn", DEFAULT_HAS_HORN);
+        this.canLockWithKey = GsonHelper.getAsBoolean(object, "canLockWithKey", DEFAULT_CAN_LOCK_WITH_KEY);
+        this.frontAxleOffset = new Vec3(0, 0, GsonHelper.getAsFloat(object, "frontAxleOffset", 0F));
+        this.rearAxleOffset = new Vec3(0, 0, GsonHelper.getAsFloat(object, "rearAxleOffset", 0F));
         this.engineSound = ExtraJSONUtils.getAsResourceLocation(object, "engineSound", DEFAULT_ENGINE_SOUND);
         this.hornSound = ExtraJSONUtils.getAsResourceLocation(object, "hornSound", DEFAULT_HORN_SOUND);
     }

@@ -8,7 +8,7 @@ import com.google.gson.JsonParseException;
 import com.mrcrayfish.vehicle.entity.HelicopterEntity;
 import com.mrcrayfish.vehicle.entity.PlaneEntity;
 import com.mrcrayfish.vehicle.entity.VehicleEntity;
-import net.minecraft.util.JSONUtils;
+import net.minecraft.util.GsonHelper;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Type;
@@ -46,10 +46,10 @@ public class Dynamic implements IValue
             if(json.isJsonObject())
             {
                 JsonObject object = json.getAsJsonObject();
-                Source source = Source.fromKey(JSONUtils.getAsString(object, "source"));
-                if(source == null) throw new JsonParseException("Invalid source: " + JSONUtils.getAsString(object, "source"));
-                boolean inverse = JSONUtils.getAsBoolean(object, "inverse", false);
-                float scale = JSONUtils.getAsFloat(object, "scale", 1.0F);
+                Source source = Source.fromKey(GsonHelper.getAsString(object, "source"));
+                if(source == null) throw new JsonParseException("Invalid source: " + GsonHelper.getAsString(object, "source"));
+                boolean inverse = GsonHelper.getAsBoolean(object, "inverse", false);
+                float scale = GsonHelper.getAsFloat(object, "scale", 1.0F);
                 return new Dynamic(source, inverse, scale);
             }
             throw new JsonParseException("Dynamic values must be object");

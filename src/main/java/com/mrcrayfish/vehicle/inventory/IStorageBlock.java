@@ -3,14 +3,14 @@ package com.mrcrayfish.vehicle.inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
-import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.NonNullList;
 
 /**
  * Author: MrCrayfish
  */
-public interface IStorageBlock extends IInventory, INamedContainerProvider
+public interface IStorageBlock extends IInventory, MenuProvider
 {
     NonNullList<ItemStack> getInventory();
 

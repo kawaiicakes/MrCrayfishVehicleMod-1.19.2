@@ -11,7 +11,7 @@ import net.minecraft.world.level.material.Material;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.fluid.Fluid;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -30,7 +30,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.level.BlockGetter;
@@ -84,22 +84,22 @@ public class FuelDrumBlock extends Block
         else
         {
             CompoundTag tag = stack.getTag();
-            if(tag != null && tag.contains("BlockEntityTag", Constants.NBT.TAG_COMPOUND))
+            if(tag != null && tag.contains("BlockEntityTag", Tag.TAG_COMPOUND))
             {
                 CompoundTag blockEntityTag = tag.getCompound("BlockEntityTag");
-                if(blockEntityTag.contains("FluidName", Constants.NBT.TAG_STRING))
+                if(blockEntityTag.contains("FluidName", Tag.TAG_STRING))
                 {
                     String fluidName = blockEntityTag.getString("FluidName");
                     Fluid fluid = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(fluidName));
                     int amount = blockEntityTag.getInt("Amount");
                     if(fluid != null && amount > 0)
                     {
-                        list.add(new TranslatableContents(fluid.getAttributes().getTranslationKey()).withStyle(ChatFormatting.BLUE));
-                        list.add(new TextComponent(amount + " / " + this.getCapacity() + "mb").withStyle(ChatFormatting.GRAY));
+                        list.add(new TranslatableContents(fluid.getAttributes().getTranslationKey())).withStyle(ChatFormatting.BLUE));
+                        list.add(MutableComponent.create(new LiteralContents(amount + " / " + this.getCapacity() + "mb")).withStyle(ChatFormatting.GRAY));
                     }
                 }
             }
-            list.add(new TranslatableContents("vehicle.info_help").withStyle(ChatFormatting.YELLOW));
+            list.add(new TranslatableContents("vehicle.info_help")).withStyle(ChatFormatting.YELLOW));
         }
     }
 

@@ -97,7 +97,7 @@ public class FuelingHandler
 
         Minecraft minecraft = Minecraft.getInstance();
         Player player = minecraft.player;
-        PoseStack matrixStack = event.getMatrixStack();
+        PoseStack matrixStack = event.getPoseStack();
         VehicleRayTraceResult result = EntityRayTracer.instance().getContinuousInteraction();
         if(result != null && result.equalsContinuousInteraction(RayTraceFunction.FUNCTION_FUELING) && event.getHand() == EntityRayTracer.instance().getContinuousInteractionHand())
         {
@@ -121,10 +121,16 @@ public class FuelingHandler
                 event.setCanceled(true);
 
                 boolean mainHand = event.getHand() == InteractionHand.MAIN_HAND;
-                HumanoidArm handSide = mainHand ? player.getMainArm() : player.getMainArm().getOpposite();
+                HumanoidArm handSide;
+                assert player != null;
+                if (mainHand) {
+                    handSide = player.getMainArm();
+                } else {
+                    handSide = player.getMainArm().getOpposite();
+                }
                 int handOffset = handSide == HumanoidArm.RIGHT ? 1 : -1;
                 MultiBufferSource renderTypeBuffer = Minecraft.getInstance().renderBuffers().bufferSource();
-                int light = minecraft.getEntityRenderDispatcher().getPackedLightCoords(player, event.getPartialTicks());
+                int light = minecraft.getEntityRenderDispatcher().getPackedLightCoords(player, event.getPartialTick());
 
                 matrixStack.pushPose();
                 matrixStack.translate(handOffset * 0.65, -0.27, -0.72);
@@ -142,11 +148,11 @@ public class FuelingHandler
     @SubscribeEvent
     public void onModelRenderPost(PlayerModelEvent.Render.Post event)
     {
-        Player player = event.getPlayer();
-        if(!SyncedPlayerData.instance().get(player, ModDataKeys.GAS_PUMP).isPresent())
+        Player player = event.getEntity();
+        if(SyncedPlayerData.instance().get(player, ModDataKeys.GAS_PUMP).isEmpty())
             return;
 
-        PoseStack matrixStack = event.getMatrixStack();
+        PoseStack matrixStack = event.getPoseStack();
         matrixStack.pushPose();
 
         if(event.getModelPlayer().young)
@@ -160,7 +166,7 @@ public class FuelingHandler
             matrixStack.translate(0.0, 0.2, 0.0);
         }
 
-        event.getModelPlayer().translateToHand(HumanoidArm.RIGHT, event.getMatrixStack());
+        event.getModelPlayer().translateToHand(HumanoidArm.RIGHT, event.getPoseStack());
         matrixStack.mulPose(Axis.POSITIVE_X.rotationDegrees(180F));
         matrixStack.mulPose(Axis.POSITIVE_Y.rotationDegrees(180F));
         boolean leftHanded = player.getMainArm() == HumanoidArm.LEFT;

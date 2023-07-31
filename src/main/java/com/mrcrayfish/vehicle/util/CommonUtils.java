@@ -2,7 +2,7 @@ package com.mrcrayfish.vehicle.util;
 
 import com.mrcrayfish.vehicle.Config;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
@@ -35,7 +35,7 @@ public class CommonUtils
 
     public static ItemStack readItemStackFromTag(CompoundTag compound, String key)
     {
-        if(compound.contains(key, Constants.NBT.TAG_COMPOUND))
+        if(compound.contains(key, Tag.TAG_COMPOUND))
         {
             return ItemStack.of(compound.getCompound(key));
         }
@@ -44,7 +44,7 @@ public class CommonUtils
 
     public static void sendInfoMessage(Player player, String message)
     {
-        if(player instanceof ServerPlayerEntity)
+        if(player instanceof ServerPlayer)
         {
             player.displayClientMessage(new TranslatableContents(message), true);
         }

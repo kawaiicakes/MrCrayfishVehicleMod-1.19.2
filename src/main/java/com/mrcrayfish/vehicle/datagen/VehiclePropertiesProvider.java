@@ -8,8 +8,8 @@ import com.google.gson.JsonObject;
 import com.mrcrayfish.vehicle.entity.VehicleEntity;
 import com.mrcrayfish.vehicle.entity.properties.VehicleProperties;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.DirectoryCache;
-import net.minecraft.data.IDataProvider;
+import net.minecraft.data.CachedOutput;
+import net.minecraft.data.DataProvider;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
@@ -29,7 +29,7 @@ import java.util.Objects;
 /**
  * Author: MrCrayfish
  */
-public abstract class VehiclePropertiesProvider implements IDataProvider
+public abstract class VehiclePropertiesProvider implements DataProvider
 {
     private static final Logger LOGGER = LogManager.getLogger();
     private static final Gson GSON = new GsonBuilder().registerTypeAdapter(VehicleProperties.class, new VehicleProperties.Serializer()).create();
@@ -50,7 +50,7 @@ public abstract class VehiclePropertiesProvider implements IDataProvider
 
     protected final void add(EntityType<? extends VehicleEntity> type, VehicleProperties.Builder builder)
     {
-        this.add(type.getRegistryName(), builder);
+        this.add(type.builtInRegistryHolder().key().location(), builder);
     }
 
     protected final void add(ResourceLocation id, VehicleProperties.Builder builder)
@@ -66,7 +66,7 @@ public abstract class VehiclePropertiesProvider implements IDataProvider
     public abstract void registerProperties();
 
     @Override
-    public void run(DirectoryCache cache) throws IOException
+    public void run(CachedOutput cache) throws IOException
     {
         this.vehiclePropertiesMap.clear();
         this.registerProperties();

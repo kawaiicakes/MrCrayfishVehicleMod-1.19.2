@@ -20,9 +20,9 @@ public class WorkstationRecipe implements IRecipe<WorkstationTileEntity>
 {
     private ResourceLocation id;
     private EntityType<?> vehicle;
-    private ImmutableList<WorkstationIngredient> materials;
+    private ImmutableList<CompoundIngredient> materials;
 
-    public WorkstationRecipe(ResourceLocation id, EntityType<?> vehicle, ImmutableList<WorkstationIngredient> materials)
+    public WorkstationRecipe(ResourceLocation id, EntityType<?> vehicle, ImmutableList<CompoundIngredient> materials)
     {
         this.id = id;
         this.vehicle = vehicle;
@@ -34,7 +34,7 @@ public class WorkstationRecipe implements IRecipe<WorkstationTileEntity>
         return this.vehicle;
     }
 
-    public ImmutableList<WorkstationIngredient> getMaterials()
+    public ImmutableList<CompoundIngredient> getMaterials()
     {
         return this.materials;
     }
@@ -83,7 +83,7 @@ public class WorkstationRecipe implements IRecipe<WorkstationTileEntity>
 
     public boolean hasMaterials(Player player)
     {
-        for(WorkstationIngredient ingredient : this.getMaterials())
+        for(CompoundIngredient ingredient : this.getMaterials())
         {
             if(!InventoryUtil.hasWorkstationIngredient(player, ingredient))
             {
@@ -95,7 +95,7 @@ public class WorkstationRecipe implements IRecipe<WorkstationTileEntity>
 
     public void consumeMaterials(Player player)
     {
-        for(WorkstationIngredient ingredient : this.getMaterials())
+        for(CompoundIngredient ingredient : this.getMaterials())
         {
             InventoryUtil.removeWorkstationIngredient(player, ingredient);
         }

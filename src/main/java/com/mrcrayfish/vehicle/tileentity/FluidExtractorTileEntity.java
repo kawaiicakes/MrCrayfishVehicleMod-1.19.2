@@ -10,12 +10,12 @@ import com.mrcrayfish.vehicle.util.InventoryUtil;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.fluid.Fluid;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tileentity.ITickableTileEntity;
@@ -24,7 +24,7 @@ import net.minecraft.util.IIntArray;
 import net.minecraft.util.INameable;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 /**
  * Author: MrCrayfish
  */
-public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements IInventory, ITickableTileEntity, INamedContainerProvider, INameable
+public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements IInventory, ITickableTileEntity, MenuProvider, INameable
 {
     private NonNullList<ItemStack> inventory = NonNullList.withSize(7, ItemStack.EMPTY);
 
@@ -75,7 +75,7 @@ public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements 
                 case 2:
                     return fuelMaxProgress;
                 case 3:
-                    return tank.getFluid().getFluid().getRegistryName().hashCode();
+                    return tank.getFluid().getFluid().builtInRegistryHolder().key().location().hashCode();
                 case 4:
                     return tank.getFluidAmount();
             }
@@ -336,12 +336,12 @@ public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements 
         {
             this.fuelMaxProgress = compound.getInt("FuelMaxProgress");
         }
-        if(compound.contains("Items", Constants.NBT.TAG_LIST))
+        if(compound.contains("Items", Tag.TAG_LIST))
         {
             this.inventory = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
             ItemStackHelper.loadAllItems(compound, this.inventory);
         }
-        if(compound.contains("CustomName", Constants.NBT.TAG_STRING))
+        if(compound.contains("CustomName", Tag.TAG_STRING))
         {
             this.customName = compound.getString("CustomName");
         }
@@ -380,7 +380,7 @@ public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements 
     @Override
     public Component getDisplayName()
     {
-        return this.hasCustomName() ? new TextComponent(this.customName) : new TranslatableContents("container.fluid_extractor");
+        return this.hasCustomName() ? MutableComponent.create(new LiteralContents(this.customName) : new TranslatableContents("container.fluid_extractor");
     }
 
     private void shrinkItem(int index)
@@ -407,7 +407,7 @@ public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements 
 
     public void updateFluid(FluidTank tank, int fluidHash)
     {
-        Optional<Fluid> optional = ForgeRegistries.FLUIDS.getValues().stream().filter(fluid -> fluid.getRegistryName().hashCode() == fluidHash).findFirst();
+        Optional<Fluid> optional = ForgeRegistries.FLUIDS.getValues().stream().filter(fluid -> fluid.builtInRegistryHolder().key().location().hashCode() == fluidHash).findFirst();
         optional.ifPresent(fluid -> tank.setFluid(new FluidStack(fluid, tank.getFluidAmount())));
     }
 

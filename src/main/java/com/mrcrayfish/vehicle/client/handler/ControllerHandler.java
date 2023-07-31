@@ -1,27 +1,21 @@
 package com.mrcrayfish.vehicle.client.handler;
 
 import com.mrcrayfish.controllable.Controllable;
-import com.mrcrayfish.controllable.client.Action;
-import com.mrcrayfish.controllable.client.ActionVisibility;
-import com.mrcrayfish.controllable.client.BindingRegistry;
-import com.mrcrayfish.controllable.client.ButtonBinding;
-import com.mrcrayfish.controllable.client.ButtonBindings;
-import com.mrcrayfish.controllable.client.Buttons;
-import com.mrcrayfish.controllable.event.AvailableActionsEvent;
+import com.mrcrayfish.controllable.client.*;
 import com.mrcrayfish.controllable.event.ControllerEvent;
 import com.mrcrayfish.controllable.event.GatherActionsEvent;
 import com.mrcrayfish.controllable.event.RenderPlayerPreviewEvent;
-import com.mrcrayfish.vehicle.Config;
 import com.mrcrayfish.vehicle.client.ClientHandler;
 import com.mrcrayfish.vehicle.entity.HelicopterEntity;
 import com.mrcrayfish.vehicle.entity.LandVehicleEntity;
-import com.mrcrayfish.vehicle.entity.PlaneEntity;
 import com.mrcrayfish.vehicle.entity.PoweredVehicleEntity;
 import com.mrcrayfish.vehicle.entity.VehicleEntity;
 import com.mrcrayfish.vehicle.network.PacketHandler;
 import com.mrcrayfish.vehicle.network.message.MessageCycleSeats;
 import com.mrcrayfish.vehicle.network.message.MessageHitchTrailer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.contents.LiteralContents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.EntityHitResult;
@@ -37,7 +31,6 @@ import java.util.Map;
 
 /**
  * Manages controller input
- *
  * Author: MrCrayfish
  */
 @OnlyIn(Dist.CLIENT)
@@ -100,8 +93,8 @@ public class ControllerHandler
             }
             else if(button == RESET_CAMERA.getButton())
             {
-                player.yRot = player.getVehicle().yRot;
-                player.xRot = 15F;
+                player.setYRot(player.getVehicle().getYRot());
+                player.setXRot(15F);
                 event.setCanceled(true);
             }
             else if(button == CYCLE_SEATS.getButton())
@@ -124,55 +117,54 @@ public class ControllerHandler
             return;
 
         Map<ButtonBinding, Action> actionMap = event.getActions();
-        if(player.getVehicle() instanceof VehicleEntity)
+        if(player.getVehicle() instanceof VehicleEntity vehicle)
         {
             actionMap.remove(ButtonBindings.ATTACK);
-            actionMap.remove(ButtonBindings.INVENTORY);
+            actionMap.remove(ButtonBindings.OPEN_INVENTORY);
 
-            VehicleEntity vehicle = (VehicleEntity) player.getVehicle();
-            actionMap.put(ButtonBindings.SNEAK, new Action("Exit Vehicle", Action.Side.LEFT));
+            actionMap.put(ButtonBindings.SNEAK, new Action(MutableComponent.create(new LiteralContents("Exit Vehicle")), Action.Side.LEFT));
 
             if(vehicle.getProperties().getSeats().size() > 1)
             {
-                actionMap.put(CYCLE_SEATS, new Action("Cycle Seats", Action.Side.LEFT));
+                actionMap.put(CYCLE_SEATS, new Action(MutableComponent.create(new LiteralContents("Cycle Seats")), Action.Side.LEFT));
             }
 
             if(vehicle.canTowTrailers())
             {
-                actionMap.put(HITCH_TRAILER, new Action("Hitch Trailer", Action.Side.LEFT));
+                actionMap.put(HITCH_TRAILER, new Action(MutableComponent.create(new LiteralContents("Hitch Trailer")), Action.Side.LEFT));
             }
 
             if(event.getVisibility() == ActionVisibility.ALL)
             {
-                actionMap.put(RESET_CAMERA, new Action("Reset Camera", Action.Side.LEFT));
-                actionMap.put(ACCELERATE, new Action("Accelerate", Action.Side.RIGHT));
+                actionMap.put(RESET_CAMERA, new Action(MutableComponent.create(new LiteralContents("Reset Camera")), Action.Side.LEFT));
+                actionMap.put(ACCELERATE, new Action(MutableComponent.create(new LiteralContents("Accelerate")), Action.Side.RIGHT));
 
                 if(vehicle instanceof PoweredVehicleEntity)
                 {
                     if(((PoweredVehicleEntity) vehicle).getSpeed() > 0.05F)
                     {
-                        actionMap.put(REVERSE, new Action("Brake", Action.Side.RIGHT));
+                        actionMap.put(REVERSE, new Action(MutableComponent.create(new LiteralContents("Brake")), Action.Side.RIGHT));
                     }
                     else
                     {
-                        actionMap.put(REVERSE, new Action("Reverse", Action.Side.RIGHT));
+                        actionMap.put(REVERSE, new Action(MutableComponent.create(new LiteralContents("Reverse")), Action.Side.RIGHT));
                     }
 
                     if(((PoweredVehicleEntity) vehicle).hasHorn())
                     {
-                        actionMap.put(HORN, new Action("Horn", Action.Side.RIGHT));
+                        actionMap.put(HORN, new Action(MutableComponent.create(new LiteralContents("Horn")), Action.Side.RIGHT));
                     }
                 }
             }
 
             if(vehicle instanceof LandVehicleEntity)
             {
-                actionMap.put(HANDBRAKE, new Action("Handbrake", Action.Side.RIGHT));
+                actionMap.put(HANDBRAKE, new Action(MutableComponent.create(new LiteralContents("Handbrake")), Action.Side.RIGHT));
             }
             else if(vehicle instanceof HelicopterEntity)
             {
-                actionMap.put(ASCEND, new Action("Ascend", Action.Side.RIGHT));
-                actionMap.put(DESCEND, new Action("Descend", Action.Side.RIGHT));
+                actionMap.put(ASCEND, new Action(MutableComponent.create(new LiteralContents("Ascend")), Action.Side.RIGHT));
+                actionMap.put(DESCEND, new Action(MutableComponent.create(new LiteralContents("Descend")), Action.Side.RIGHT));
             }
         }
         else if(player.getVehicle() == null)
@@ -182,7 +174,7 @@ public class ControllerHandler
                 Entity entity = ((EntityHitResult) mc.hitResult).getEntity();
                 if(entity instanceof VehicleEntity)
                 {
-                    actionMap.put(ButtonBindings.USE_ITEM, new Action("Ride Vehicle", Action.Side.RIGHT));
+                    actionMap.put(ButtonBindings.USE_ITEM, new Action(MutableComponent.create(new LiteralContents("Ride Vehicle")), Action.Side.RIGHT));
                 }
             }
         }
@@ -192,6 +184,7 @@ public class ControllerHandler
     public void onRenderPlayerPreview(RenderPlayerPreviewEvent event)
     {
         Player player = Minecraft.getInstance().player;
+        assert player != null;
         if(player.getVehicle() instanceof VehicleEntity)
         {
             event.setCanceled(true);

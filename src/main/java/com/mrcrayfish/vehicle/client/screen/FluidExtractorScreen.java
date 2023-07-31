@@ -14,7 +14,7 @@ import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.ChatFormatting;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -56,11 +56,11 @@ public class FluidExtractorScreen extends ContainerScreen<FluidExtractorContaine
             {
                 if(stack.getAmount() > 0)
                 {
-                    this.renderTooltip(matrixStack, Lists.transform(Arrays.asList(new TextComponent(stack.getDisplayName().getString()), new TextComponent(ChatFormatting.GRAY.toString() + this.fluidExtractorTileEntity.getFluidLevel() + "/" + this.fluidExtractorTileEntity.getCapacity() + " mB")), Component::getVisualOrderText), mouseX, mouseY);
+                    this.renderTooltip(matrixStack, Lists.transform(Arrays.asList(MutableComponent.create(new LiteralContents(stack.getDisplayName().getString()), MutableComponent.create(new LiteralContents(ChatFormatting.GRAY.toString() + this.fluidExtractorTileEntity.getFluidLevel() + "/" + this.fluidExtractorTileEntity.getCapacity() + " mB")), Component::getVisualOrderText), mouseX, mouseY);
                 }
                 else
                 {
-                    this.renderTooltip(matrixStack, Lists.transform(Collections.singletonList(new TextComponent("No Fluid")), Component::getVisualOrderText), mouseX, mouseY);
+                    this.renderTooltip(matrixStack, Lists.transform(Collections.singletonList(MutableComponent.create(new LiteralContents("No Fluid")), Component::getVisualOrderText), mouseX, mouseY);
                 }
             }
         }

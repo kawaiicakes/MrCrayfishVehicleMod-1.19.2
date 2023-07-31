@@ -6,7 +6,7 @@ import net.minecraft.loot.ILootSerializer;
 import net.minecraft.loot.LootFunctionType;
 import net.minecraft.loot.functions.ILootFunction;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
 
 /**
  * Author: MrCrayfish

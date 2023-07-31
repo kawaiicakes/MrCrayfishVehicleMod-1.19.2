@@ -77,7 +77,7 @@ public class CosmeticCache
     }
 
     @SubscribeEvent
-    public void onClientTick(InputEvent.KeyInputEvent event)
+    public void onClientTick(InputEvent.Key event)
     {
         Minecraft mc = Minecraft.getInstance();
         if(mc.player == null)

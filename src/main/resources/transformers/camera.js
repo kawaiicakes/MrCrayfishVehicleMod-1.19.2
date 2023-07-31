@@ -37,12 +37,12 @@ function initializeCoreMod() {
                 'type': 'METHOD',
                 'class': 'net.optifine.shaders.ShadersRender',
                 'methodName': 'updateActiveRenderInfo',
-                'methodDesc': '(Lnet/minecraft/client/renderer/ActiveRenderInfo;Lnet/minecraft/client/Minecraft;F)V'
+                'methodDesc': '(Lnet/minecraft/client/renderer/Camera;Lnet/minecraft/client/Minecraft;F)V'
             },
             'transformer': function(method) {
                 var node = getFirstMatchingMethodNode(method, Opcodes.INVOKEVIRTUAL, "func_216772_a", "(Lnet/minecraft/world/BlockGetter;Lnet/minecraft/entity/Entity;ZZF)V");
                 if(node !== null) {
-                    method.instructions.insert(node, new MethodInsnNode(Opcodes.INVOKESTATIC, "com/mrcrayfish/vehicle/client/handler/CameraHandler", "setupShaderCamera", "(Lnet/minecraft/client/renderer/ActiveRenderInfo;F)V"));
+                    method.instructions.insert(node, new MethodInsnNode(Opcodes.INVOKESTATIC, "com/mrcrayfish/vehicle/client/handler/CameraHandler", "setupShaderCamera", "(Lnet/minecraft/client/renderer/Camera;F)V"));
                     method.instructions.insert(node, new VarInsnNode(Opcodes.FLOAD, 2));
                     method.instructions.insert(node, new VarInsnNode(Opcodes.ALOAD, 0));
                 }

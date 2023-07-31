@@ -3,9 +3,9 @@ package com.mrcrayfish.vehicle.datagen;
 import com.google.gson.JsonObject;
 import com.mrcrayfish.vehicle.crafting.FluidEntry;
 import com.mrcrayfish.vehicle.init.ModRecipeSerializers;
-import net.minecraft.data.IFinishedRecipe;
+import net.minecraft.data.recipes.FinishedRecipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
@@ -32,17 +32,17 @@ public class FluidExtractorRecipeBuilder
         return new FluidExtractorRecipeBuilder(ModRecipeSerializers.FLUID_EXTRACTOR.get(), ingredient, entry);
     }
 
-    public void save(Consumer<IFinishedRecipe> consumer, String name)
+    public void save(Consumer<FinishedRecipe> consumer, String name)
     {
         this.save(consumer, new ResourceLocation(name));
     }
 
-    public void save(Consumer<IFinishedRecipe> consumer, ResourceLocation id)
+    public void save(Consumer<FinishedRecipe> consumer, ResourceLocation id)
     {
         consumer.accept(new Result(id, this.serializer, this.ingredient, this.entry));
     }
 
-    public static class Result implements IFinishedRecipe
+    public static class Result implements FinishedRecipe
     {
         private final ResourceLocation id;
         private final IRecipeSerializer<?> serializer;

@@ -3,9 +3,9 @@ package com.mrcrayfish.vehicle.network;
 import com.mrcrayfish.vehicle.Reference;
 import com.mrcrayfish.vehicle.network.message.*;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.fmllegacy.network.FMLHandshakeHandler;
-import net.minecraftforge.fmllegacy.network.NetworkRegistry;
-import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
+import net.minecraftforge.network.HandshakeHandler;
+import net.minecraftforge.network.NetworkRegistry;
+import net.minecraftforge.network.simple.SimpleChannel;
 
 public class PacketHandler
 {
@@ -20,14 +20,14 @@ public class PacketHandler
                 .loginIndex(HandshakeMessages.LoginIndexedMessage::getLoginIndex, HandshakeMessages.LoginIndexedMessage::setLoginIndex)
                 .decoder(HandshakeMessages.C2SAcknowledge::decode)
                 .encoder(HandshakeMessages.C2SAcknowledge::encode)
-                .consumer(FMLHandshakeHandler.indexFirst((handler, msg, s) -> HandshakeHandler.handleAcknowledge(msg, s)))
+                .consumerNetworkThread(HandshakeHandler.indexFirst((((handler, msg, s) -> com.mrcrayfish.vehicle.network.HandshakeHandler.handleAcknowledge(msg, s)))))
                 .add();
 
         HANDSHAKE_CHANNEL.messageBuilder(HandshakeMessages.S2CVehicleProperties.class, 1)
                 .loginIndex(HandshakeMessages.LoginIndexedMessage::getLoginIndex, HandshakeMessages.LoginIndexedMessage::setLoginIndex)
                 .decoder(HandshakeMessages.S2CVehicleProperties::decode)
                 .encoder(HandshakeMessages.S2CVehicleProperties::encode)
-                .consumer(FMLHandshakeHandler.biConsumerFor((handler, msg, supplier) -> HandshakeHandler.handleVehicleProperties(msg, supplier)))
+                .consumerNetworkThread(HandshakeHandler.biConsumerFor((handler, msg, supplier) -> com.mrcrayfish.vehicle.network.HandshakeHandler.handleVehicleProperties(msg, supplier)))
                 .markAsLoginPacket()
                 .add();
 
@@ -57,7 +57,7 @@ public class PacketHandler
         registerPlayMessage(MessageSyncActionData.class, new MessageSyncActionData());
     }
 
-    private static <T> void registerPlayMessage(Class<T> clazz, IMessage<T> message)
+    private static <MSG> void registerPlayMessage(Class<MSG> clazz, IMessage<MSG> message)
     {
         PLAY_CHANNEL.registerMessage(nextId++, clazz, message::encode, message::decode, message::handle);
     }

@@ -13,10 +13,10 @@ import com.mrcrayfish.vehicle.item.KeyItem;
 import com.mrcrayfish.vehicle.item.SprayCanItem;
 import com.mrcrayfish.vehicle.item.WheelItem;
 import com.mrcrayfish.vehicle.item.WrenchItem;
-import net.minecraft.item.BucketItem;
+import net.minecraft.world.item.BucketItem;
 import net.minecraft.world.item.Item;
-import net.minecraft.item.Items;
-import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraft.world.item.Items;
+import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 

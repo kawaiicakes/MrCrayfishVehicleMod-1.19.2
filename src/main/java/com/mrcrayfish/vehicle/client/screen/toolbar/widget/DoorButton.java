@@ -10,7 +10,7 @@ import com.mrcrayfish.vehicle.entity.VehicleEntity;
 import com.mrcrayfish.vehicle.network.PacketHandler;
 import com.mrcrayfish.vehicle.network.message.MessageInteractCosmetic;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
 import net.minecraft.network.chat.contents.TranslatableContents;
 
 /**

@@ -19,7 +19,7 @@ import net.minecraft.item.BoneMealItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -52,7 +52,7 @@ public class StorageTrailerEntity extends TrailerEntity implements IStorage
     protected void readAdditionalSaveData(CompoundTag compound)
     {
         super.readAdditionalSaveData(compound);
-        if(compound.contains(INVENTORY_STORAGE_KEY, Constants.NBT.TAG_LIST))
+        if(compound.contains(INVENTORY_STORAGE_KEY, Tag.TAG_LIST))
         {
             this.initInventory();
             InventoryUtil.readInventoryToNBT(compound, INVENTORY_STORAGE_KEY, this.inventory);

@@ -4,9 +4,7 @@ import com.mrcrayfish.vehicle.Reference;
 import com.mrcrayfish.vehicle.client.render.complex.ComplexModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.client.event.ModelBakeEvent;
-import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.event.ModelEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -14,7 +12,6 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 /**
  * Author: MrCrayfish
@@ -35,19 +32,19 @@ public class ComponentManager
     }
 
     @SubscribeEvent
-    public static void setupModels(ModelRegistryEvent event)
+    public static void setupModels(ModelEvent.RegisterAdditional event)
     {
         LOADERS.forEach((modId, loader) ->
         {
             loader.getModels().forEach(model ->
             {
-                ModelLoader.addSpecialModel(model.getModelLocation());
+                event.register(model.getModelLocation());
             });
         });
     }
 
     @SubscribeEvent
-    public static void onBakeEvent(ModelBakeEvent event)
+    public static void onBakeEvent(ModelEvent.BakingCompleted event)
     {
         LOADERS.forEach((modId, loader) ->
         {

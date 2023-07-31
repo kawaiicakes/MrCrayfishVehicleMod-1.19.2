@@ -5,7 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.MatrixApplyingVertexBuilder;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Atlases;
+import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.ItemRenderer;
@@ -16,14 +16,14 @@ import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraftforge.client.extensions.IForgeBakedModel;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.model.ModelBakery;
-import net.minecraft.client.renderer.model.ModelResourceLocation;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.world.item.Items;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.text.Style;
 import net.minecraft.ChatFormatting;
 import org.lwjgl.opengl.GL11;
@@ -105,7 +105,7 @@ public class RenderUtil
         matrixStack.translate(-0.5, -0.5, -0.5);
         if(!model.isCustomRenderer())
         {
-            VertexConsumer vertexBuilder = renderTypeBuffer.getBuffer(Atlases.cutoutBlockSheet());
+            VertexConsumer vertexBuilder = renderTypeBuffer.getBuffer(Sheets.cutoutBlockSheet());
             renderModel(model, ItemStack.EMPTY, color, lightTexture, overlayTexture, matrixStack, vertexBuilder);
         }
         matrixStack.popPose();
@@ -143,9 +143,9 @@ public class RenderUtil
             if(!model.isCustomRenderer() && (stack.getItem() != Items.TRIDENT || tridentFlag))
             {
                 RenderType renderType = RenderTypeLookup.getRenderType(stack, false); //TODO test what this flag does
-                if(isGui && Objects.equals(renderType, Atlases.translucentCullBlockSheet()))
+                if(isGui && Objects.equals(renderType, Sheets.translucentCullBlockSheet()))
                 {
-                    renderType = Atlases.translucentCullBlockSheet();
+                    renderType = Sheets.translucentCullBlockSheet();
                 }
                 VertexConsumer vertexBuilder = ItemRenderer.getFoilBuffer(renderTypeBuffer, renderType, true, stack.hasFoil());
                 renderModel(model, stack, -1, lightTexture, overlayTexture, matrixStack, vertexBuilder);
@@ -199,6 +199,6 @@ public class RenderUtil
     public static List<Component> lines(FormattedText text, int maxWidth)
     {
         List<FormattedText> lines = Minecraft.getInstance().font.getSplitter().splitLines(text, maxWidth, Style.EMPTY);
-        return lines.stream().map(t -> new TextComponent(t.getString()).withStyle(ChatFormatting.GRAY)).collect(Collectors.toList());
+        return lines.stream().map(t -> MutableComponent.create(new LiteralContents(t.getString())).withStyle(ChatFormatting.GRAY)).collect(Collectors.toList());
     }
 }

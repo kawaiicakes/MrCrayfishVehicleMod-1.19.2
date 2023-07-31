@@ -9,33 +9,33 @@ import com.mrcrayfish.vehicle.common.entity.HeldVehicleDataHandler;
 import com.mrcrayfish.vehicle.entity.VehicleEntity;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.entity.IEntityRenderer;
-import net.minecraft.client.renderer.entity.layers.LayerRenderer;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
 
 /**
  * Author: MrCrayfish
  */
-public class LayerHeldVehicle extends LayerRenderer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>>
-{
+public class LayerHeldVehicle extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
     private VehicleEntity vehicle;
     private CachedVehicle cachedVehicle;
     private float width = -1.0F;
 
-    public LayerHeldVehicle(IEntityRenderer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> renderer)
+    public LayerHeldVehicle(LivingEntityRenderer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> renderer)
     {
         super(renderer);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public void render(PoseStack matrixStack, MultiBufferSource renderTypeBuffer, int light, AbstractClientPlayer player, float v, float v1, float partialTicks, float v3, float v4, float v5)
+    public void render(@NotNull PoseStack matrixStack, @NotNull MultiBufferSource renderTypeBuffer, int light, @NotNull AbstractClientPlayer player, float v, float v1, float partialTicks, float v3, float v4, float v5)
     {
         CompoundTag tagCompound = HeldVehicleDataHandler.getHeldVehicle(player);
         if(!tagCompound.isEmpty())

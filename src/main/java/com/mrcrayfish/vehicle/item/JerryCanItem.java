@@ -15,14 +15,14 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fluids.capability.templates.FluidHandlerItemStack;
@@ -67,20 +67,20 @@ public class JerryCanItem extends Item
         }
         else if(worldIn != null)
         {
-            stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).ifPresent(handler ->
+            stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).ifPresent(handler ->
             {
                 FluidStack fluidStack = handler.getFluidInTank(0);
                 if(!fluidStack.isEmpty())
                 {
-                    tooltip.add(new TranslatableContents(fluidStack.getTranslationKey()).withStyle(ChatFormatting.BLUE));
-                    tooltip.add(new TextComponent(this.getCurrentFuel(stack) + " / " + this.capacitySupplier.get() + "mb").withStyle(ChatFormatting.GRAY));
+                    tooltip.add(new TranslatableContents(fluidStack.getTranslationKey())).withStyle(ChatFormatting.BLUE));
+                    tooltip.add(MutableComponent.create(new LiteralContents(this.getCurrentFuel(stack) + " / " + this.capacitySupplier.get() + "mb")).withStyle(ChatFormatting.GRAY));
                 }
                 else
                 {
-                    tooltip.add(new TranslatableContents("item.vehicle.jerry_can.empty").withStyle(ChatFormatting.RED));
+                    tooltip.add(new TranslatableContents("item.vehicle.jerry_can.empty")).withStyle(ChatFormatting.RED));
                 }
             });
-            tooltip.add(new TextComponent(ChatFormatting.YELLOW + I18n.get("vehicle.info_help")));
+            tooltip.add(MutableComponent.create(new LiteralContents(ChatFormatting.YELLOW + I18n.get("vehicle.info_help")));
         }
     }
 
@@ -98,7 +98,7 @@ public class JerryCanItem extends Item
                 if(optional.isPresent())
                 {
                     IFluidHandler source = optional.get();
-                    Optional<IFluidHandlerItem> itemOptional = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).resolve();
+                    Optional<IFluidHandlerItem> itemOptional = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).resolve();
                     if(itemOptional.isPresent())
                     {
                         if(context.getPlayer().isCrouching())
@@ -119,7 +119,7 @@ public class JerryCanItem extends Item
 
     public int getCurrentFuel(ItemStack stack)
     {
-        Optional<IFluidHandlerItem> optional = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).resolve();
+        Optional<IFluidHandlerItem> optional = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).resolve();
         return optional.map(handler -> handler.getFluidInTank(0).getAmount()).orElse(0);
     }
 
@@ -148,7 +148,7 @@ public class JerryCanItem extends Item
     @Override
     public int getRGBDurabilityForDisplay(ItemStack stack)
     {
-        Optional<IFluidHandlerItem> optional = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).resolve();
+        Optional<IFluidHandlerItem> optional = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).resolve();
         return optional.map(handler -> {
             int color = handler.getFluidInTank(0).getFluid().getAttributes().getColor();
             if(color == 0xFFFFFFFF) color = FluidUtils.getAverageFluidColor(handler.getFluidInTank(0).getFluid());

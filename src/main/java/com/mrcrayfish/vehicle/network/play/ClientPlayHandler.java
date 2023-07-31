@@ -20,7 +20,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 
@@ -49,7 +49,7 @@ public class ClientPlayHandler
             if(inventory != null)
             {
                 CompoundTag tag = tags[i];
-                inventory.fromTag(tag.getList("SimpleContainer", Constants.NBT.TAG_COMPOUND));
+                inventory.fromTag(tag.getList("SimpleContainer", Tag.TAG_COMPOUND));
             }
         }
     }

@@ -11,7 +11,7 @@ import com.mrcrayfish.vehicle.client.render.Axis;
 import com.mrcrayfish.vehicle.client.render.CachedVehicle;
 import com.mrcrayfish.vehicle.common.entity.Transform;
 import com.mrcrayfish.vehicle.crafting.RecipeType;
-import com.mrcrayfish.vehicle.crafting.WorkstationIngredient;
+import net.minecraftforge.common.crafting.CompoundIngredient;
 import com.mrcrayfish.vehicle.crafting.WorkstationRecipe;
 import com.mrcrayfish.vehicle.crafting.WorkstationRecipes;
 import com.mrcrayfish.vehicle.entity.EngineType;
@@ -41,9 +41,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.NonNullList;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.math.vector.Quaternion;
+import com.mojang.math.Quaternion;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.level.Level;
@@ -89,12 +89,12 @@ public class WorkstationScreen extends ContainerScreen<WorkstationContainer>
         this.inventoryLabelY = this.imageHeight - 93;
         this.materials = new ArrayList<>();
         this.vehicleTypes = this.getVehicleTypes(playerInventory.player.level);
-        this.vehicleTypes.sort(Comparator.comparing(type -> type.getRegistryName().getPath()));
+        this.vehicleTypes.sort(Comparator.comparing(type -> type.builtInRegistryHolder().key().location().getPath()));
     }
 
     private List<EntityType<?>> getVehicleTypes(Level world)
     {
-        return world.getRecipeManager().getRecipes().stream().filter(recipe -> recipe.getType() == RecipeType.WORKSTATION).map(recipe -> (WorkstationRecipe) recipe).map(WorkstationRecipe::getVehicle).filter(entityType -> !Config.SERVER.disabledVehicles.get().contains(Objects.requireNonNull(entityType.getRegistryName()).toString())).collect(Collectors.toList());
+        return world.getRecipeManager().getRecipes().stream().filter(recipe -> recipe.getType() == RecipeType.WORKSTATION).map(recipe -> (WorkstationRecipe) recipe).map(WorkstationRecipe::getVehicle).filter(entityType -> !Config.SERVER.disabledVehicles.get().contains(Objects.requireNonNull(entityType.builtInRegistryHolder().key().location()).toString())).collect(Collectors.toList());
     }
 
     @Override
@@ -102,18 +102,18 @@ public class WorkstationScreen extends ContainerScreen<WorkstationContainer>
     {
         super.init();
 
-        this.addButton(new Button(this.leftPos + 9, this.topPos + 18, 15, 20, new TextComponent("<"), button -> {
+        this.addButton(new Button(this.leftPos + 9, this.topPos + 18, 15, 20, MutableComponent.create(new LiteralContents("<"), button -> {
             this.loadVehicle(Math.floorMod(currentVehicle - 1,  this.vehicleTypes.size()));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
         }));
 
-        this.addButton(new Button(this.leftPos + 153, this.topPos + 18, 15, 20, new TextComponent(">"), button -> {
+        this.addButton(new Button(this.leftPos + 153, this.topPos + 18, 15, 20, MutableComponent.create(new LiteralContents(">"), button -> {
             this.loadVehicle(Math.floorMod(currentVehicle + 1,  this.vehicleTypes.size()));
             Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.UI_BUTTON_CLICK, 1.0F));
         }));
 
         this.btnCraft = this.addButton(new Button(this.leftPos + 172, this.topPos + 6, 97, 20, new TranslatableContents("gui.vehicle.craft"), button -> {
-            ResourceLocation registryName = this.vehicleTypes.get(currentVehicle).getRegistryName();
+            ResourceLocation registryName = this.vehicleTypes.get(currentVehicle).builtInRegistryHolder().key().location();
             Objects.requireNonNull(registryName, "Vehicle registry name must not be null!");
             PacketHandler.getPlayChannel().sendToServer(new MessageCraftVehicle(registryName.toString(), this.workstation.getBlockPos()));
         }));
@@ -296,30 +296,30 @@ public class WorkstationScreen extends ContainerScreen<WorkstationContainer>
         VehicleProperties properties = cachedVehicle.getProperties();
         if(properties.canBePainted())
         {
-            this.drawSlotTooltip(matrixStack, Lists.newArrayList(new TranslatableContents("vehicle.tooltip.optional").withStyle(ChatFormatting.AQUA), new TranslatableContents("vehicle.tooltip.paint_color").withStyle(ChatFormatting.GRAY)), startX, startY, 172, 29, mouseX, mouseY, 0);
+            this.drawSlotTooltip(matrixStack, Lists.newArrayList(new TranslatableContents("vehicle.tooltip.optional")).withStyle(ChatFormatting.AQUA), new TranslatableContents("vehicle.tooltip.paint_color")).withStyle(ChatFormatting.GRAY)), startX, startY, 172, 29, mouseX, mouseY, 0);
         }
         else
         {
-            this.drawSlotTooltip(matrixStack, Lists.newArrayList(new TranslatableContents("vehicle.tooltip.paint_color"), new TranslatableContents("vehicle.tooltip.not_applicable").withStyle(ChatFormatting.GRAY)), startX, startY, 172, 29, mouseX, mouseY, 0);
+            this.drawSlotTooltip(matrixStack, Lists.newArrayList(new TranslatableContents("vehicle.tooltip.paint_color"), new TranslatableContents("vehicle.tooltip.not_applicable")).withStyle(ChatFormatting.GRAY)), startX, startY, 172, 29, mouseX, mouseY, 0);
         }
 
         if(properties.getExtended(PoweredProperties.class).getEngineType() != EngineType.NONE)
         {
             TranslatableContents engineName = properties.getExtended(PoweredProperties.class).getEngineType().getEngineName();
-            this.drawSlotTooltip(matrixStack, Lists.newArrayList(new TranslatableContents("vehicle.tooltip.required").withStyle(ChatFormatting.RED), engineName), startX, startY, 192, 29, mouseX, mouseY, 1);
+            this.drawSlotTooltip(matrixStack, Lists.newArrayList(new TranslatableContents("vehicle.tooltip.required")).withStyle(ChatFormatting.RED), engineName), startX, startY, 192, 29, mouseX, mouseY, 1);
         }
         else
         {
-            this.drawSlotTooltip(matrixStack, Lists.newArrayList(new TranslatableContents("vehicle.tooltip.engine"), new TranslatableContents("vehicle.tooltip.not_applicable").withStyle(ChatFormatting.GRAY)), startX, startY, 192, 29, mouseX, mouseY, 1);
+            this.drawSlotTooltip(matrixStack, Lists.newArrayList(new TranslatableContents("vehicle.tooltip.engine"), new TranslatableContents("vehicle.tooltip.not_applicable")).withStyle(ChatFormatting.GRAY)), startX, startY, 192, 29, mouseX, mouseY, 1);
         }
 
         if(properties.canChangeWheels())
         {
-            this.drawSlotTooltip(matrixStack, Lists.newArrayList(new TranslatableContents("vehicle.tooltip.required").withStyle(ChatFormatting.RED), new TranslatableContents("vehicle.tooltip.wheels")), startX, startY, 212, 29, mouseX, mouseY, 2);
+            this.drawSlotTooltip(matrixStack, Lists.newArrayList(new TranslatableContents("vehicle.tooltip.required")).withStyle(ChatFormatting.RED), new TranslatableContents("vehicle.tooltip.wheels")), startX, startY, 212, 29, mouseX, mouseY, 2);
         }
         else
         {
-            this.drawSlotTooltip(matrixStack, Lists.newArrayList(new TranslatableContents("vehicle.tooltip.wheels"), new TranslatableContents("vehicle.tooltip.not_applicable").withStyle(ChatFormatting.GRAY)), startX, startY, 212, 29, mouseX, mouseY, 2);
+            this.drawSlotTooltip(matrixStack, Lists.newArrayList(new TranslatableContents("vehicle.tooltip.wheels"), new TranslatableContents("vehicle.tooltip.not_applicable")).withStyle(ChatFormatting.GRAY)), startX, startY, 212, 29, mouseX, mouseY, 2);
         }
     }
 
@@ -486,12 +486,12 @@ public class WorkstationScreen extends ContainerScreen<WorkstationContainer>
         private long lastTime = System.currentTimeMillis();
         private int displayIndex;
         private boolean enabled = false;
-        private WorkstationIngredient ingredient = null;
+        private CompoundIngredient ingredient = null;
         private final List<ItemStack> displayStacks = new ArrayList<>();
 
         public MaterialItem() {}
 
-        public MaterialItem(WorkstationIngredient ingredient)
+        public MaterialItem(CompoundIngredient ingredient)
         {
             this.ingredient = ingredient;
             Stream.of(ingredient.getItems()).forEach(stack -> {
@@ -501,7 +501,7 @@ public class WorkstationScreen extends ContainerScreen<WorkstationContainer>
             });
         }
 
-        public WorkstationIngredient getIngredient()
+        public CompoundIngredient getIngredient()
         {
             return this.ingredient;
         }

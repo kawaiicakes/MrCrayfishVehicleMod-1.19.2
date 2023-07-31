@@ -43,7 +43,7 @@ public class ItemTrafficCone extends BlockItem
         }
         else
         {
-            tooltip.add(new TranslatableContents("vehicle.info_help").withStyle(ChatFormatting.YELLOW));
+            tooltip.add(new TranslatableContents("vehicle.info_help")).withStyle(ChatFormatting.YELLOW));
         }
     }
 }

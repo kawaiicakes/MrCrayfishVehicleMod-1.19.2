@@ -5,24 +5,25 @@ import com.mrcrayfish.vehicle.init.ModBlocks;
 import com.mrcrayfish.vehicle.init.ModItems;
 import com.mrcrayfish.vehicle.tileentity.VehicleCrateTileEntity;
 import com.mrcrayfish.vehicle.util.RenderUtil;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.particle.DiggingParticle;
+import net.minecraft.client.particle.BlockMarker;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.client.world.ClientWorld;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.item.DyeColor;
+import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.particles.BlockParticleData;
-import net.minecraft.particles.ParticleTypes;
+import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.core.Direction;
@@ -147,7 +148,7 @@ public class VehicleCrateBlock extends RotatedObjectBlock
         {
             if(world.isClientSide)
             {
-                this.spawnCrateOpeningParticles((ClientWorld) world, pos, state);
+                this.spawnCrateOpeningParticles((ClientLevel) world, pos, state);
             }
             else
             {
@@ -157,18 +158,18 @@ public class VehicleCrateBlock extends RotatedObjectBlock
     }
 
     @OnlyIn(Dist.CLIENT)
-    private void spawnCrateOpeningParticles(ClientWorld world, BlockPos pos, BlockState state)
+    private void spawnCrateOpeningParticles(ClientLevel world, BlockPos pos, BlockState state)
     {
         double y = 0.875;
         double x, z;
-        DiggingParticle.Factory factory = new DiggingParticle.Factory();
+        BlockMarker.Provider factory = new BlockMarker.Provider();
         for(int j = 0; j < 4; ++j)
         {
             for(int l = 0; l < 4; ++l)
             {
                 x = (j + 0.5D) / 4.0D;
                 z = (l + 0.5D) / 4.0D;
-                Minecraft.getInstance().particleEngine.add(factory.createParticle(new BlockParticleData(ParticleTypes.BLOCK, state), world, pos.getX() + x, pos.getY() + y, pos.getZ() + z, x - 0.5D, y - 0.5D, z - 0.5D));
+                Minecraft.getInstance().particleEngine.add(factory.createParticle(new BlockParticleOption(ParticleTypes.BLOCK, state), world, pos.getX() + x, pos.getY() + y, pos.getZ() + z, x - 0.5D, y - 0.5D, z - 0.5D));
             }
         }
     }
@@ -200,7 +201,7 @@ public class VehicleCrateBlock extends RotatedObjectBlock
         CompoundTag tagCompound = stack.getTag();
         if(tagCompound != null)
         {
-            if(tagCompound.contains("BlockEntityTag", Constants.NBT.TAG_COMPOUND))
+            if(tagCompound.contains("BlockEntityTag", Tag.TAG_COMPOUND))
             {
                 CompoundTag blockEntityTag = tagCompound.getCompound("BlockEntityTag");
                 String entityType = blockEntityTag.getString("Vehicle");
@@ -216,8 +217,8 @@ public class VehicleCrateBlock extends RotatedObjectBlock
         }
         else
         {
-            list.add(vehicleName.copy().withStyle(ChatFormatting.BLUE));
-            list.add(new TranslatableContents("vehicle.info_help").withStyle(ChatFormatting.YELLOW));
+            list.add(vehicleName.copy()).withStyle(ChatFormatting.BLUE));
+            list.add(new TranslatableContents("vehicle.info_help")).withStyle(ChatFormatting.YELLOW));
         }
     }
 

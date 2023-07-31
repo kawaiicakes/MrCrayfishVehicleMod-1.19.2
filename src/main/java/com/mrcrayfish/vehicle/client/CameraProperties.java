@@ -2,7 +2,7 @@ package com.mrcrayfish.vehicle.client;
 
 import com.google.gson.JsonObject;
 import com.mrcrayfish.vehicle.util.ExtraJSONUtils;
-import net.minecraft.util.JSONUtils;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.stream.Stream;
@@ -73,10 +73,10 @@ public class CameraProperties
     public static CameraProperties fromJsonObject(JsonObject object)
     {
         CameraProperties.Type type = ExtraJSONUtils.getAsEnum(object, "type", Type.class, DEFAULT_TYPE);
-        float strength = JSONUtils.getAsFloat(object, "strength", DEFAULT_STRENGTH);
+        float strength = GsonHelper.getAsFloat(object, "strength", DEFAULT_STRENGTH);
         Vec3 position = ExtraJSONUtils.getAsVector3d(object, "position", DEFAULT_POSITION);
         Vec3 rotation = ExtraJSONUtils.getAsVector3d(object, "rotation", DEFAULT_ROTATION);
-        double distance = JSONUtils.getAsFloat(object, "distance", DEFAULT_DISTANCE);
+        double distance = GsonHelper.getAsFloat(object, "distance", DEFAULT_DISTANCE);
         return new CameraProperties(type, strength, position, rotation, distance);
     }
 

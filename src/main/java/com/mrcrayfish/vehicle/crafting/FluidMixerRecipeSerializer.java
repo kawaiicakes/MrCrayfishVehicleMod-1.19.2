@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.util.JSONUtils;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 
@@ -19,8 +19,8 @@ public class FluidMixerRecipeSerializer extends net.minecraftforge.registries.Fo
     @Override
     public FluidMixerRecipe fromJson(ResourceLocation recipeId, JsonObject json)
     {
-        String s = JSONUtils.getAsString(json, "group", "");
-        JsonArray input = JSONUtils.getAsJsonArray(json, "input");
+        String s = GsonHelper.getAsString(json, "group", "");
+        JsonArray input = GsonHelper.getAsJsonArray(json, "input");
         if(input.size() != 2)
         {
             throw new com.google.gson.JsonSyntaxException("Invalid input, must only have two objects");

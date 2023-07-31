@@ -7,11 +7,11 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.inventory.container.ChestContainer;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.IContainerProvider;
-import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.inventory.container.SimpleNamedContainerProvider;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListNBT;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 
 import javax.annotation.Nullable;
@@ -59,9 +59,9 @@ public class StorageInventory extends SimpleContainer
         return this.itemPredicate.test(stack);
     }
 
-    public ListNBT createTag()
+    public ListTag createTag()
     {
-        ListNBT tagList = new ListNBT();
+        ListTag tagList = new ListTag();
         for(int i = 0; i < this.getContainerSize(); i++)
         {
             ItemStack stack = this.getItem(i);
@@ -77,7 +77,7 @@ public class StorageInventory extends SimpleContainer
     }
 
     @Override
-    public void fromTag(ListNBT tagList)
+    public void fromTag(ListTag tagList)
     {
         this.clearContent();
         for(int i = 0; i < tagList.size(); i++)

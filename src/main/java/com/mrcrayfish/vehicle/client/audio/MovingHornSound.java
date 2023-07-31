@@ -1,7 +1,8 @@
 package com.mrcrayfish.vehicle.client.audio;
 
 import com.mrcrayfish.vehicle.entity.PoweredVehicleEntity;
-import net.minecraft.client.audio.TickableSound;
+import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -14,14 +15,14 @@ import java.lang.ref.WeakReference;
  * Author: MrCrayfish
  */
 @OnlyIn(Dist.CLIENT)
-public class MovingHornSound extends TickableSound
+public class MovingHornSound extends AbstractTickableSoundInstance
 {
     private final WeakReference<Player> playerRef;
     private final WeakReference<PoweredVehicleEntity> vehicleRef;
 
     public MovingHornSound(Player player, PoweredVehicleEntity vehicle)
     {
-        super(vehicle.getHornSound(), SoundSource.NEUTRAL);
+        super(vehicle.getHornSound(), SoundSource.NEUTRAL, RandomSource.create());
         this.playerRef = new WeakReference<>(player);
         this.vehicleRef = new WeakReference<>(vehicle);
         this.volume = 0.0F;
@@ -59,7 +60,7 @@ public class MovingHornSound extends TickableSound
             this.volume = Mth.lerp(0.75F, this.volume, 0.0F);
         }
 
-        this.attenuation = vehicle.equals(player.getVehicle()) ? AttenuationType.NONE : AttenuationType.LINEAR;
+        this.attenuation = vehicle.equals(player.getVehicle()) ? Attenuation.NONE : Attenuation.LINEAR;
 
         if(!vehicle.equals(player.getVehicle()))
         {

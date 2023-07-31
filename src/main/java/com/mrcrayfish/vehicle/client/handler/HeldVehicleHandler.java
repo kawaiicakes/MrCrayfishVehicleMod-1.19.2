@@ -5,14 +5,14 @@ import com.mrcrayfish.vehicle.client.render.layer.LayerHeldVehicle;
 import com.mrcrayfish.vehicle.common.entity.HeldVehicleDataHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.renderer.entity.LivingRenderer;
-import net.minecraft.client.renderer.entity.PlayerRenderer;
-import net.minecraft.client.renderer.entity.layers.LayerRenderer;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 
 import java.util.HashMap;
 import java.util.List;
@@ -31,16 +31,16 @@ public class HeldVehicleHandler
     {
         if(!setupExtraLayers)
         {
-            Map<String, PlayerRenderer> skinMap = Minecraft.getInstance().getEntityRenderDispatcher().getSkinMap();
-            this.patchPlayerRender(skinMap.get("default"));
-            this.patchPlayerRender(skinMap.get("slim"));
+            Map<String, EntityRenderer<? extends Player>> skinMap = Minecraft.getInstance().getEntityRenderDispatcher().getSkinMap();
+            this.patchPlayerRender((LivingEntityRenderer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>>) skinMap.get("default"));
+            this.patchPlayerRender((LivingEntityRenderer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>>) skinMap.get("slim"));
             setupExtraLayers = true;
         }
     }
 
-    private void patchPlayerRender(PlayerRenderer player)
+    private void patchPlayerRender(LivingEntityRenderer<AbstractClientPlayer,PlayerModel<AbstractClientPlayer>> player)
     {
-        List<LayerRenderer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>>> layers = ObfuscationReflectionHelper.getPrivateValue(LivingRenderer.class, player, "field_177097_h");
+        List<RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>>> layers = ObfuscationReflectionHelper.getPrivateValue(LivingEntityRenderer.class, player, "field_177097_h");
         if(layers != null)
         {
             layers.add(new LayerHeldVehicle(player));
@@ -53,7 +53,7 @@ public class HeldVehicleHandler
     public void onSetupAngles(PlayerModelEvent.SetupAngles.Post event)
     {
         PlayerModel model = event.getModelPlayer();
-        Player player = event.getPlayer();
+        Player player = event.getEntity();
 
         boolean holdingVehicle = HeldVehicleDataHandler.isHoldingVehicle(player);
         if(holdingVehicle && !idToCounter.containsKey(player.getUUID()))
@@ -62,7 +62,7 @@ public class HeldVehicleHandler
         }
         else if(idToCounter.containsKey(player.getUUID()))
         {
-            if(idToCounter.get(player.getUUID()).getProgress(event.getPartialTicks()) == 0F)
+            if(idToCounter.get(player.getUUID()).getProgress(event.getDeltaTicks()) == 0F)
             {
                 idToCounter.remove(player.getUUID());
                 return;
@@ -70,7 +70,7 @@ public class HeldVehicleHandler
             if(!holdingVehicle)
             {
                 AnimationCounter counter = idToCounter.get(player.getUUID());
-                player.yBodyRot = player.getYHeadRot() - (player.getYHeadRot() - player.yBodyRotO) * counter.getProgress(event.getPartialTicks());
+                player.yBodyRot = player.getYHeadRot() - (player.getYHeadRot() - player.yBodyRotO) * counter.getProgress(event.getDeltaTicks());
             }
         }
         else
@@ -80,7 +80,7 @@ public class HeldVehicleHandler
 
         AnimationCounter counter = idToCounter.get(player.getUUID());
         counter.update(holdingVehicle);
-        float progress = counter.getProgress(event.getPartialTicks());
+        float progress = counter.getProgress(event.getDeltaTicks());
         model.rightArm.xRot = (float) Math.toRadians(-180F * progress);
         model.rightArm.zRot = (float) Math.toRadians(-5F * progress);
         model.rightArm.y = (player.isCrouching() ? 3.0F : -0.5F) * progress;

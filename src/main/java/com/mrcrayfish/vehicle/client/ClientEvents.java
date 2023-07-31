@@ -18,7 +18,7 @@ public class ClientEvents
 {
     @SubscribeEvent
     @OnlyIn(Dist.CLIENT)
-    public void onKeyInput(InputEvent.KeyInputEvent event)
+    public void onKeyInput(InputEvent.Key event)
     {
         Minecraft mc = Minecraft.getInstance();
         if(mc.getOverlay() != null)
@@ -38,7 +38,7 @@ public class ClientEvents
     }
 
     /*@SubscribeEvent
-    public void setLiquidFogDensity(EntityViewRenderEvent.FogDensity event)
+    public void setLiquidFogDensity(ViewportEvent.RenderFog event)
     {
         event.getInfo().getBlockAtCamera();
         *//*Block block = event.getState().getBlock(); //TODO do i need to fix this

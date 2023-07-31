@@ -21,10 +21,10 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.FluidUtil;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraftforge.entity.IEntityAdditionalSpawnData;
+import net.minecraftforge.network.PacketDistributor;
 
 import javax.annotation.Nonnull;
 
@@ -64,7 +64,7 @@ public class FluidTrailerEntity extends TrailerEntity implements IEntityAddition
     protected void readAdditionalSaveData(CompoundTag compound)
     {
         super.readAdditionalSaveData(compound);
-        if(compound.contains("Tank", Constants.NBT.TAG_COMPOUND))
+        if(compound.contains("Tank", Tag.TAG_COMPOUND))
         {
             this.tank.readFromNBT(compound.getCompound("Tank"));
         }

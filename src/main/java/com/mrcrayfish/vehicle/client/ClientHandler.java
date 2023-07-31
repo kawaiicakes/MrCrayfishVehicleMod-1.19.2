@@ -50,7 +50,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.client.renderer.color.IItemColor;
 import net.minecraft.resources.IReloadableResourceManager;
-import net.minecraft.resources.IResourceManager;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.Unit;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
@@ -104,7 +104,7 @@ public class ClientHandler
         setupItemColors();
         setupInteractableVehicles();
 
-        IResourceManager manager = Minecraft.getInstance().getResourceManager();
+        ResourceManager manager = Minecraft.getInstance().getResourceManager();
         if(manager instanceof IReloadableResourceManager)
         {
             ((IReloadableResourceManager) manager).registerReloadListener((stage, resourceManager, preparationsProfiler, reloadProfiler, backgroundExecutor, gameExecutor) -> {

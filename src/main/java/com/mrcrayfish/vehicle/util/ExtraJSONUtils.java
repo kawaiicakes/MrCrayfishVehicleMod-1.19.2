@@ -6,7 +6,7 @@ import com.google.gson.JsonParseException;
 import com.mrcrayfish.vehicle.common.VehicleRegistry;
 import com.mrcrayfish.vehicle.common.entity.Transform;
 import com.mrcrayfish.vehicle.entity.IEngineType;
-import net.minecraft.util.JSONUtils;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import com.mojang.math.Vector3f;
@@ -92,16 +92,16 @@ public class ExtraJSONUtils
     {
         if(object.has(memberName))
         {
-            JsonArray jsonArray = JSONUtils.getAsJsonArray(object, memberName);
+            JsonArray jsonArray = GsonHelper.getAsJsonArray(object, memberName);
             if(jsonArray.size() != 3)
             {
                 throw new JsonParseException("Expected 3 " + memberName + " values, found: " + jsonArray.size());
             }
             else
             {
-                double x = JSONUtils.convertToFloat(jsonArray.get(0), memberName + "[0]");
-                double y = JSONUtils.convertToFloat(jsonArray.get(1), memberName + "[1]");
-                double z = JSONUtils.convertToFloat(jsonArray.get(2), memberName + "[2]");
+                double x = GsonHelper.convertToFloat(jsonArray.get(0), memberName + "[0]");
+                double y = GsonHelper.convertToFloat(jsonArray.get(1), memberName + "[1]");
+                double z = GsonHelper.convertToFloat(jsonArray.get(2), memberName + "[2]");
                 return new Vec3(x, y, z);
             }
         }
@@ -113,13 +113,13 @@ public class ExtraJSONUtils
         if(!object.has(memberName))
             throw new JsonParseException("Missing member " + memberName);
 
-        JsonArray jsonArray = JSONUtils.getAsJsonArray(object, memberName);
+        JsonArray jsonArray = GsonHelper.getAsJsonArray(object, memberName);
         if(jsonArray.size() != 3)
             throw new JsonParseException("Expected 3 " + memberName + " values, found: " + jsonArray.size());
 
-        float x = JSONUtils.convertToFloat(jsonArray.get(0), memberName + "[0]");
-        float y = JSONUtils.convertToFloat(jsonArray.get(1), memberName + "[1]");
-        float z = JSONUtils.convertToFloat(jsonArray.get(2), memberName + "[2]");
+        float x = GsonHelper.convertToFloat(jsonArray.get(0), memberName + "[0]");
+        float y = GsonHelper.convertToFloat(jsonArray.get(1), memberName + "[1]");
+        float z = GsonHelper.convertToFloat(jsonArray.get(2), memberName + "[2]");
         return new Vector3f(x, y, z);
     }
 
@@ -130,7 +130,7 @@ public class ExtraJSONUtils
             JsonObject transform = object.getAsJsonObject(key);
             Vec3 translate = ExtraJSONUtils.getAsVector3d(transform, "translate", Vec3.ZERO);
             Vec3 rotation = ExtraJSONUtils.getAsVector3d(transform, "rotation", Vec3.ZERO);
-            double scale = JSONUtils.getAsFloat(transform, "scale", 1.0F);
+            double scale = GsonHelper.getAsFloat(transform, "scale", 1.0F);
             return Transform.create(translate, rotation, scale);
         }
         return defaultValue;
@@ -138,7 +138,7 @@ public class ExtraJSONUtils
 
     public static IEngineType getAsEngineType(JsonObject object, String key, IEngineType defaultValue)
     {
-        String rawId = JSONUtils.getAsString(object, key, "");
+        String rawId = GsonHelper.getAsString(object, key, "");
         if(!rawId.isEmpty())
         {
             ResourceLocation id = new ResourceLocation(rawId);
@@ -152,7 +152,7 @@ public class ExtraJSONUtils
     {
         if(object.has(key) && object.get(key).isJsonPrimitive())
         {
-            return new ResourceLocation(JSONUtils.getAsString(object, key));
+            return new ResourceLocation(GsonHelper.getAsString(object, key));
         }
         return defaultValue;
     }
@@ -161,7 +161,7 @@ public class ExtraJSONUtils
     {
         if(object.has(key) && object.get(key).isJsonPrimitive())
         {
-            String enumString = JSONUtils.getAsString(object, key);
+            String enumString = GsonHelper.getAsString(object, key);
             return Stream.of(enumClass.getEnumConstants()).filter(side -> side.name().equalsIgnoreCase(enumString)).findFirst().orElse(defaultValue);
         }
         return defaultValue;

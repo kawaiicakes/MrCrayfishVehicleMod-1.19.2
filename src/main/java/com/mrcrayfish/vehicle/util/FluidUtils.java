@@ -9,9 +9,9 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.AtlasTexture;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.particle.SpriteSet;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import net.minecraft.fluid.Fluid;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.BlockPos;
@@ -46,7 +46,7 @@ public class FluidUtils
     @OnlyIn(Dist.CLIENT)
     public static int getAverageFluidColor(Fluid fluid)
     {
-        Integer cachedColor = CACHE_FLUID_COLOR.get(fluid.getRegistryName());
+        Integer cachedColor = CACHE_FLUID_COLOR.get(fluid.builtInRegistryHolder().key().location());
         if(cachedColor != null)
         {
             return cachedColor;
@@ -77,7 +77,7 @@ public class FluidUtils
                 }
                 fluidColor = (((int) Math.sqrt(totalRed / pixelCount) & 255) << 16) | (((int) Math.sqrt(totalGreen / pixelCount) & 255) << 8) | (((int) Math.sqrt(totalBlue / pixelCount) & 255));
             }
-            CACHE_FLUID_COLOR.put(fluid.getRegistryName(), fluidColor);
+            CACHE_FLUID_COLOR.put(fluid.builtInRegistryHolder().key().location(), fluidColor);
             return fluidColor;
         }
     }

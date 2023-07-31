@@ -16,7 +16,7 @@ import org.lwjgl.glfw.GLFW;
 public class InputHandler
 {
     @SubscribeEvent
-    public void onKeyInput(InputEvent.KeyInputEvent event)
+    public void onKeyInput(InputEvent.Key event)
     {
         Minecraft minecraft = Minecraft.getInstance();
         if(minecraft.player == null || minecraft.screen != null)

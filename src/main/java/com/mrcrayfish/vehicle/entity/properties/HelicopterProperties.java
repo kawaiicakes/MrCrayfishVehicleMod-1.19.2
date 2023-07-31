@@ -2,7 +2,7 @@ package com.mrcrayfish.vehicle.entity.properties;
 
 import com.google.gson.JsonObject;
 import com.mrcrayfish.vehicle.util.ExtraJSONUtils;
-import net.minecraft.util.JSONUtils;
+import net.minecraft.util.GsonHelper;
 
 /**
  * Author: MrCrayfish
@@ -21,10 +21,10 @@ public class HelicopterProperties extends ExtendedProperties
 
     public HelicopterProperties(JsonObject object)
     {
-        this.movementStrength = JSONUtils.getAsFloat(object, "movementStrength", DEFAULT_MOVEMENT_STRENGTH);
-        this.rotateStrength = JSONUtils.getAsFloat(object, "rotateStrength", DEFAULT_ROTATE_STRENGTH);
-        this.maxLeanAngle = JSONUtils.getAsFloat(object, "maxLeanAngle", DEFAULT_MAX_LEAN_ANGLE);
-        this.drag = JSONUtils.getAsFloat(object, "drag", DEFAULT_DRAG);
+        this.movementStrength = GsonHelper.getAsFloat(object, "movementStrength", DEFAULT_MOVEMENT_STRENGTH);
+        this.rotateStrength = GsonHelper.getAsFloat(object, "rotateStrength", DEFAULT_ROTATE_STRENGTH);
+        this.maxLeanAngle = GsonHelper.getAsFloat(object, "maxLeanAngle", DEFAULT_MAX_LEAN_ANGLE);
+        this.drag = GsonHelper.getAsFloat(object, "drag", DEFAULT_DRAG);
     }
 
     public HelicopterProperties(float movementStrength, float rotateStrength, float maxLeanAngle, float drag)

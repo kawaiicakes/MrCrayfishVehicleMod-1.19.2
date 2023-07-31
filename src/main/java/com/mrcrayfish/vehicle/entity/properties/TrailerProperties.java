@@ -2,7 +2,7 @@ package com.mrcrayfish.vehicle.entity.properties;
 
 import com.google.gson.JsonObject;
 import com.mrcrayfish.vehicle.util.ExtraJSONUtils;
-import net.minecraft.util.JSONUtils;
+import net.minecraft.util.GsonHelper;
 
 /**
  * Author: MrCrayfish
@@ -15,7 +15,7 @@ public class TrailerProperties extends ExtendedProperties
 
     public TrailerProperties(JsonObject object)
     {
-        this.hitchOffset = JSONUtils.getAsFloat(object, "hitchOffset", DEFAULT_HITCH_OFFSET);
+        this.hitchOffset = GsonHelper.getAsFloat(object, "hitchOffset", DEFAULT_HITCH_OFFSET);
     }
 
     public TrailerProperties(double hitchOffset)

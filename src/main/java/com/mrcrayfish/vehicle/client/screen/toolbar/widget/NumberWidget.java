@@ -2,7 +2,7 @@ package com.mrcrayfish.vehicle.client.screen.toolbar.widget;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.MutableComponent;
 
 /**
  * Author: MrCrayfish

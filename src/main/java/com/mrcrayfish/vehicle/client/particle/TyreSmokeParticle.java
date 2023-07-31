@@ -1,25 +1,25 @@
 package com.mrcrayfish.vehicle.client.particle;
 
-import net.minecraft.client.particle.IAnimatedSprite;
-import net.minecraft.client.particle.IParticleFactory;
-import net.minecraft.client.particle.IParticleRenderType;
+import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.Particle;
-import net.minecraft.client.particle.SpriteTexturedParticle;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.particles.BasicParticleType;
+import net.minecraft.client.particle.SimpleAnimatedParticle;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
 /**
  * Author: MrCrayfish
  */
-public class TyreSmokeParticle extends SpriteTexturedParticle
+public class TyreSmokeParticle extends SimpleAnimatedParticle
 {
-    public TyreSmokeParticle(ClientWorld world, double x, double y, double z, double xd, double yd, double zd)
+    public TyreSmokeParticle(ClientLevel world, SpriteSet spriteSet, double x, double y, double z, double xd, double yd, double zd)
     {
-        super(world, x, y, z);
+        super(world, x, y, z, spriteSet, (float) yd);
         this.lifetime = 50 + this.random.nextInt(20);
         this.xd = xd;
         this.yd = yd;
@@ -47,27 +47,21 @@ public class TyreSmokeParticle extends SpriteTexturedParticle
         }
     }
 
-    @Override
-    public IParticleRenderType getRenderType()
-    {
-        return IParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
-    }
-
     @OnlyIn(Dist.CLIENT)
-    public static class Factory implements IParticleFactory<BasicParticleType>
+    public static class Factory implements ParticleProvider<SimpleParticleType>
     {
-        private final IAnimatedSprite spriteSet;
+        private final SpriteSet spriteSet;
 
-        public Factory(IAnimatedSprite spriteSet)
+        public Factory(SpriteSet spriteSet)
         {
             this.spriteSet = spriteSet;
         }
 
         @Nullable
         @Override
-        public Particle createParticle(BasicParticleType type, ClientWorld world, double x, double y, double z, double xd, double yd, double zd)
+        public Particle createParticle(@NotNull SimpleParticleType type, @NotNull ClientLevel world, double x, double y, double z, double xd, double yd, double zd)
         {
-            TyreSmokeParticle particle = new TyreSmokeParticle(world, x, y, z, xd, yd, zd);
+            TyreSmokeParticle particle = new TyreSmokeParticle(world, spriteSet, x, y, z, xd, yd, zd);
             particle.pickSprite(this.spriteSet);
             return particle;
         }

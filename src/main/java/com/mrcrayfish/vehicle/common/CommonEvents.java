@@ -42,7 +42,7 @@ import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 
 import java.util.List;
 import java.util.Optional;
@@ -350,7 +350,7 @@ public class CommonEvents
 
     private static ResourceLocation getEntityId(Entity entity)
     {
-        return entity.getType().getRegistryName();
+        return entity.getType().builtInRegistryHolder().key().location();
     }
 
     @SubscribeEvent

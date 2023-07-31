@@ -1,17 +1,7 @@
 package com.mrcrayfish.vehicle.client.model;
 
 import com.mrcrayfish.vehicle.Reference;
-import net.minecraft.client.Minecraft;
-import net.minecraftforge.client.extensions.IForgeBakedModel;
-import net.minecraft.client.renderer.model.ModelResourceLocation;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.client.event.ModelRegistryEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-
-import javax.annotation.Nullable;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 
 public class VehicleModels
 {

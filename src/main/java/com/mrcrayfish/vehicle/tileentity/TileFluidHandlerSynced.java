@@ -1,7 +1,7 @@
 package com.mrcrayfish.vehicle.tileentity;
 
 import com.mrcrayfish.vehicle.util.TileEntityUtil;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
@@ -52,7 +52,7 @@ public class TileFluidHandlerSynced extends TileFluidHandler
         }
     }
 
-    public void syncFluidToPlayer(ServerPlayerEntity player)
+    public void syncFluidToPlayer(ServerPlayer player)
     {
         if(this.level != null && !this.level.isClientSide)
         {

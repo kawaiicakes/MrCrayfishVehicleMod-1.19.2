@@ -18,9 +18,12 @@ import com.mrcrayfish.vehicle.entity.properties.VehicleProperties;
 import com.mrcrayfish.vehicle.init.ModEntities;
 import com.mrcrayfish.vehicle.init.ModSounds;
 import com.mrcrayfish.vehicle.util.Axis;
+import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.common.Mod;
+
+import java.io.IOException;
 
 /**
  * Author: MrCrayfish
@@ -771,5 +774,9 @@ public class VehiclePropertiesGen extends VehiclePropertiesProvider
                         .setEnergyCapacity(40000F)
                         .setEnergyConsumptionPerTick(0.5F)
                         .build()));
+    }
+
+    @Override
+    public void run(CachedOutput p_236071_) throws IOException {
     }
 }

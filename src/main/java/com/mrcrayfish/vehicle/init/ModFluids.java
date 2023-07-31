@@ -5,8 +5,8 @@ import com.mrcrayfish.vehicle.fluid.BlazeJuice;
 import com.mrcrayfish.vehicle.fluid.EnderSap;
 import com.mrcrayfish.vehicle.fluid.Fuelium;
 import net.minecraft.fluid.FlowingFluid;
-import net.minecraft.fluid.Fluid;
-import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 

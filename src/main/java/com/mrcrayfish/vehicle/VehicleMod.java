@@ -7,7 +7,7 @@ import com.mrcrayfish.vehicle.common.CommonEvents;
 import com.mrcrayfish.vehicle.common.FluidNetworkHandler;
 import com.mrcrayfish.vehicle.common.entity.HeldVehicleDataHandler;
 import com.mrcrayfish.vehicle.crafting.RecipeType;
-import com.mrcrayfish.vehicle.crafting.WorkstationIngredient;
+import net.minecraftforge.common.crafting.CompoundIngredient;
 import com.mrcrayfish.vehicle.datagen.LootTableGen;
 import com.mrcrayfish.vehicle.datagen.RecipeGen;
 import com.mrcrayfish.vehicle.datagen.VehiclePropertiesGen;
@@ -35,7 +35,7 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.event.lifecycle.GatherDataEvent;
+import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -93,7 +93,7 @@ public class VehicleMod
         HeldVehicleDataHandler.register();
         ModDataKeys.register();
         ModLootFunctions.init();
-        CraftingHelper.register(new ResourceLocation(Reference.MOD_ID, "workstation_ingredient"), WorkstationIngredient.Serializer.INSTANCE);
+        CraftingHelper.register(new ResourceLocation(Reference.MOD_ID, "workstation_ingredient"), CompoundIngredient.Serializer.INSTANCE);
         event.enqueueWork(() -> VehicleProperties.registerDynamicProvider(() -> new VehiclePropertiesGen(null)));
     }
 
@@ -105,8 +105,8 @@ public class VehicleMod
     private void onGatherData(GatherDataEvent event)
     {
         DataGenerator generator = event.getGenerator();
-        generator.addProvider(new LootTableGen(generator));
-        generator.addProvider(new RecipeGen(generator));
-        generator.addProvider(new VehiclePropertiesGen(generator));
+        generator.addProvider(true, new LootTableGen(generator));
+        generator.addProvider(true, new RecipeGen(generator));
+        generator.addProvider(true, new VehiclePropertiesGen(generator));
     }
 }

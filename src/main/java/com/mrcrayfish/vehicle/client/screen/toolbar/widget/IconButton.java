@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.Tessellator;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.MutableComponent;
 import org.lwjgl.opengl.GL11;
 
 import javax.annotation.Nullable;

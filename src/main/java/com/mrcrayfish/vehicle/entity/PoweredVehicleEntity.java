@@ -35,18 +35,18 @@ import net.minecraft.entity.MoverType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.player.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.IInventoryChangedListener;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.INamedContainerProvider;
+import net.minecraft.world.MenuProvider;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.particles.ParticleTypes;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionHand;
@@ -58,17 +58,17 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.GameRules;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
-import net.minecraftforge.fml.network.NetworkHooks;
+import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
@@ -79,7 +79,7 @@ import java.util.UUID;
 /**
  * Author: MrCrayfish
  */
-public abstract class PoweredVehicleEntity extends VehicleEntity implements IInventoryChangedListener, INamedContainerProvider
+public abstract class PoweredVehicleEntity extends VehicleEntity implements IInventoryChangedListener, MenuProvider
 {
     protected static final int MAX_WHEELIE_TICKS = 10;
 
@@ -201,7 +201,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
             GasPumpTankTileEntity gasPumpTank = (GasPumpTankTileEntity) tileEntity;
             FluidTank tank = gasPumpTank.getFluidTank();
             FluidStack stack = tank.getFluid();
-            if(stack.isEmpty() || !Config.SERVER.validFuels.get().contains(stack.getFluid().getRegistryName().toString()))
+            if(stack.isEmpty() || !Config.SERVER.validFuels.get().contains(stack.getFluid().builtInRegistryHolder().key().location().toString()))
                 return;
 
             stack = tank.drain(200, IFluidHandler.FluidAction.EXECUTE);
@@ -221,13 +221,13 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
             return;
 
         JerryCanItem jerryCan = (JerryCanItem) stack.getItem();
-        Optional<IFluidHandlerItem> optional = stack.getCapability(CapabilityFluidHandler.FLUID_HANDLER_ITEM_CAPABILITY).resolve();
+        Optional<IFluidHandlerItem> optional = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).resolve();
         if(!optional.isPresent())
             return;
 
         IFluidHandlerItem handler = optional.get();
         FluidStack fluidStack = handler.getFluidInTank(0);
-        if(fluidStack.isEmpty() || !Config.SERVER.validFuels.get().contains(fluidStack.getFluid().getRegistryName().toString()))
+        if(fluidStack.isEmpty() || !Config.SERVER.validFuels.get().contains(fluidStack.getFluid().builtInRegistryHolder().key().location().toString()))
             return;
 
         int transferAmount = Math.min(handler.getFluidInTank(0).getAmount(), jerryCan.getFillRate());
@@ -443,7 +443,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
                             double wheelWorldX = this.getX() + wheelX;
                             double wheelWorldY = this.getY() + wheelY;
                             double wheelWorldZ = this.getZ() + wheelZ;
-                            VehicleHelper.spawnWheelParticle(pos, state, wheelWorldX, wheelWorldY, wheelWorldZ, dirVec);
+                            VehicleHelper.spawnWheelParticle(state, wheelWorldX, wheelWorldY, wheelWorldZ, dirVec);
                             if(this.showTyreSmokeParticles() && SurfaceHelper.getSurfaceTypeForMaterial(state.getMaterial()) == SurfaceHelper.SurfaceType.SOLID)
                             {
                                 VehicleHelper.spawnSmokeParticle(wheelWorldX, wheelWorldY, wheelWorldZ, dirVec.multiply(0.03 * this.random.nextFloat(), 0.03, 0.03 * this.random.nextFloat()));
@@ -512,23 +512,23 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
     protected void readAdditionalSaveData(CompoundTag compound)
     {
         super.readAdditionalSaveData(compound);
-        if(compound.contains("Owner", Constants.NBT.TAG_COMPOUND))
+        if(compound.contains("Owner", Tag.TAG_COMPOUND))
         {
             this.owner = compound.getUUID("Owner");
         }
-        if(compound.contains("EngineStack", Constants.NBT.TAG_COMPOUND))
+        if(compound.contains("EngineStack", Tag.TAG_COMPOUND))
         {
             this.setEngineStack(ItemStack.of(compound.getCompound("EngineStack")));
         }
-        if(compound.contains("StepHeight", Constants.NBT.TAG_FLOAT))
+        if(compound.contains("StepHeight", Tag.TAG_FLOAT))
         {
             this.maxUpStep = compound.getFloat("StepHeight");
         }
-        if(compound.contains("CurrentFuel", Constants.NBT.TAG_FLOAT))
+        if(compound.contains("CurrentFuel", Tag.TAG_FLOAT))
         {
             this.setCurrentEnergy(compound.getFloat("CurrentFuel"));
         }
-        if(compound.contains("KeyNeeded", Constants.NBT.TAG_BYTE))
+        if(compound.contains("KeyNeeded", Tag.TAG_BYTE))
         {
             this.setKeyNeeded(compound.getBoolean("KeyNeeded"));
         }
@@ -843,9 +843,9 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
 
     private void openEditInventory(Player player)
     {
-        if(player instanceof ServerPlayerEntity)
+        if(player instanceof ServerPlayer)
         {
-            NetworkHooks.openGui((ServerPlayerEntity) player, this, buffer -> buffer.writeInt(this.getId()));
+            NetworkHooks.openScreen((ServerPlayer) player, this, buffer -> buffer.writeInt(this.getId()));
         }
     }
 
@@ -1025,7 +1025,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
             wheel = this.getWheelStack();
         }
 
-        ResourceLocation entityId = this.getType().getRegistryName();
+        ResourceLocation entityId = this.getType().builtInRegistryHolder().key().location();
         if(entityId != null)
         {
             return VehicleCrateBlock.create(entityId, this.getColor(), engine, wheel);

@@ -5,11 +5,12 @@ import com.mrcrayfish.vehicle.Config;
 import com.mrcrayfish.vehicle.entity.LandVehicleEntity;
 import com.mrcrayfish.vehicle.entity.PoweredVehicleEntity;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.contents.LiteralContents;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.ChatFormatting;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -24,7 +25,7 @@ import java.util.List;
  */
 public class OverlayHandler
 {
-    private List<Component> stats = new ArrayList<>();
+    private final List<Component> stats = new ArrayList<>();
 
     @SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event)
@@ -46,10 +47,9 @@ public class OverlayHandler
             return;
 
         Entity entity = player.getVehicle();
-        if(!(entity instanceof PoweredVehicleEntity))
+        if(!(entity instanceof PoweredVehicleEntity vehicle))
             return;
 
-        PoweredVehicleEntity vehicle = (PoweredVehicleEntity) entity;
         DecimalFormat format = new DecimalFormat("0.00");
         this.addStat("BPS", format.format(vehicle.getSpeed()));
 
@@ -61,9 +61,8 @@ public class OverlayHandler
 
         if(!FMLLoader.isProduction())
         {
-            if(vehicle instanceof LandVehicleEntity)
+            if(vehicle instanceof LandVehicleEntity landVehicle)
             {
-                LandVehicleEntity landVehicle = (LandVehicleEntity) vehicle;
                 String traction = format.format(landVehicle.getTraction());
                 this.addStat("Traction", traction);
 
@@ -77,7 +76,7 @@ public class OverlayHandler
 
     private void addStat(String label, String value)
     {
-        this.stats.add(new TextComponent(label + ": ").withStyle(ChatFormatting.BOLD).withStyle(ChatFormatting.RESET).append(new TextComponent(value).withStyle(ChatFormatting.YELLOW)));
+        this.stats.add(MutableComponent.create(new LiteralContents(label + ": ")).withStyle(ChatFormatting.BOLD).withStyle(ChatFormatting.RESET).append(MutableComponent.create(new LiteralContents(value)).withStyle(ChatFormatting.YELLOW)));
     }
 
     @SubscribeEvent

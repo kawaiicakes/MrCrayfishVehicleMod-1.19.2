@@ -75,7 +75,7 @@ public class PipeTileEntity extends TileEntitySynced
     public void load(BlockState state, CompoundTag compound)
     {
         super.load(state, compound);
-        if(compound.contains("DisabledConnections", Constants.NBT.TAG_BYTE_ARRAY))
+        if(compound.contains("DisabledConnections", Tag.TAG_BYTE_ARRAY))
         {
             byte[] connections = compound.getByteArray("DisabledConnections");
             for(int i = 0; i < connections.length; i++)

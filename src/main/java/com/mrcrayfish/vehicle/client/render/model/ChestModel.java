@@ -2,11 +2,11 @@ package com.mrcrayfish.vehicle.client.render.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.Atlases;
+import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.renderer.model.RenderMaterial;
+import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.Mth;
 import org.apache.commons.lang3.tuple.Pair;
@@ -43,7 +43,7 @@ public class ChestModel
         float lidProgress = Mth.lerp(partialTicks, lidProgressPair.getLeft(), lidProgressPair.getRight());
         lidProgress = 1.0F - lidProgress;
         lidProgress = 1.0F - lidProgress * lidProgress * lidProgress;
-        RenderMaterial renderMaterial = this.christmas ? Atlases.CHEST_XMAS_LOCATION : Atlases.CHEST_LOCATION;
+        Material renderMaterial = this.christmas ? Sheets.CHEST_XMAS_LOCATION : Sheets.CHEST_LOCATION;
         VertexConsumer builder = renderMaterial.buffer(renderTypeBuffer, RenderType::entityCutout);
         this.renderChest(matrixStack, builder, lidProgress, light);
     }

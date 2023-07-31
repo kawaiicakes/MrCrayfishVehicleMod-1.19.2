@@ -2,7 +2,7 @@ package com.mrcrayfish.vehicle.common;
 
 import com.google.gson.JsonObject;
 import com.mrcrayfish.vehicle.util.ExtraJSONUtils;
-import net.minecraft.util.JSONUtils;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.world.phys.Vec3;
 
 /**
@@ -67,8 +67,8 @@ public class Seat
     public static Seat fromJsonObject(JsonObject object)
     {
         Vec3 position = ExtraJSONUtils.getAsVector3d(object, "position", DEFAULT_POSITION);
-        boolean isDriverSeat = JSONUtils.getAsBoolean(object, "driver", DEFAULT_IS_DRIVER_SEAT);
-        float yawOffset = JSONUtils.getAsFloat(object, "yawOffset", DEFAULT_YAW_OFFSET);
+        boolean isDriverSeat = GsonHelper.getAsBoolean(object, "driver", DEFAULT_IS_DRIVER_SEAT);
+        float yawOffset = GsonHelper.getAsFloat(object, "yawOffset", DEFAULT_YAW_OFFSET);
         return new Seat(position, isDriverSeat, yawOffset);
     }
 
