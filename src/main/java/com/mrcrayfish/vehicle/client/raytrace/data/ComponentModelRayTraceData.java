@@ -75,6 +75,7 @@ public class ComponentModelRayTraceData extends RayTraceData
             }
         }
 
+        @SuppressWarnings("unused")
         public ComplexTriangleList(ComplexModel model, Matrix4f baseMatrix)
         {
             this(model.getModel(), baseMatrix);

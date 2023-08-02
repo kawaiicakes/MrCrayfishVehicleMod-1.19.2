@@ -40,8 +40,8 @@ import java.util.List;
 
 /**
  * A special type of model that is fully data driven. Complex models can be made up of multiple models
- * with each model having it's own transforms and children. Transforms can take in data from vehicles,
- * such has steering angle, and apply it before rendering the model and it's subsequent children.
+ * with each model having its own transforms and children. Transforms can take in data from vehicles,
+ * such has steering angle, and apply it before rendering the model and its subsequent children.
  * Author: MrCrayfish
  */
 public class ComplexModel

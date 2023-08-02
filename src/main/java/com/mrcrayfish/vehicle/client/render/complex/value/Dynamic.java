@@ -59,24 +59,18 @@ public class Dynamic implements IValue
     // TODO remove hardcoded nature and allow externals to register custom sources
     public enum Source
     {
-        PLANE_AILERON("plane_aileron", (vehicle, partialTicks) -> {
-            return vehicle instanceof PlaneEntity ? (double) ((PlaneEntity) vehicle).getFlapAngle(partialTicks) : 0.0;
-        }),
-        PLANE_PROPELLER("plane_propeller", (vehicle, partialTicks) -> {
-            return vehicle instanceof PlaneEntity ? (double) ((PlaneEntity) vehicle).getPropellerRotation(partialTicks) : 0.0;
-        }),
-        PLANE_ELEVATOR("plane_elevator", (vehicle, partialTicks) -> {
-            return vehicle instanceof PlaneEntity ? (double) ((PlaneEntity) vehicle).getElevatorAngle(partialTicks) : 0.0;
-        }),
-        HELICOPTER_BLADES("helicopter_blades", (vehicle, partialTicks) -> {
-            return vehicle instanceof HelicopterEntity ? (double) ((HelicopterEntity) vehicle).getBladeRotation(partialTicks) : 0.0;
-        }),
-        HELICOPTER_FORWARDS("helicopter_forwards", (vehicle, partialTicks) -> {
-            return vehicle instanceof HelicopterEntity ? (double) ((HelicopterEntity) vehicle).getForwards(partialTicks) : 0.0;
-        }),
-        HELICOPTER_SIDEWARDS("helicopter_sidewards", (vehicle, partialTicks) -> {
-            return vehicle instanceof HelicopterEntity ? (double) ((HelicopterEntity) vehicle).getSidewards(partialTicks) : 0.0;
-        });
+        PLANE_AILERON("plane_aileron", (vehicle, partialTicks) ->
+                vehicle instanceof PlaneEntity ? (double) ((PlaneEntity) vehicle).getFlapAngle(partialTicks) : 0.0),
+        PLANE_PROPELLER("plane_propeller", (vehicle, partialTicks) ->
+                vehicle instanceof PlaneEntity ? (double) ((PlaneEntity) vehicle).getPropellerRotation(partialTicks) : 0.0),
+        PLANE_ELEVATOR("plane_elevator", (vehicle, partialTicks) ->
+                vehicle instanceof PlaneEntity ? (double) ((PlaneEntity) vehicle).getElevatorAngle(partialTicks) : 0.0),
+        HELICOPTER_BLADES("helicopter_blades", (vehicle, partialTicks) ->
+                vehicle instanceof HelicopterEntity ? (double) ((HelicopterEntity) vehicle).getBladeRotation(partialTicks) : 0.0),
+        HELICOPTER_FORWARDS("helicopter_forwards", (vehicle, partialTicks) ->
+                vehicle instanceof HelicopterEntity ? (double) ((HelicopterEntity) vehicle).getForwards(partialTicks) : 0.0),
+        HELICOPTER_SIDEWARDS("helicopter_sidewards", (vehicle, partialTicks) ->
+                vehicle instanceof HelicopterEntity ? (double) ((HelicopterEntity) vehicle).getSidewards(partialTicks) : 0.0);
 
         private final String key;
         private final BiFunction<VehicleEntity, Float, Double> valueFunction;

@@ -71,6 +71,7 @@ public class CosmeticRayTraceData extends RayTraceData
         private final Matrix4f baseMatrix;
         private final List<Pair<List<Triangle>, BiFunction<RayTraceData, Entity, Matrix4f>>> matrixPairs = new ArrayList<>();
 
+        @SuppressWarnings("unused")
         public CosmeticTriangleList(ComponentModel model, Matrix4f baseMatrix)
         {
             this.baseMatrix = baseMatrix;

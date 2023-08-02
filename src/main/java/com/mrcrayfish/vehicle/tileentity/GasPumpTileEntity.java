@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.sounds.SoundEvents;
@@ -26,7 +26,7 @@ import java.util.Optional;
 /**
  * Author: MrCrayfish
  */
-public class GasPumpTileEntity extends TileEntitySynced implements ITickableTileEntity
+public class GasPumpTileEntity extends TileEntitySynced implements BaseEntityBlock
 {
     private int fuelingEntityId;
     private Player fuelingEntity;

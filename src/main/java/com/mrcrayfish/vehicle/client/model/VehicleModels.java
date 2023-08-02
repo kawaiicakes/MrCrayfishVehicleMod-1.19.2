@@ -3,6 +3,7 @@ package com.mrcrayfish.vehicle.client.model;
 import com.mrcrayfish.vehicle.Reference;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 
+@SuppressWarnings("unused") //LOTS of unused fields. Why? No clue. Do I want to find out? No.
 public class VehicleModels
 {
     public static final ComponentLoader LOADER = new ComponentLoader(Reference.MOD_ID);

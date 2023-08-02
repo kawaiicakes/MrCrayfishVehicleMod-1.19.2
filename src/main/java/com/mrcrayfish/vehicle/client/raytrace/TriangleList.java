@@ -1,6 +1,5 @@
 package com.mrcrayfish.vehicle.client.raytrace;
 
-import com.google.common.collect.Lists;
 import com.mrcrayfish.vehicle.client.raytrace.data.RayTraceData;
 import net.minecraft.world.entity.Entity;
 import com.mojang.math.Matrix4f;

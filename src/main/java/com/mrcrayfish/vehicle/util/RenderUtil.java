@@ -10,7 +10,7 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraftforge.client.extensions.IForgeBakedModel;
@@ -142,7 +142,7 @@ public class RenderUtil
             matrixStack.translate(-0.5, -0.5, -0.5);
             if(!model.isCustomRenderer() && (stack.getItem() != Items.TRIDENT || tridentFlag))
             {
-                RenderType renderType = RenderTypeLookup.getRenderType(stack, false); //TODO test what this flag does
+                RenderType renderType = ItemBlockRenderTypes.getRenderType(stack, false); //TODO test what this flag does
                 if(isGui && Objects.equals(renderType, Sheets.translucentCullBlockSheet()))
                 {
                     renderType = Sheets.translucentCullBlockSheet();

@@ -67,13 +67,9 @@ public class CosmeticCache
     {
         Map<ResourceLocation, RayTraceData> cosmeticData = this.getModelRayTraceDataMap(vehicle);
         vehicle.getProperties().getCosmetics().forEach((cosmeticId, cosmeticProperties) ->
-        {
-            cosmeticProperties.getModelLocations().forEach(modelLocation ->
-            {
-                cosmeticData.computeIfAbsent(modelLocation, location ->
-                        new CosmeticRayTraceData(cosmeticId, location, cosmeticProperties.getOffset().scale(0.0625)));
-            });
-        });
+                cosmeticProperties.getModelLocations().forEach(modelLocation ->
+                        cosmeticData.computeIfAbsent(modelLocation, location ->
+                                new CosmeticRayTraceData(cosmeticId, location, cosmeticProperties.getOffset().scale(0.0625)))));
     }
 
     @SubscribeEvent

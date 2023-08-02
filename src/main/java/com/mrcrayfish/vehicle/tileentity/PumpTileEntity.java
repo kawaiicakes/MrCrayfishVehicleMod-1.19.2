@@ -12,7 +12,7 @@ import com.mrcrayfish.vehicle.util.FluidUtils;
 import com.mrcrayfish.vehicle.util.TileEntityUtil;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
@@ -31,7 +31,7 @@ import java.util.function.Function;
 /**
  * Author: MrCrayfish
  */
-public class PumpTileEntity extends PipeTileEntity implements ITickableTileEntity
+public class PumpTileEntity extends PipeTileEntity implements BaseEntityBlock
 {
     private int lastHandlerIndex;
     private boolean validatedNetwork;
@@ -326,6 +326,12 @@ public class PumpTileEntity extends PipeTileEntity implements ITickableTileEntit
     private void writePowerMode(CompoundTag compound)
     {
         compound.putInt("PowerMode", this.powerMode.ordinal());
+    }
+
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos p_153215_, BlockState p_153216_) {
+        return null;
     }
 
     private static class PipeNode

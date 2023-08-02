@@ -31,6 +31,7 @@ public class InteractableBox<T extends VehicleEntity>
         return this.boxSupplier;
     }
 
+    //UNCHECKED CASTS!!!!
     public void handle(VehicleEntity entity, boolean rightClick)
     {
         this.handler.accept((T) entity, rightClick);

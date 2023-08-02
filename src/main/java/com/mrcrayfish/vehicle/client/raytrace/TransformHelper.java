@@ -2,7 +2,6 @@ package com.mrcrayfish.vehicle.client.raytrace;
 
 import com.google.common.collect.Lists;
 import com.mrcrayfish.vehicle.client.model.ComponentModel;
-import com.mrcrayfish.vehicle.client.model.IComplexModel;
 import com.mrcrayfish.vehicle.client.model.VehicleModels;
 import com.mrcrayfish.vehicle.client.raytrace.data.ItemStackRayTraceData;
 import com.mrcrayfish.vehicle.client.raytrace.data.RayTraceData;

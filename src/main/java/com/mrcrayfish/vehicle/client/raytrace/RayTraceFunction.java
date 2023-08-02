@@ -27,23 +27,22 @@ import java.util.Optional;
 /**
  * Author: MrCrayfish
  */
+@SuppressWarnings("deprecation")
 public interface RayTraceFunction
 {
-    @Nullable
-    InteractionHand apply(EntityRayTracer rayTracer, VehicleRayTraceResult result, Player player);
-
     /**
      * Checks if fuel can be transferred from a jerry can to a powered vehicle, and sends a packet to do so every other tick, if it can
      *
-     * @return whether or not fueling can continue
+     * @return whether fueling can continue
      */
+    @Nullable
+    InteractionHand apply(EntityRayTracer rayTracer, VehicleRayTraceResult result, Player player);
     RayTraceFunction FUNCTION_FUELING = (rayTracer, result, player) ->
     {
         Entity entity = result.getEntity();
-        if(!(entity instanceof PoweredVehicleEntity))
+        if(!(entity instanceof PoweredVehicleEntity poweredVehicle))
             return null;
 
-        PoweredVehicleEntity poweredVehicle = (PoweredVehicleEntity) entity;
         if(!poweredVehicle.requiresEnergy() || poweredVehicle.getCurrentEnergy() >= poweredVehicle.getEnergyCapacity())
             return null;
 
@@ -77,7 +76,7 @@ public interface RayTraceFunction
                 continue;
 
             Optional<IFluidHandlerItem> optional = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).resolve();
-            if(!optional.isPresent())
+            if(optional.isEmpty())
                 continue;
 
             IFluidHandlerItem handler = optional.get();

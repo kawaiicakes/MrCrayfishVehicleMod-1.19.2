@@ -1,4 +1,4 @@
-package com.mrcrayfish.vehicle.client.render.tileentity;
+package com.mrcrayfish.vehicle.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mrcrayfish.vehicle.block.RotatedObjectBlock;
@@ -9,36 +9,42 @@ import com.mrcrayfish.vehicle.entity.VehicleEntity;
 import com.mrcrayfish.vehicle.init.ModBlocks;
 import com.mrcrayfish.vehicle.tileentity.VehicleCrateTileEntity;
 import com.mrcrayfish.vehicle.util.RenderUtil;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.WorldRenderer;
-import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.core.Direction;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Objects;
 
 /**
  * Author: MrCrayfish
  */
-public class VehicleCrateRenderer extends BlockEntityRenderer<VehicleCrateTileEntity>
-{
-    public VehicleCrateRenderer(TileEntityRendererDispatcher dispatcher)
-    {
-        super(dispatcher);
+@SuppressWarnings("deprecation")
+public class VehicleCrateRenderer implements BlockEntityRenderer<VehicleCrateTileEntity> {
+    private final BlockEntityRenderDispatcher renderer;
+    public VehicleCrateRenderer(BlockEntityRendererProvider.Context context) {
+        this.renderer = context.getBlockEntityRenderDispatcher();
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void render(VehicleCrateTileEntity crate, float partialTicks, PoseStack matrixStack, MultiBufferSource renderTypeBuffer, int light, int overlay)
+    public void render(VehicleCrateTileEntity crate, float partialTicks, @NotNull PoseStack matrixStack, @NotNull MultiBufferSource renderTypeBuffer, int light, int overlay)
     {
-        BlockState state = crate.getLevel().getBlockState(crate.getBlockPos());
+        BlockState state = Objects.requireNonNull(crate.getLevel()).getBlockState(crate.getBlockPos());
         if(state.getBlock() != ModBlocks.VEHICLE_CRATE.get())
             return;
         
@@ -49,11 +55,11 @@ public class VehicleCrateRenderer extends BlockEntityRenderer<VehicleCrateTileEn
         matrixStack.mulPose(Axis.POSITIVE_Y.rotationDegrees(facing.get2DDataValue() * -90F + 180F));
         matrixStack.translate(-0.5, -0.5, -0.5);
 
-        this.renderer.textureManager.bind(AtlasTexture.LOCATION_BLOCKS);
+        // wtf? fix this shit! this.renderer.textureManager.bind(TextureAtlas.LOCATION_BLOCKS);
 
         matrixStack.pushPose();
 
-        light = WorldRenderer.getLightColor(crate.getLevel(), crate.getBlockPos().above()); //TODO figure out the correct way to calculate light
+        light = LevelRenderer.getLightColor(crate.getLevel(), crate.getBlockPos().above()); //TODO figure out the correct way to calculate light
 
         if(crate.isOpened() && crate.getTimer() > 150)
         {

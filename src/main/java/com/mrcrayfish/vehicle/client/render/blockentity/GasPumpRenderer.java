@@ -1,7 +1,9 @@
-package com.mrcrayfish.vehicle.client.render.tileentity;
+package com.mrcrayfish.vehicle.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector4f;
 import com.mrcrayfish.vehicle.Config;
 import com.mrcrayfish.vehicle.block.GasPumpBlock;
 import com.mrcrayfish.vehicle.client.model.VehicleModels;
@@ -12,39 +14,35 @@ import com.mrcrayfish.vehicle.init.ModBlocks;
 import com.mrcrayfish.vehicle.tileentity.GasPumpTileEntity;
 import com.mrcrayfish.vehicle.util.CollisionHelper;
 import com.mrcrayfish.vehicle.util.RenderUtil;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
-import net.minecraft.client.CameraType;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.core.BlockPos;
-import com.mojang.math.Matrix4f;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
-import com.mojang.math.Vector4f;
 import org.apache.commons.lang3.tuple.Triple;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
 /**
  * Author: MrCrayfish
  */
-public class GasPumpRenderer extends BlockEntityRenderer<GasPumpTileEntity>
-{
-    public GasPumpRenderer(TileEntityRendererDispatcher dispatcher)
-    {
-        super(dispatcher);
+public class GasPumpRenderer implements BlockEntityRenderer<GasPumpTileEntity> {
+    public GasPumpRenderer(BlockEntityRendererProvider.Context context) {
     }
 
     @Override
-    public void render(GasPumpTileEntity gasPump, float partialTicks, PoseStack matrixStack, MultiBufferSource renderTypeBuffer, int light, int overlay)
+    public void render(GasPumpTileEntity gasPump, float partialTicks, @NotNull PoseStack matrixStack, @NotNull MultiBufferSource renderTypeBuffer, int light, int overlay)
     {
         BlockState state = gasPump.getBlockState();
         if(state.getBlock() != ModBlocks.GAS_PUMP.get())
@@ -257,7 +255,7 @@ public class GasPumpRenderer extends BlockEntityRenderer<GasPumpTileEntity>
         Minecraft minecraft = Minecraft.getInstance();
         if(player.equals(minecraft.player) && minecraft.options.getCameraType() == CameraType.FIRST_PERSON)
         {
-            return playerVec.add(new Vec3(-0.25, 0.5, -0.25).yRot(-player.yRot * 0.017453292F));
+            return playerVec.add(new Vec3(-0.25, 0.5, -0.25).yRot(-player.getYRot() * 0.017453292F));
         }
 
         double handSide = player.getMainArm() == HumanoidArm.RIGHT ? 1 : -1;
@@ -277,7 +275,7 @@ public class GasPumpRenderer extends BlockEntityRenderer<GasPumpTileEntity>
         Minecraft minecraft = Minecraft.getInstance();
         if(player.equals(minecraft.player) && minecraft.options.getCameraType() == CameraType.FIRST_PERSON)
         {
-            return Vec3.directionFromRotation(0F, player.yRot);
+            return Vec3.directionFromRotation(0F, player.getYRot());
         }
 
         float bodyRotation = this.getPlayerBodyRotation(player, partialTicks);

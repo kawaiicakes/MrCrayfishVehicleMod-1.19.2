@@ -1,4 +1,4 @@
-package com.mrcrayfish.vehicle.client.render.tileentity;
+package com.mrcrayfish.vehicle.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mrcrayfish.vehicle.block.RotatedObjectBlock;
@@ -6,28 +6,26 @@ import com.mrcrayfish.vehicle.client.render.Axis;
 import com.mrcrayfish.vehicle.init.ModBlocks;
 import com.mrcrayfish.vehicle.tileentity.GasPumpTankTileEntity;
 import com.mrcrayfish.vehicle.util.FluidUtils;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Author: MrCrayfish
  */
-public class GasPumpTankRenderer extends BlockEntityRenderer<GasPumpTankTileEntity>
-{
+public class GasPumpTankRenderer implements BlockEntityRenderer<GasPumpTankTileEntity> {
     private static final FluidUtils.FluidSides FLUID_SIDES = new FluidUtils.FluidSides(Direction.NORTH, Direction.SOUTH, Direction.UP);
 
-    public GasPumpTankRenderer(TileEntityRendererDispatcher dispatcher)
-    {
-        super(dispatcher);
+    public GasPumpTankRenderer(BlockEntityRendererProvider.Context context) {
     }
 
     @Override
-    public void render(GasPumpTankTileEntity gasPump, float partialTicks, PoseStack matrixStack, MultiBufferSource renderTypeBuffer, int light, int overlay)
+    public void render(GasPumpTankTileEntity gasPump, float partialTicks, @NotNull PoseStack matrixStack, @NotNull MultiBufferSource renderTypeBuffer, int light, int overlay)
     {
         Level world = gasPump.getLevel();
         BlockState state = gasPump.getBlockState();

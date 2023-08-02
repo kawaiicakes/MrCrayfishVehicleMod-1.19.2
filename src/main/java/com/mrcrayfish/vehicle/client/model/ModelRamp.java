@@ -3,9 +3,12 @@ package com.mrcrayfish.vehicle.client.model;
 /**
  * Author: MrCrayfish
  */
+@SuppressWarnings("unused")
 public class ModelRamp
 {
-    /*@Override
+    /* More lovely WIP stuff
+
+    @Override
     public Collection<ResourceLocation> getTextures()
     {
         return ImmutableSet.of(new ResourceLocation("minecraft", "blocks/concrete_gray"), new ResourceLocation("vehicle", "blocks/boost_pad"));

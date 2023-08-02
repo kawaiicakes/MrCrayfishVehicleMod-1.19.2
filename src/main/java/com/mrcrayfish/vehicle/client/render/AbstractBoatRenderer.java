@@ -4,7 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mrcrayfish.vehicle.common.entity.Transform;
 import com.mrcrayfish.vehicle.entity.BoatEntity;
 import com.mrcrayfish.vehicle.entity.properties.VehicleProperties;
-import com.mrcrayfish.vehicle.entity.vehicle.GoKartEntity;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.entity.EntityType;
 
@@ -56,10 +55,10 @@ public abstract class AbstractBoatRenderer<T extends BoatEntity> extends Abstrac
         matrixStack.scale((float) bodyPosition.getScale(), (float) bodyPosition.getScale(), (float) bodyPosition.getScale());
         matrixStack.translate(0.0, 0.5, 0.0);
 
-        //Translate the vehicle so it's axles are half way into the ground
+        //Translate the vehicle so its axles are halfway into the ground
         matrixStack.translate(0.0, properties.getAxleOffset() * 0.0625, 0.0);
 
-        //Translate the vehicle so it's actually riding on it's wheels
+        //Translate the vehicle, so it's actually riding on it's wheels
         matrixStack.translate(0.0, properties.getWheelOffset() * 0.0625, 0.0);
 
         //Render body

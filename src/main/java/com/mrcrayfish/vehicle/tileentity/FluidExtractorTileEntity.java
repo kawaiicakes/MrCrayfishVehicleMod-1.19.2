@@ -11,14 +11,14 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.fluid.Fluids;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.Container;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.core.Direction;
 import net.minecraft.util.IIntArray;
 import net.minecraft.util.INameable;
@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 /**
  * Author: MrCrayfish
  */
-public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements Container, ITickableTileEntity, MenuProvider, INameable
+public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements Container, BaseEntityBlock, MenuProvider, INameable
 {
     private NonNullList<ItemStack> inventory = NonNullList.withSize(7, ItemStack.EMPTY);
 

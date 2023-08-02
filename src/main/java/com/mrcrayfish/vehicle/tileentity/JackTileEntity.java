@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.block.material.PushReaction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.entity.MoverType;
-import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -24,7 +24,7 @@ import java.util.List;
 /**
  * Author: MrCrayfish
  */
-public class JackTileEntity extends TileEntitySynced implements ITickableTileEntity
+public class JackTileEntity extends TileEntitySynced implements BaseEntityBlock
 {
     public static final int MAX_LIFT_PROGRESS = 20;
 

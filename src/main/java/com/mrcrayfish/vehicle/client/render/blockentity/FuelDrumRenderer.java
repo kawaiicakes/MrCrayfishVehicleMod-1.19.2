@@ -1,62 +1,69 @@
-package com.mrcrayfish.vehicle.client.render.tileentity;
+package com.mrcrayfish.vehicle.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mrcrayfish.vehicle.tileentity.FuelDrumTileEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.RenderStateShard;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderState;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.texture.AtlasTexture;
-import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import net.minecraft.inventory.container.PlayerContainer;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import com.mojang.math.Matrix4f;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
-import org.lwjgl.opengl.GL11;
+
+import javax.annotation.ParametersAreNonnullByDefault;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Author: MrCrayfish
  */
-public class FuelDrumRenderer extends BlockEntityRenderer<FuelDrumTileEntity>
-{
-    public static final RenderType LABEL_BACKGROUND = RenderType.create("vehicle:fuel_drum_label_background", DefaultVertexFormat.POSITION_COLOR, GL11.GL_QUADS, 256, RenderType.State.builder().createCompositeState(false));
-    public static final RenderType LABEL_FLUID = RenderType.create("vehicle:fuel_drum_label_fluid", DefaultVertexFormat.POSITION_TEX, GL11.GL_QUADS, 256, RenderType.State.builder().setTextureState(new RenderState.TextureState(PlayerContainer.BLOCK_ATLAS, false, true)).createCompositeState(false));
+public class FuelDrumRenderer implements BlockEntityRenderer<FuelDrumTileEntity> {
+    public static final RenderType LABEL_BACKGROUND = RenderType.create("vehicle:fuel_drum_label_background", DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS, 256, false, false, RenderType.CompositeState.builder().createCompositeState(false));
+    public static final RenderType LABEL_FLUID = RenderType.create("vehicle:fuel_drum_label_fluid", DefaultVertexFormat.POSITION_TEX, VertexFormat.Mode.QUADS, 256, false, false, RenderType.CompositeState.builder().setTextureState(new RenderStateShard.TextureStateShard(InventoryMenu.BLOCK_ATLAS, false, true)).createCompositeState(false));
+    private final BlockEntityRenderDispatcher renderer;
 
-    public FuelDrumRenderer(TileEntityRendererDispatcher dispatcher)
-    {
-        super(dispatcher);
+    public FuelDrumRenderer(BlockEntityRendererProvider.Context context) {
+        this.renderer = context.getBlockEntityRenderDispatcher();
     }
-
+    @ParametersAreNonnullByDefault
     @Override
     public void render(FuelDrumTileEntity fuelDrumTileEntity, float partialTicks, PoseStack matrixStack, MultiBufferSource renderTypeBuffer, int lightTexture, int overlayTexture)
     {
+        assert Minecraft.getInstance().player != null;
         if(Minecraft.getInstance().player.isCrouching())
         {
-            if(fuelDrumTileEntity.hasFluid() && this.renderer.cameraHitResult != null && this.renderer.cameraHitResult.getType() == HitResult.Type.BLOCK)
+            if(fuelDrumTileEntity.hasFluid() && this.renderer.cameraHitResult.getType() == HitResult.Type.BLOCK)
             {
                 BlockHitResult result = (BlockHitResult) this.renderer.cameraHitResult;
                 if(result.getBlockPos().equals(fuelDrumTileEntity.getBlockPos()))
                 {
-                    this.drawFluidLabel(this.renderer.font, fuelDrumTileEntity.getFluidTank(), matrixStack, renderTypeBuffer);
+                    this.drawFluidLabel(this.renderer, fuelDrumTileEntity.getFluidTank(), matrixStack, renderTypeBuffer);
                 }
             }
         }
     }
 
-    private void drawFluidLabel(FontRenderer fontRendererIn, FluidTank tank, PoseStack matrixStack, MultiBufferSource renderTypeBuffer)
+    @SuppressWarnings("deprecation")
+    private void drawFluidLabel(BlockEntityRenderDispatcher fontRendererIn, FluidTank tank, PoseStack matrixStack, MultiBufferSource renderTypeBuffer)
     {
         if(tank.getFluid().isEmpty())
             return;
 
         FluidStack stack = tank.getFluid();
-        TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(AtlasTexture.LOCATION_BLOCKS).apply(tank.getFluid().getFluid().getAttributes().getStillTexture());
+        AtomicReference<ResourceLocation> stackLocation = new AtomicReference<>();
+        stack.getFluid().getFluidType().initializeClient((iClient) -> stackLocation.set(iClient.getFlowingTexture()));
+        TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(stackLocation.get());
         if(sprite != null)
         {
             float level = tank.getFluidAmount() / (float) tank.getCapacity();
@@ -103,8 +110,8 @@ public class FuelDrumRenderer extends BlockEntityRenderer<FuelDrumTileEntity>
             /* Fluid Name */
             matrixStack.scale(0.5F, 0.5F, 0.5F);
             String name = stack.getDisplayName().getString();
-            int nameWidth = fontRendererIn.width(name) / 2;
-            fontRendererIn.draw(matrixStack, name, -nameWidth, -14, -1);
+            int nameWidth = fontRendererIn.font.width(name) / 2;
+            fontRendererIn.font.draw(matrixStack, name, -nameWidth, -14, -1);
 
             matrixStack.popPose();
         }

@@ -1,52 +1,54 @@
-package com.mrcrayfish.vehicle.client.render.tileentity;
+package com.mrcrayfish.vehicle.client.render.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Matrix4f;
 import com.mrcrayfish.vehicle.block.FluidPumpBlock;
 import com.mrcrayfish.vehicle.client.raytrace.EntityRayTracer;
 import com.mrcrayfish.vehicle.init.ModItems;
 import com.mrcrayfish.vehicle.tileentity.PumpTileEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.core.Direction;
-import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import com.mojang.math.Matrix4f;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.contents.TranslatableContents;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * Author: MrCrayfish
  */
-public class FluidPumpRenderer extends BlockEntityRenderer<PumpTileEntity>
-{
-    public FluidPumpRenderer(TileEntityRendererDispatcher dispatcher)
-    {
-        super(dispatcher);
+public class FluidPumpRenderer implements BlockEntityRenderer<PumpTileEntity> {
+
+    private final BlockEntityRenderDispatcher renderer;
+    public FluidPumpRenderer(BlockEntityRendererProvider.Context context) {
+        this.renderer = context.getBlockEntityRenderDispatcher();
     }
 
+    @ParametersAreNonnullByDefault
     @Override
     public void render(PumpTileEntity tileEntity, float partialTicks, PoseStack matrixStack, MultiBufferSource renderTypeBuffer, int light, int overlay)
     {
         Entity entity = this.renderer.camera.getEntity();
-        if(!(entity instanceof Player))
+        if(!(entity instanceof Player player))
             return;
 
-        Player player = (Player) entity;
         if(player.getMainHandItem().getItem() != ModItems.WRENCH.get())
             return;
 
         this.renderInteractableBox(tileEntity, matrixStack, renderTypeBuffer);
 
-        if(this.renderer.cameraHitResult == null || this.renderer.cameraHitResult.getType() != HitResult.Type.BLOCK)
+        if(this.renderer.cameraHitResult.getType() != HitResult.Type.BLOCK)
             return;
 
         BlockHitResult result = (BlockHitResult) this.renderer.cameraHitResult;
@@ -68,8 +70,8 @@ public class FluidPumpRenderer extends BlockEntityRenderer<PumpTileEntity>
         matrixStack.mulPose(this.renderer.camera.rotation());
         matrixStack.scale(-0.015F, -0.015F, 0.015F);
         Matrix4f matrix4f = matrixStack.last().pose();
-        FontRenderer fontRenderer = this.renderer.font;
-        Component text = new TranslatableContents(tileEntity.getPowerMode().getKey());
+        Font fontRenderer = this.renderer.font;
+        Component text = Component.translatable(tileEntity.getPowerMode().getKey());
         float x = (float)(-fontRenderer.width(text) / 2);
         fontRenderer.drawInBatch(text, x, 0, -1, true, matrix4f, renderTypeBuffer, true, 0, 15728880);
         matrixStack.popPose();
@@ -77,7 +79,7 @@ public class FluidPumpRenderer extends BlockEntityRenderer<PumpTileEntity>
 
     private void renderInteractableBox(PumpTileEntity tileEntity, PoseStack matrixStack, MultiBufferSource renderTypeBuffer)
     {
-        if(this.renderer.cameraHitResult != null && this.renderer.cameraHitResult.getType() == HitResult.Type.BLOCK)
+        if(this.renderer.cameraHitResult.getType() == HitResult.Type.BLOCK)
         {
             BlockHitResult result = (BlockHitResult) this.renderer.cameraHitResult;
             if(result.getBlockPos().equals(tileEntity.getBlockPos()))

@@ -35,24 +35,16 @@ public class ComponentManager
     public static void setupModels(ModelEvent.RegisterAdditional event)
     {
         LOADERS.forEach((modId, loader) ->
-        {
-            loader.getModels().forEach(model ->
-            {
-                event.register(model.getModelLocation());
-            });
-        });
+                loader.getModels().forEach(model ->
+                        event.register(model.getModelLocation())));
     }
 
     @SubscribeEvent
     public static void onBakeEvent(ModelEvent.BakingCompleted event)
     {
         LOADERS.forEach((modId, loader) ->
-        {
-            loader.getModels().forEach(model ->
-            {
-                model.setComplexModel(ComplexModel.load(model));
-            });
-        });
+                loader.getModels().forEach(model ->
+                        model.setComplexModel(ComplexModel.load(model))));
     }
 
     public static void clearCache()

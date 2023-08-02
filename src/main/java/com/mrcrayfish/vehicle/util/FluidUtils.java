@@ -8,7 +8,7 @@ import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.particle.SpriteSet;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.world.level.material.Fluid;
@@ -54,7 +54,7 @@ public class FluidUtils
         else
         {
             int fluidColor = -1;
-            TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(AtlasTexture.LOCATION_BLOCKS).apply(fluid.getFluid().getAttributes().getStillTexture());
+            TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(fluid.getFluid().getAttributes().getStillTexture());
             if(sprite != null)
             {
                 long totalRed = 0;
@@ -103,7 +103,7 @@ public class FluidUtils
         if(fluid == null || fluid.isEmpty())
             return;
 
-        TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(AtlasTexture.LOCATION_BLOCKS).apply(fluid.getFluid().getAttributes().getStillTexture());
+        TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(fluid.getFluid().getAttributes().getStillTexture());
         if(sprite != null)
         {
             float minU = sprite.getU0();
@@ -113,7 +113,7 @@ public class FluidUtils
             float deltaV = maxV - minV;
             double tankLevel = percent * height;
 
-            Minecraft.getInstance().getTextureManager().bind(AtlasTexture.LOCATION_BLOCKS);
+            Minecraft.getInstance().getTextureManager().bind(TextureAtlas.LOCATION_BLOCKS);
 
             RenderSystem.enableBlend();
             int count = 1 + ((int) Math.ceil(tankLevel)) / 16;

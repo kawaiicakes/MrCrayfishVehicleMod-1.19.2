@@ -21,7 +21,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.tileentity.ITickableTileEntity;
+import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -38,7 +38,7 @@ import java.util.UUID;
 /**
  * Author: MrCrayfish
  */
-public class VehicleCrateTileEntity extends TileEntitySynced implements ITickableTileEntity
+public class VehicleCrateTileEntity extends TileEntitySynced implements BaseEntityBlock
 {
     private static final Random RAND = new Random();
 

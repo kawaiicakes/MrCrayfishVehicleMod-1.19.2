@@ -190,5 +190,7 @@
     "vehicle.toolbar.label.spoiler": "Spoiler",
     "vehicle.toolbar.label.hood": "Hood",
     "vehicle.toolbar.label.driver_seat": "Driver Seat",
-    "vehicle.toolbar.label.passenger_seat": "Passenger Seat"
+    "vehicle.toolbar.label.passenger_seat": "Passenger Seat",
+    "key.vehicle.dashboard": "Dashboard",
+    "key.vehicle.hitch_trailer": "Hitch Trailer"
 }

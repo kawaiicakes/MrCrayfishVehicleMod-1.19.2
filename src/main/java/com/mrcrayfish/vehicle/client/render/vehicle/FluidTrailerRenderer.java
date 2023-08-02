@@ -11,12 +11,14 @@ import com.mrcrayfish.vehicle.entity.trailer.FluidTrailerEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.fluid.Fluids;
+import net.minecraft.world.level.material.Fluids;
 import com.mojang.math.Matrix4f;
+import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.fluids.ForgeFlowingFluid.Properties;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 
@@ -27,7 +29,7 @@ import javax.annotation.Nullable;
  */
 public class FluidTrailerRenderer extends AbstractTrailerRenderer<FluidTrailerEntity>
 {
-    protected final PropertyFunction<FluidTrailerEntity, FluidTank> fluidTankProperty = new PropertyFunction<>(FluidTrailerEntity::getTank, new FluidTank(FluidAttributes.BUCKET_VOLUME));
+    protected final PropertyFunction<FluidTrailerEntity, FluidTank> fluidTankProperty = new PropertyFunction<>(FluidTrailerEntity::getTank, new FluidTank(FluidType.BUCKET_VOLUME));
 
     public FluidTrailerRenderer(EntityType<FluidTrailerEntity> type, VehicleProperties defaultProperties)
     {
@@ -50,7 +52,7 @@ public class FluidTrailerRenderer extends AbstractTrailerRenderer<FluidTrailerEn
         if(fluid == Fluids.EMPTY)
             return;
 
-        TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(AtlasTexture.LOCATION_BLOCKS).apply(fluid.getFluid().getAttributes().getStillTexture());
+        TextureAtlasSprite sprite = Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(fluid.getFluid().getAttributes().getStillTexture());
 
         int fluidColor = vehicle != null ? fluid.getAttributes().getColor(vehicle.getCommandSenderWorld(), vehicle.blockPosition()) : 0xFF3F76E4;
         float red = (float) (fluidColor >> 16 & 255) / 255.0F;
@@ -89,8 +91,6 @@ public class FluidTrailerRenderer extends AbstractTrailerRenderer<FluidTrailerEn
     public RayTraceTransforms getRayTraceTransforms()
     {
         return (tracer, transforms, parts) ->
-        {
-            TransformHelper.createTransformListForPart(VehicleModels.FLUID_TRAILER, parts, transforms);
-        };
+                TransformHelper.createTransformListForPart(VehicleModels.FLUID_TRAILER, parts, transforms);
     }
 }

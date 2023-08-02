@@ -61,7 +61,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -157,8 +156,8 @@ public class EntityRayTracer
     /**
      * Registers a {@link RayTraceTransforms} for a vehicle. This allows triangles to be generated
      * for preforming ray tracing on a vehicle. This allows for advanced interactions like being able
-     * to click on any part of the vehicle to mount it, fueling the vehicle through it's fuel port,
-     * and using a key in the key hole.
+     * to click on any part of the vehicle to mount it, fueling the vehicle through its fuel port,
+     * and using a key in the keyhole.
      *
      * @param type the entity type of the vehicle
      * @param transforms the ray trace transforms for the vehicle
@@ -199,6 +198,7 @@ public class EntityRayTracer
      */
     public synchronized <T extends VehicleEntity> void registerDynamicRayTraceData(EntityType<T> type, Function<T, List<RayTraceData>> function)
     {
+        //looks like this needs to be generified. I don't like unchecked casts. Maybe this is fine though
         this.entityDynamicRayTraceData.put(type, (Function<VehicleEntity, List<RayTraceData>>) function);
     }
 
@@ -237,7 +237,7 @@ public class EntityRayTracer
      * @return list of all triangles
      */
     public static List<Triangle> createTrianglesFromBakedModel(IForgeBakedModel model, @Nullable Matrix4f matrix)
-    {
+    { //how the fuck do I get ModelData from an IForgeBakedModel?
         List<Triangle> triangles = new ArrayList<>();
         try
         {
@@ -314,6 +314,8 @@ public class EntityRayTracer
      */
     public static void interactWithEntity(Entity entity, EntityHitResult result)
     {
+        assert Minecraft.getInstance().gameMode != null; //temporary assertion check. might be too aggressive
+        assert Minecraft.getInstance().player != null;
         Minecraft.getInstance().gameMode.interact(Minecraft.getInstance().player, entity, InteractionHand.MAIN_HAND);
         Minecraft.getInstance().gameMode.interactAt(Minecraft.getInstance().player, entity, result, InteractionHand.MAIN_HAND);
     }
@@ -386,7 +388,7 @@ public class EntityRayTracer
         if(event.getAction() == GLFW.GLFW_RELEASE)
             return;
 
-        // Return if not right and/or left clicking, if the mouse is being released, or if there are no entity classes to raytrace
+        // Return if not right and/or left-clicking, if the mouse is being released, or if there are no entity classes to raytrace
         boolean rightClick = event.getButton() == Minecraft.getInstance().options.keyUse.getKey().getValue();
         boolean leftClick = event.getButton() == Minecraft.getInstance().options.keyAttack.getKey().getValue();
 
@@ -424,7 +426,7 @@ public class EntityRayTracer
      * @return the result of the raytrace - returns null, if it fails
      */
     @Nullable
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "deprecation"})
     private <T extends VehicleEntity> VehicleRayTraceResult rayTraceEntities(boolean rightClick)
     {
         Minecraft minecraft = Minecraft.getInstance();
@@ -440,8 +442,10 @@ public class EntityRayTracer
             EntityType<T> type = (EntityType<T>) entity.getType();
             if(this.entityRayTraceTransformSuppliers.containsKey(type))
             {
-                /* Initialize the vehicle triangles if they don't exist. Lazy loading for memory
-                 * sake, not that it does much */
+                /* Initialize the vehicle triangles if they don't exist. Lazy loading for memory’s
+                 * sake, not that it does much
+                 * I fixed your typo teehee
+                 */
                 this.initializeTransforms(type);
 
                 VehicleRayTraceResult rayTraceResult = this.rayTraceEntityRotated(entity, eyeVec, forwardVec, reach, rightClick);
@@ -467,7 +471,7 @@ public class EntityRayTracer
             {
                 /* If the hit entity is a raytraceable entity, and if the player's eyes are inside what MC
                  * thinks the player is looking at, then process the hit regardless of what MC thinks */
-                boolean bypass = this.entityRayTraceData.keySet().contains(closestRayTraceResult.getEntity().getType());
+                boolean bypass = this.entityRayTraceData.containsKey(closestRayTraceResult.getEntity().getType());
                 HitResult result = Minecraft.getInstance().hitResult;
                 if(bypass && result != null && result.getType() != HitResult.Type.MISS)
                 {
@@ -559,15 +563,13 @@ public class EntityRayTracer
     private <T extends VehicleEntity> void generateInteractableBoxes(EntityType<T> type, List<MatrixTransform> transforms)
     {
         Optional.ofNullable(this.entityInteractableBoxes.get(type)).ifPresent(list ->
-        {
-            list.forEach(box ->
-            {
-                RayTraceData data = box.getData();
-                data.clearTriangles();
-                data.setMatrix(TransformHelper.createMatrixFromTransformsForInteractionBox(transforms));
-                this.entityInteractableBoxData.computeIfAbsent(type, t -> new ArrayList<>()).add(data);
-            });
-        });
+                list.forEach(box ->
+                {
+                    RayTraceData data = box.getData();
+                    data.clearTriangles();
+                    data.setMatrix(TransformHelper.createMatrixFromTransformsForInteractionBox(transforms));
+                    this.entityInteractableBoxData.computeIfAbsent(type, t -> new ArrayList<>()).add(data);
+                }));
     }
 
     /**
@@ -686,10 +688,10 @@ public class EntityRayTracer
     }
 
     /**
-     * Rotates the x and z components of a vector about the y axis
+     * Rotates the x and z components of a vector about the y-axis
      * 
      * @param vec vector to rotate
-     * @param angle angle in radians to rotate about the y axis
+     * @param angle angle in radians to rotate about the y-axis
      * @param rotationPoint vector containing the x/z position to rotate around
      * 
      * @return the passed vector rotated by 'angle' around 'rotationPoint'
@@ -738,28 +740,25 @@ public class EntityRayTracer
     private static <T extends VehicleEntity> void drawTriangleList(T entity, @Nullable List<RayTraceData> dataList, PoseStack matrixStack, VertexConsumer builder, int baseColor)
     {
         Optional.ofNullable(dataList).ifPresent(list ->
-        {
-            list.forEach(data ->
-            {
-                if(!Config.CLIENT.forceRenderAllInteractableBoxes.get() && data instanceof InteractableBoxRayTraceData)
+                list.forEach(data ->
                 {
-                    InteractableBoxRayTraceData interactableBoxData = (InteractableBoxRayTraceData) data;
-                    if(!interactableBoxData.getInteractableBox().isActive(entity))
+                    if(!Config.CLIENT.forceRenderAllInteractableBoxes.get() && data instanceof InteractableBoxRayTraceData interactableBoxData)
                     {
-                        return;
+                        if(!interactableBoxData.getInteractableBox().isActive(entity))
+                        {
+                            return;
+                        }
                     }
-                }
-                int color = data.getRayTraceFunction() != null ? 0x00FF00 : baseColor;
-                float r = (float) (color >> 16 & 255) / 255.0F;
-                float g = (float) (color >> 8 & 255) / 255.0F;
-                float b = (float) (color & 255) / 255.0F;
-                ITriangleList triangleList = data.getTriangleList();
-                if(triangleList != null)
-                {
-                    triangleList.getTriangles(data, entity).forEach(triangle -> triangle.draw(matrixStack, builder, r, g, b, 0.4F));
-                }
-            });
-        });
+                    int color = data.getRayTraceFunction() != null ? 0x00FF00 : baseColor;
+                    float r = (float) (color >> 16 & 255) / 255.0F;
+                    float g = (float) (color >> 8 & 255) / 255.0F;
+                    float b = (float) (color & 255) / 255.0F;
+                    ITriangleList triangleList = data.getTriangleList();
+                    if(triangleList != null)
+                    {
+                        triangleList.getTriangles(data, entity).forEach(triangle -> triangle.draw(matrixStack, builder, r, g, b, 0.4F));
+                    }
+                }));
     }
 
     public static void renderShape(PoseStack matrixStack, VertexConsumer builder, VoxelShape shape, float red, float green, float blue, float alpha)
@@ -809,7 +808,6 @@ public class EntityRayTracer
     /**
      * Converts quad into a pair of triangles that represents it
      * @param triangles list of all triangles for the given raytraceable entity class
-     * @param matrix
      * @param data four vertices of a quad
      */
     private static <T> void createTrianglesFromDataAndAdd(List<Triangle> triangles, Matrix4f matrix, int size, T[] data, Function<T, Float> cast)
@@ -870,11 +868,10 @@ public class EntityRayTracer
         }
 
         RayTraceData data = result.getData();
-        if(!mc.player.isCrouching() && entity instanceof VehicleEntity && data instanceof CosmeticRayTraceData)
+        if(!mc.player.isCrouching() && entity instanceof VehicleEntity vehicle && data instanceof CosmeticRayTraceData)
         {
             mc.player.swing(InteractionHand.MAIN_HAND);
             ResourceLocation cosmeticId = ((CosmeticRayTraceData) data).getCosmeticId();
-            VehicleEntity vehicle = (VehicleEntity) entity;
             Collection<Action> actions = vehicle.getCosmeticTracker().getActions(cosmeticId);
             if(!actions.isEmpty())
             {
@@ -897,6 +894,7 @@ public class EntityRayTracer
             boolean notRiding = player.getVehicle() != entity;
             if(!rightClick && notRiding)
             {
+                assert mc.gameMode != null; //another aggressive assertion check. rewrite if necessary
                 mc.gameMode.attack(player, entity);
                 return true;
             }

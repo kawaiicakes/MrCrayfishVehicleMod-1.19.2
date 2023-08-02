@@ -3,9 +3,12 @@ package com.mrcrayfish.vehicle.client.model.baked;
 /**
  * Author: MrCrayfish
  */
+@SuppressWarnings("unused")
 public class BakedModelSteepRamp
 {
-    /*private static final ImmutableMap<ItemTransforms.TransformType, Matrix4f> CAMERA_TRANSFORMATIONS;
+    /* See BakedModelRamp
+
+    private static final ImmutableMap<ItemTransforms.TransformType, Matrix4f> CAMERA_TRANSFORMATIONS;
 
     static
     {

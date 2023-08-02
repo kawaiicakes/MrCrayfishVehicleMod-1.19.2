@@ -7,6 +7,7 @@ import com.mrcrayfish.vehicle.common.CommonEvents;
 import com.mrcrayfish.vehicle.common.FluidNetworkHandler;
 import com.mrcrayfish.vehicle.common.entity.HeldVehicleDataHandler;
 import com.mrcrayfish.vehicle.crafting.RecipeType;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.common.crafting.CompoundIngredient;
 import com.mrcrayfish.vehicle.datagen.LootTableGen;
 import com.mrcrayfish.vehicle.datagen.RecipeGen;
@@ -39,6 +40,7 @@ import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Author: MrCrayfish
@@ -50,7 +52,7 @@ public class VehicleMod
     public static final CreativeModeTab CREATIVE_TAB = new CreativeModeTab(Reference.MOD_ID)
     {
         @Override
-        public ItemStack makeIcon()
+        public @NotNull ItemStack makeIcon()
         {
             return new ItemStack(ModItems.IRON_SMALL_ENGINE.get());
         }
@@ -59,6 +61,7 @@ public class VehicleMod
     public VehicleMod()
     {
         IEventBus eventBus = FMLJavaModLoadingContext.get().getModEventBus();
+
         ModBlocks.REGISTER.register(eventBus);
         ModItems.REGISTER.register(eventBus);
         ModEntities.REGISTER.register(eventBus);
@@ -68,20 +71,25 @@ public class VehicleMod
         ModSounds.REGISTER.register(eventBus);
         ModRecipeSerializers.REGISTER.register(eventBus);
         ModFluids.REGISTER.register(eventBus);
+
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.serverSpec);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.clientSpec);
+
         eventBus.addListener(this::onCommonSetup);
         eventBus.addListener(this::onClientSetup);
         eventBus.addListener(this::onGatherData);
+
         MinecraftForge.EVENT_BUS.register(new CommonEvents());
         MinecraftForge.EVENT_BUS.register(new ModCommands());
         MinecraftForge.EVENT_BUS.register(FluidNetworkHandler.instance());
+
         ExtendedProperties.register(new ResourceLocation(Reference.MOD_ID, "powered"), PoweredProperties.class, PoweredProperties::new);
         ExtendedProperties.register(new ResourceLocation(Reference.MOD_ID, "land"), LandProperties.class, LandProperties::new);
         ExtendedProperties.register(new ResourceLocation(Reference.MOD_ID, "motorcycle"), MotorcycleProperties.class, MotorcycleProperties::new);
         ExtendedProperties.register(new ResourceLocation(Reference.MOD_ID, "plane"), PlaneProperties.class, PlaneProperties::new);
         ExtendedProperties.register(new ResourceLocation(Reference.MOD_ID, "helicopter"), HelicopterProperties.class, HelicopterProperties::new);
         ExtendedProperties.register(new ResourceLocation(Reference.MOD_ID, "trailer"), TrailerProperties.class, TrailerProperties::new);
+
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ComponentManager.registerLoader(VehicleModels.LOADER));
     }
 
@@ -109,4 +117,5 @@ public class VehicleMod
         generator.addProvider(true, new RecipeGen(generator));
         generator.addProvider(true, new VehiclePropertiesGen(generator));
     }
+
 }

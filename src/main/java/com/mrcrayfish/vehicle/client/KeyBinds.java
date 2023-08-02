@@ -4,9 +4,10 @@ import com.mrcrayfish.vehicle.entity.VehicleEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.settings.IKeyConflictContext;
 import net.minecraftforge.client.settings.KeyConflictContext;
-import net.minecraftforge.fmlclient.registry.ClientRegistry;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
 import org.lwjgl.glfw.GLFW;
 
 /**
@@ -47,11 +48,12 @@ public class KeyBinds
         KEY_DASHBOARD.setKeyConflictContext(RIDING_VEHICLE);
     }
 
-    public static void register()
+    @SubscribeEvent
+    public static void register(RegisterKeyMappingsEvent event)
     {
-        ClientRegistry.registerKeyBinding(KEY_HORN);
-        ClientRegistry.registerKeyBinding(KEY_CYCLE_SEATS);
-        ClientRegistry.registerKeyBinding(KEY_HITCH_TRAILER);
-        ClientRegistry.registerKeyBinding(KEY_DASHBOARD);
+        event.register(KEY_HORN);
+        event.register(KEY_CYCLE_SEATS);
+        event.register(KEY_HITCH_TRAILER);
+        event.register(KEY_DASHBOARD);
     }
 }

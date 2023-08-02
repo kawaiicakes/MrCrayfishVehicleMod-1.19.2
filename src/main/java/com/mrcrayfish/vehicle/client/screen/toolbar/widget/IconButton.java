@@ -3,7 +3,7 @@ package com.mrcrayfish.vehicle.client.screen.toolbar.widget;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mrcrayfish.vehicle.client.screen.toolbar.IToolbarLabel;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.gui.widget.button.Button;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.Tessellator;
@@ -53,7 +53,7 @@ public class IconButton extends Button implements IToolbarLabel
     {
         super.renderButton(matrixStack, mouseX, mouseY, partialTicks);
         Minecraft mc = Minecraft.getInstance();
-        FontRenderer font = mc.font;
+        BlockEntityRenderDispatcher font = mc.font;
         int combinedWidth = this.icon != null ? 10 : 0;
         String message = this.getMessage().getContents().trim();
         if(!message.isEmpty())

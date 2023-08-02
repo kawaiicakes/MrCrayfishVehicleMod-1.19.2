@@ -3,9 +3,12 @@ package com.mrcrayfish.vehicle.client.model.baked;
 /**
  * Author: MrCrayfish
  */
+@SuppressWarnings("unused")
 public class BakedModelRamp
 {
-    /*private static final ImmutableMap<ItemTransforms.TransformType, Matrix4f> CAMERA_TRANSFORMATIONS;
+    /* it looks like mrcrayfish was trying to make the ramp a baked model. this can be continued at another time.
+
+    private static final ImmutableMap<ItemTransforms.TransformType, Matrix4f> CAMERA_TRANSFORMATIONS;
 
     static
     {

@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 /**
  * Author: MrCrayfish
  */
+@SuppressWarnings({"SpellCheckingInspection", "GrazieInspection"}) //FUCK OUTTA HERE (lol irony)
 class InterceptResult
 {
     private static final float EPSILON = 0.000001F;
