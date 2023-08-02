@@ -350,7 +350,7 @@ public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements 
     @Override
     public CompoundTag save(CompoundTag compound)
     {
-        super.save(compound);
+        super.saveAdditional(compound);
         compound.putInt("ExtractionProgress", this.extractionProgress);
         compound.putInt("RemainingFuel", this.remainingFuel);
         compound.putInt("FuelMaxProgress", this.fuelMaxProgress);

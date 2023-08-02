@@ -15,7 +15,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraftforge.client.extensions.IForgeBakedModel;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.core.BlockPos;
@@ -26,7 +26,7 @@ import java.util.Random;
 /**
  * Author: MrCrayfish
  */
-public class JackRenderer extends TileEntityRenderer<JackTileEntity>
+public class JackRenderer extends BlockEntityRenderer<JackTileEntity>
 {
     public JackRenderer(TileEntityRendererDispatcher dispatcher)
     {

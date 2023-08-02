@@ -2,16 +2,16 @@ package com.mrcrayfish.vehicle.tileentity;
 
 import com.mrcrayfish.vehicle.util.TileEntityUtil;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.NetworkManager;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.network.Connection;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 
 import javax.annotation.Nullable;
 
 public class TileEntitySynced extends BlockEntity
 {
-    public TileEntitySynced(TileEntityType<?> tileEntityTypeIn)
+    public TileEntitySynced(BlockEntityType<?> tileEntityTypeIn)
     {
         super(tileEntityTypeIn);
     }
@@ -30,13 +30,13 @@ public class TileEntitySynced extends BlockEntity
 
     @Nullable
     @Override
-    public SUpdateTileEntityPacket getUpdatePacket()
+    public ClientboundBlockEntityDataPacket getUpdatePacket()
     {
-        return new SUpdateTileEntityPacket(this.getBlockPos(), 0, this.getUpdateTag());
+        return new ClientboundBlockEntityDataPacket(this.getBlockPos(), 0, this.getUpdateTag());
     }
 
     @Override
-    public void onDataPacket(final NetworkManager net, final SUpdateTileEntityPacket pkt)
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt)
     {
         this.load(null, pkt.getTag());
     }

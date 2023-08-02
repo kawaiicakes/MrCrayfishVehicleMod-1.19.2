@@ -320,7 +320,7 @@ public class PumpTileEntity extends PipeTileEntity implements ITickableTileEntit
     public CompoundTag save(CompoundTag compound)
     {
         compound.putInt("PowerMode", this.powerMode.ordinal());
-        return super.save(compound);
+        return super.saveAdditional(compound);
     }
 
     private void writePowerMode(CompoundTag compound)

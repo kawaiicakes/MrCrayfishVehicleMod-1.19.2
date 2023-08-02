@@ -11,11 +11,12 @@ import com.mrcrayfish.vehicle.util.ExtraJSONUtils;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraftforge.client.extensions.IForgeBakedModel;
 import net.minecraft.client.resources.model.ModelState;
-import net.minecraft.client.renderer.block.model.IUnbakedModel;
-import net.minecraft.client.renderer.block.model.ItemOverrideList;
+import net.minecraft.client.resources.model.UnbakedModel;
+import net.minecraft.client.renderer.block.model.ItemOverride;
 import net.minecraft.client.resources.model.ModelBakery;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.client.particle.SpriteSet;
@@ -25,10 +26,10 @@ import net.minecraft.resources.ResourceLocation;
 import com.mojang.math.Vector3f;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ModelEvent;
-import net.minecraftforge.client.model.IModelConfiguration;
-import net.minecraftforge.client.model.IModelLoader;
-import net.minecraftforge.client.model.ModelLoaderRegistry;
+import net.minecraftforge.client.model.obj.ObjLoader;
+import net.minecraftforge.client.event.ModelEvent.RegisterGeometryLoaders;
 import net.minecraft.client.renderer.block.model.BlockModel;
+import net.minecraftforge.client.model.obj.ObjModel;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 
@@ -54,33 +55,35 @@ public class OpenModel implements BlockModel<OpenModel>
     }
 
     @Override
-    public BakedModel bake(ModelBakery bakery, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform, ResourceLocation modelLocation)
+    public BakedModel bake(ModelBakery bakery, BlockModel model, Function<Material, TextureAtlasSprite> spriteGetter, ModelState modelTransform, ResourceLocation modelLocation, boolean bool)
     {
-        return this.model.bake(bakery, this.model, spriteGetter, modelTransform, modelLocation, true);
+        return net.minecraftforge.client.model.geometry.UnbakedGeometryHelper.bake(this, bakery, model, spriteGetter, modelTransform, modelLocation, bool);
     }
 
     @Override
-    public Collection<Material> getTextures(IModelConfiguration owner, Function<ResourceLocation, IUnbakedModel> modelGetter, Set<Pair<String, String>> missingTextureErrors)
+    public Collection<Material> getMaterials(Function<ResourceLocation, UnbakedModel> modelGetter, Set<Pair<String, String>> missingTextureErrors)
     {
         return this.model.getMaterials(modelGetter, missingTextureErrors);
     }
 
     @Mod.EventBusSubscriber(modid = Reference.MOD_ID, bus = Mod.EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-    public static class Loader implements IModelLoader<OpenModel>
-    {
+    public static class Loader extends ObjLoader {
         @Override
         public void onResourceManagerReload(ResourceManager manager) {}
 
         @Override
-        public OpenModel read(JsonDeserializationContext context, JsonObject object)
+        public ObjModel read(JsonObject jsonObject, JsonDeserializationContext deserializationContext)
         {
-            return new OpenModel(Deserializer.INSTANCE.deserialize(object, BlockModel.class, context));
+            return loadModel(Deserializer.INSTANCE.deserialize(jsonObject, BlockModel.class, deserializationContext));
+        }
+
+        private ObjModel loadModel(BlockModel deserialize) {
         }
 
         @SubscribeEvent
-        public static void onModelRegister(ModelEvent event)
+        public static void onModelRegister(ModelEvent.RegisterGeometryLoaders event)
         {
-            ModelLoaderRegistry.registerLoader(new ResourceLocation("framework", "open_model"), new Loader());
+            event.register(String.valueOf(new ResourceLocation("framework", "open_model")), new Loader());
         }
     }
 

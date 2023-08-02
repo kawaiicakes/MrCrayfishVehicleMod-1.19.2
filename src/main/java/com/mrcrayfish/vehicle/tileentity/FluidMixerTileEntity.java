@@ -398,7 +398,7 @@ public class FluidMixerTileEntity extends TileEntitySynced implements IInventory
     @Override
     public CompoundTag save(CompoundTag compound)
     {
-        super.save(compound);
+        super.saveAdditional(compound);
 
         ItemStackHelper.saveAllItems(compound, this.inventory);
 

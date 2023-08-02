@@ -148,7 +148,7 @@ public class GasPumpTileEntity extends TileEntitySynced implements ITickableTile
     public CompoundTag save(CompoundTag compound)
     {
         compound.putInt("FuelingEntity", this.fuelingEntityId);
-        return super.save(compound);
+        return super.saveAdditional(compound);
     }
 
     private void syncFuelingEntity()

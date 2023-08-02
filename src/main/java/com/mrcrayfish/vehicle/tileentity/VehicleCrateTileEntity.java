@@ -255,7 +255,7 @@ public class VehicleCrateTileEntity extends TileEntitySynced implements ITickabl
         }
         compound.putInt("Color", this.color);
         compound.putBoolean("Opened", this.opened);
-        return super.save(compound);
+        return super.saveAdditional(compound);
     }
 
     @Override

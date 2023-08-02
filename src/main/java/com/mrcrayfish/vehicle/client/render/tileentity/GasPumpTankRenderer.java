@@ -8,7 +8,7 @@ import com.mrcrayfish.vehicle.tileentity.GasPumpTankTileEntity;
 import com.mrcrayfish.vehicle.util.FluidUtils;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -17,7 +17,7 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 /**
  * Author: MrCrayfish
  */
-public class GasPumpTankRenderer extends TileEntityRenderer<GasPumpTankTileEntity>
+public class GasPumpTankRenderer extends BlockEntityRenderer<GasPumpTankTileEntity>
 {
     private static final FluidUtils.FluidSides FLUID_SIDES = new FluidUtils.FluidSides(Direction.NORTH, Direction.SOUTH, Direction.UP);
 

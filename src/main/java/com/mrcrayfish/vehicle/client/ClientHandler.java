@@ -120,8 +120,8 @@ public class ClientHandler
     private static void setupCustomBlockModels()
     {
         //TODO add custom loader
-        //ModelLoaderRegistry.registerLoader(new CustomLoader());
-        //ModelLoaderRegistry.registerLoader(new ResourceLocation(Reference.MOD_ID, "ramp"), new CustomLoader());
+        //RegisterGeometryLoaders.registerLoader(new CustomLoader());
+        //RegisterGeometryLoaders.registerLoader(new ResourceLocation(Reference.MOD_ID, "ramp"), new CustomLoader());
     }
 
     private static void setupRenderLayers()

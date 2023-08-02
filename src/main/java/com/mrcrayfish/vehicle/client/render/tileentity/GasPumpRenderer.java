@@ -19,7 +19,7 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.CameraType;
 import net.minecraft.world.entity.player.Player;
@@ -36,7 +36,7 @@ import javax.annotation.Nullable;
 /**
  * Author: MrCrayfish
  */
-public class GasPumpRenderer extends TileEntityRenderer<GasPumpTileEntity>
+public class GasPumpRenderer extends BlockEntityRenderer<GasPumpTileEntity>
 {
     public GasPumpRenderer(TileEntityRendererDispatcher dispatcher)
     {

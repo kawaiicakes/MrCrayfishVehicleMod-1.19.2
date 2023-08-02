@@ -17,7 +17,7 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.AtlasTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -27,7 +27,7 @@ import org.apache.commons.lang3.tuple.Pair;
 /**
  * Author: MrCrayfish
  */
-public class VehicleCrateRenderer extends TileEntityRenderer<VehicleCrateTileEntity>
+public class VehicleCrateRenderer extends BlockEntityRenderer<VehicleCrateTileEntity>
 {
     public VehicleCrateRenderer(TileEntityRendererDispatcher dispatcher)
     {

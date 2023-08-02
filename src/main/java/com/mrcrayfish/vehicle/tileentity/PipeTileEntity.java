@@ -4,7 +4,7 @@ import com.mrcrayfish.vehicle.init.ModTileEntities;
 import com.mrcrayfish.vehicle.util.TileEntityUtil;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.tileentity.TileEntityType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
 import net.minecraftforge.common.util.Constants;
@@ -25,7 +25,7 @@ public class PipeTileEntity extends TileEntitySynced
         super(ModTileEntities.FLUID_PIPE.get());
     }
 
-    public PipeTileEntity(TileEntityType<?> tileEntityType)
+    public PipeTileEntity(BlockEntityType<?> tileEntityType)
     {
         super(tileEntityType);
     }
@@ -89,7 +89,7 @@ public class PipeTileEntity extends TileEntitySynced
     public CompoundTag save(CompoundTag compound)
     {
         this.writeConnections(compound);
-        return super.save(compound);
+        return super.saveAdditional(compound);
     }
 
     private void writeConnections(CompoundTag compound)

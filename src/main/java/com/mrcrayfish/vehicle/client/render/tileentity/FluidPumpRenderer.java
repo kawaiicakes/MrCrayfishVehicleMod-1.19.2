@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -26,7 +26,7 @@ import net.minecraft.network.chat.contents.TranslatableContents;
 /**
  * Author: MrCrayfish
  */
-public class FluidPumpRenderer extends TileEntityRenderer<PumpTileEntity>
+public class FluidPumpRenderer extends BlockEntityRenderer<PumpTileEntity>
 {
     public FluidPumpRenderer(TileEntityRendererDispatcher dispatcher)
     {

@@ -42,7 +42,7 @@ public class BoostTileEntity extends TileEntitySynced
     public CompoundTag save(CompoundTag compound)
     {
         compound.putFloat("SpeedMultiplier", this.speedMultiplier);
-        return super.save(compound);
+        return super.saveAdditional(compound);
     }
 }
 

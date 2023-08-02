@@ -5,7 +5,7 @@ import com.mrcrayfish.vehicle.block.FluidExtractorBlock;
 import com.mrcrayfish.vehicle.tileentity.FluidExtractorTileEntity;
 import com.mrcrayfish.vehicle.util.FluidUtils;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.core.Direction;
 import com.mojang.math.Vector3f;
@@ -14,7 +14,7 @@ import net.minecraftforge.fluids.capability.templates.FluidTank;
 /**
  * Author: MrCrayfish
  */
-public class FluidExtractorRenderer extends TileEntityRenderer<FluidExtractorTileEntity>
+public class FluidExtractorRenderer extends BlockEntityRenderer<FluidExtractorTileEntity>
 {
     private static final FluidUtils.FluidSides FLUID_SIDES = new FluidUtils.FluidSides(Direction.WEST, Direction.EAST, Direction.SOUTH, Direction.UP);
 

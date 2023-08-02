@@ -2,7 +2,7 @@ package com.mrcrayfish.vehicle.util;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.play.server.SUpdateTileEntityPacket;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -23,7 +23,7 @@ public class TileEntityUtil
      */
     public static void sendUpdatePacket(BlockEntity tileEntity)
     {
-        SUpdateTileEntityPacket packet = tileEntity.getUpdatePacket();
+        ClientboundBlockEntityDataPacket packet = tileEntity.getUpdatePacket();
         if(packet != null)
         {
             sendUpdatePacket(tileEntity.getLevel(), tileEntity.getBlockPos(), packet);
@@ -37,7 +37,7 @@ public class TileEntityUtil
      */
     public static void sendUpdatePacket(BlockEntity tileEntity, CompoundTag compound)
     {
-        SUpdateTileEntityPacket packet = new SUpdateTileEntityPacket(tileEntity.getBlockPos(), 0, compound);
+        ClientboundBlockEntityDataPacket packet = new ClientboundBlockEntityDataPacket(tileEntity.getBlockPos(), 0, compound);
         sendUpdatePacket(tileEntity.getLevel(), tileEntity.getBlockPos(), packet);
     }
 
@@ -65,11 +65,11 @@ public class TileEntityUtil
      */
     public static void sendUpdatePacket(BlockEntity tileEntity, CompoundTag compound, ServerPlayer player)
     {
-        SUpdateTileEntityPacket packet = new SUpdateTileEntityPacket(tileEntity.getBlockPos(), 0, compound);
+        ClientboundBlockEntityDataPacket packet = new ClientboundBlockEntityDataPacket(tileEntity.getBlockPos(), 0, compound);
         player.connection.send(packet);
     }
 
-    private static void sendUpdatePacket(Level world, BlockPos pos, SUpdateTileEntityPacket packet)
+    private static void sendUpdatePacket(Level world, BlockPos pos, ClientboundBlockEntityDataPacket packet)
     {
         if(world instanceof ServerLevel)
         {

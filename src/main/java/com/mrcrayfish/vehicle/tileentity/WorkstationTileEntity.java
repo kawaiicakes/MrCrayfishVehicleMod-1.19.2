@@ -46,7 +46,7 @@ public class WorkstationTileEntity extends TileEntitySynced implements IStorageB
     public CompoundTag save(CompoundTag compound)
     {
         ItemStackHelper.saveAllItems(compound, this.inventory);
-        return super.save(compound);
+        return super.saveAdditional(compound);
     }
 
     @Override
