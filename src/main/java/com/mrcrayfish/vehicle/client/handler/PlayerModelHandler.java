@@ -15,7 +15,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.CameraType;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import com.mojang.math.Vector3f;
@@ -30,14 +29,12 @@ public class PlayerModelHandler
      * Applies transformations to the player model when riding a vehicle and performing a wheelie
      */
     @SubscribeEvent
-    @SuppressWarnings("unchecked")
     public void onPreRender(PlayerModelEvent.Render.Pre event)
     {
-        Player player = event.getPlayer();
+        Player player = event.getEntity();
         Entity ridingEntity = player.getVehicle();
-        if(ridingEntity instanceof VehicleEntity)
+        if(ridingEntity instanceof VehicleEntity vehicle)
         {
-            VehicleEntity vehicle = (VehicleEntity) ridingEntity;
             this.applyPassengerTransformations(vehicle, player, event.getPoseStack(), event.getVertexConsumer(), event.getDeltaTicks());
             this.applyWheelieTransformations(vehicle, player, event.getPoseStack(), event.getDeltaTicks());
         }
@@ -63,10 +60,9 @@ public class PlayerModelHandler
      */
     private void applyWheelieTransformations(VehicleEntity vehicle, Player player, PoseStack matrixStack, float partialTicks)
     {
-        if(!(vehicle instanceof LandVehicleEntity))
+        if(!(vehicle instanceof LandVehicleEntity landVehicle))
             return;
 
-        LandVehicleEntity landVehicle = (LandVehicleEntity) vehicle;
         if(!landVehicle.canWheelie())
             return;
 
@@ -91,7 +87,7 @@ public class PlayerModelHandler
     @SubscribeEvent
     public void onSetupAngles(PlayerModelEvent.SetupAngles.Post event)
     {
-        Player player = event.getPlayer();
+        Player player = event.getEntity();
 
         if(player.equals(Minecraft.getInstance().player) && Minecraft.getInstance().options.getCameraType() == CameraType.FIRST_PERSON)
             return;
@@ -118,11 +114,10 @@ public class PlayerModelHandler
     private void applyPassengerPose(Player player, PlayerModel model, float partialTicks)
     {
         Entity ridingEntity = player.getVehicle();
-        if(!(ridingEntity instanceof VehicleEntity))
+        if(!(ridingEntity instanceof VehicleEntity vehicle))
             return;
 
-        VehicleEntity vehicle = (VehicleEntity) ridingEntity;
-        AbstractVehicleRenderer<VehicleEntity> render = (AbstractVehicleRenderer<VehicleEntity>) VehicleRenderRegistry.getRenderer((EntityType<? extends VehicleEntity>) vehicle.getType());
+        AbstractVehicleRenderer<VehicleEntity> render = (AbstractVehicleRenderer<VehicleEntity>) VehicleRenderRegistry.getRenderer(vehicle.getType());
         if(render != null)
         {
             render.applyPlayerModel(vehicle, player, model, partialTicks);

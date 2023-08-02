@@ -30,7 +30,7 @@ public class HeldVehicleHandler
     public void onRenderPlayer(RenderPlayerEvent.Pre event)
     {
         if(!setupExtraLayers)
-        {
+        { //uh ohhhhh, unchecked casts! I might have to make this a generic class, or at least this method generic
             Map<String, EntityRenderer<? extends Player>> skinMap = Minecraft.getInstance().getEntityRenderDispatcher().getSkinMap();
             this.patchPlayerRender((LivingEntityRenderer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>>) skinMap.get("default"));
             this.patchPlayerRender((LivingEntityRenderer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>>) skinMap.get("slim"));
@@ -52,7 +52,8 @@ public class HeldVehicleHandler
     @SubscribeEvent
     public void onSetupAngles(PlayerModelEvent.SetupAngles.Post event)
     {
-        PlayerModel model = event.getModelPlayer();
+        var model = event.getModelPlayer(); //var is used here to prevent(?) raw use of parameterized type PlayerModel
+        //Whether this actually fixes anything is yet to be seen...
         Player player = event.getEntity();
 
         boolean holdingVehicle = HeldVehicleDataHandler.isHoldingVehicle(player);
@@ -89,6 +90,7 @@ public class HeldVehicleHandler
         model.leftArm.y = (player.isCrouching() ? 3.0F : -0.5F) * progress;
     }
 
+    @SuppressWarnings("unused")
     public static class AnimationCounter
     {
         private final int MAX_COUNT;
@@ -100,6 +102,7 @@ public class HeldVehicleHandler
             this.MAX_COUNT = maxCount;
         }
 
+        @SuppressWarnings("UnusedReturnValue")
         public int update(boolean increment)
         {
             prevCount = currentCount;
@@ -120,6 +123,7 @@ public class HeldVehicleHandler
             return currentCount;
         }
 
+        //both this and #getCurrentCount are unused, yet MrCrayfish's comments make me reconsider deleting.
         public int getMaxCount()
         {
             return MAX_COUNT;

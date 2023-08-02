@@ -29,7 +29,6 @@ import java.util.function.BiConsumer;
 
 /**
  * Manages changing the point of view of the camera when mounting and dismount vehicles
- *
  * Author: MrCrayfish
  */
 public class CameraHandler
@@ -169,10 +168,9 @@ public class CameraHandler
             return;
 
         AbstractClientPlayer player = minecraft.player;
-        if(!(player.getVehicle() instanceof VehicleEntity))
+        if(!(player.getVehicle() instanceof VehicleEntity vehicle))
             return;
 
-        VehicleEntity vehicle = (VehicleEntity) player.getVehicle();
         this.cameraHelper.tick(vehicle, minecraft.options.getCameraType());
     }
 
@@ -192,11 +190,10 @@ public class CameraHandler
             return;
 
         AbstractClientPlayer player = minecraft.player;
-        if(!(player.getVehicle() instanceof VehicleEntity))
+        if(!(player.getVehicle() instanceof VehicleEntity vehicle))
             return;
 
         CameraType pointOfView = minecraft.options.getCameraType();
-        VehicleEntity vehicle = (VehicleEntity) player.getVehicle();
         this.cameraHelper.setupVanillaCamera(info, pointOfView, vehicle, player, partialTicks);
     }
 
@@ -229,6 +226,7 @@ public class CameraHandler
     /*
      * Called via transformer. Do not delete!
      */
+    @SuppressWarnings("unused") //YES SIR MR CRAYFISH SIR!!
     public static void setupShaderCamera(Camera info, float partialTicks)
     {
         CameraHandler.instance().setupVanillaCamera(info, partialTicks);
@@ -237,6 +235,7 @@ public class CameraHandler
     /*
      * Called via transformer. Do not delete!
      */
+    @SuppressWarnings("unused")
     public static void onPlayerTurn(double x, double y)
     {
         CameraHandler.instance().cameraHelper.turnPlayerView(x, y);

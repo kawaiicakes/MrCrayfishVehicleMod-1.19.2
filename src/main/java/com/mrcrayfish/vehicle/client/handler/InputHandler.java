@@ -35,9 +35,8 @@ public class InputHandler
 
         if(KeyBinds.KEY_HITCH_TRAILER.isDown())
         {
-            if(minecraft.player.getVehicle() instanceof VehicleEntity)
+            if(minecraft.player.getVehicle() instanceof VehicleEntity vehicle)
             {
-                VehicleEntity vehicle = (VehicleEntity) minecraft.player.getVehicle();
                 if(vehicle.canTowTrailers())
                 {
                     PacketHandler.getPlayChannel().sendToServer(new MessageHitchTrailer(vehicle.getTrailer() == null));
