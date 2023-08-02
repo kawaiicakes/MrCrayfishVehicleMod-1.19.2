@@ -75,7 +75,8 @@ repositories {
 dependencies {
     minecraft 'net.minecraftforge:forge:1.19.2-43.2.14'
 
-    compileOnly fg.deobf('curse.maven:obfuscate-289380:3459987')
+    compileOnly fg.deobf('curse.maven:obfuscate-289380:3459987') //this is pending removal. i suspect framework has replaced obfuscate
+    compileOnly fg.deobf('curse.maven:framework-549225:4287474')
     compileOnly fg.deobf('curse.maven:controllable-317269:4445137')
     compileOnly fg.deobf('curse.maven:configured-457570:4462837')
     compileOnly fg.deobf('curse.maven:catalogue-459701:4171024')
