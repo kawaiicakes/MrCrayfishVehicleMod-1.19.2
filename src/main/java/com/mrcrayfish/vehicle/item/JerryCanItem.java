@@ -91,7 +91,7 @@ public class JerryCanItem extends Item
         BlockEntity tileEntity = context.getLevel().getBlockEntity(context.getClickedPos());
         if(tileEntity != null && context.getPlayer() != null)
         {
-            LazyOptional<IFluidHandler> lazyOptional = tileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, context.getClickedFace());
+            LazyOptional<IFluidHandler> lazyOptional = tileEntity.getCapability(ForgeCapabilities.FLUID_HANDLER, context.getClickedFace());
             if(lazyOptional.isPresent())
             {
                 Optional<IFluidHandler> optional = lazyOptional.resolve();

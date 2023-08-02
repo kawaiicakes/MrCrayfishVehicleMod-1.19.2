@@ -6,7 +6,7 @@ import com.mrcrayfish.vehicle.common.slot.SlotStorage;
 import com.mrcrayfish.vehicle.init.ModContainers;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.inventory.IInventory;
+import net.minecraft.world.Container;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -19,7 +19,7 @@ public class StorageContainer extends Container
     private final StorageInventory storageInventory;
     private final int numRows;
 
-    public StorageContainer(int windowId, IInventory playerInventory, StorageInventory storageInventory, Player player)
+    public StorageContainer(int windowId, Container playerInventory, StorageInventory storageInventory, Player player)
     {
         super(ModContainers.STORAGE.get(), windowId);
         this.storageInventory = storageInventory;
@@ -98,7 +98,7 @@ public class StorageContainer extends Container
         this.storageInventory.stopOpen(playerIn);
     }
 
-    public IInventory getStorageInventory()
+    public Container getStorageInventory()
     {
         return this.storageInventory;
     }

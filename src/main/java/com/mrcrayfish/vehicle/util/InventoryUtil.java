@@ -3,7 +3,7 @@ package com.mrcrayfish.vehicle.util;
 import net.minecraftforge.common.crafting.CompoundIngredient;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.inventory.IInventory;
+import net.minecraft.world.Container;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -20,7 +20,7 @@ public class InventoryUtil
 {
     private static final Random RANDOM = new Random();
 
-    public static void writeInventoryToNBT(CompoundTag compound, String tagName, IInventory inventory)
+    public static void writeInventoryToNBT(CompoundTag compound, String tagName, Container inventory)
     {
         ListTag tagList = new ListTag();
         for(int i = 0; i < inventory.getContainerSize(); i++)
@@ -37,7 +37,7 @@ public class InventoryUtil
         compound.put(tagName, tagList);
     }
 
-    public static <T extends IInventory> T readInventoryToNBT(CompoundTag compound, String tagName, T t)
+    public static <T extends Container> T readInventoryToNBT(CompoundTag compound, String tagName, T t)
     {
         if(compound.contains(tagName, Tag.TAG_LIST))
         {
@@ -55,7 +55,7 @@ public class InventoryUtil
         return t;
     }
 
-    public static void dropInventoryItems(Level worldIn, double x, double y, double z, IInventory inventory)
+    public static void dropInventoryItems(Level worldIn, double x, double y, double z, Container inventory)
     {
         for(int i = 0; i < inventory.getContainerSize(); ++i)
         {

@@ -22,7 +22,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.inventory.InventoryHelper;
+import net.minecraft.world.Containers;
 import net.minecraft.inventory.container.SimpleNamedContainerProvider;
 import net.minecraft.item.BlockNamedItem;
 import net.minecraft.world.item.ItemStack;
@@ -206,7 +206,7 @@ public class SeederTrailerEntity extends TrailerEntity implements IStorage
         super.onVehicleDestroyed(entity);
         if(this.inventory != null)
         {
-            InventoryHelper.dropContents(this.level, this, this.inventory);
+            Containers.dropContents(this.level, this, this.inventory);
         }
     }
 

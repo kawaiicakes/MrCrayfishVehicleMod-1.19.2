@@ -1,6 +1,6 @@
 package com.mrcrayfish.vehicle.inventory.container.slot;
 
-import net.minecraft.inventory.IInventory;
+import net.minecraft.world.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -11,7 +11,7 @@ import net.minecraft.tileentity.AbstractFurnaceTileEntity;
  */
 public class FuelSlot extends Slot
 {
-    public FuelSlot(IInventory inventory, int index, int x, int y)
+    public FuelSlot(Container inventory, int index, int x, int y)
     {
         super(inventory, index, x, y);
     }

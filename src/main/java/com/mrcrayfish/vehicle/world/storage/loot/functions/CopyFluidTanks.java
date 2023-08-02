@@ -42,7 +42,7 @@ public class CopyFluidTanks extends LootFunction
                 CompoundTag tileEntityTag = new CompoundTag();
                 if(tileEntity instanceof FluidHandlerBlockEntity)
                 {
-                    LazyOptional<IFluidHandler> handler = tileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);
+                    LazyOptional<IFluidHandler> handler = tileEntity.getCapability(ForgeCapabilities.FLUID_HANDLER);
                     handler.ifPresent(h ->
                     {
                         FluidTank tank = (FluidTank) h;

@@ -4,7 +4,7 @@ import com.mrcrayfish.vehicle.init.ModContainers;
 import com.mrcrayfish.vehicle.inventory.container.slot.FuelSlot;
 import com.mrcrayfish.vehicle.tileentity.FluidExtractorTileEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.inventory.IInventory;
+import net.minecraft.world.Container;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -22,7 +22,7 @@ public class FluidExtractorContainer extends Container
 
     private FluidExtractorTileEntity fluidExtractor;
 
-    public FluidExtractorContainer(int windowId, IInventory playerInventory, FluidExtractorTileEntity fluidExtractor)
+    public FluidExtractorContainer(int windowId, Container playerInventory, FluidExtractorTileEntity fluidExtractor)
     {
         super(ModContainers.FLUID_EXTRACTOR.get(), windowId);
         this.fluidExtractor = fluidExtractor;

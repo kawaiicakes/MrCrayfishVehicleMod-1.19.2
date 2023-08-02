@@ -5,7 +5,7 @@ import com.mrcrayfish.vehicle.item.EngineItem;
 import com.mrcrayfish.vehicle.item.WheelItem;
 import com.mrcrayfish.vehicle.tileentity.WorkstationTileEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.inventory.IInventory;
+import net.minecraft.world.Container;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.item.DyeItem;
@@ -20,7 +20,7 @@ public class WorkstationContainer extends Container
     private WorkstationTileEntity workstationTileEntity;
     private BlockPos pos;
 
-    public WorkstationContainer(int windowId, IInventory playerInventory, WorkstationTileEntity workstationTileEntity)
+    public WorkstationContainer(int windowId, Container playerInventory, WorkstationTileEntity workstationTileEntity)
     {
         super(ModContainers.WORKSTATION.get(), windowId);
         this.workstationTileEntity = workstationTileEntity;

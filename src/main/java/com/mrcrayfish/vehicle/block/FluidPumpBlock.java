@@ -26,6 +26,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -48,18 +49,18 @@ public class FluidPumpBlock extends FluidPipeBlock
     };
 
     @Override
-    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) //CollisionContext context is normally the next param, but idk wtf this class is actually supposed to override in 1.17.1
+    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context)
     {
         return this.getPumpShape(state, worldIn, pos);
     }
 
     @Override
-    public VoxelShape getCollisionShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) //CollisionContext context is normally the next param, but idk wtf this class is actually supposed to override in 1.17.1
+    public VoxelShape getCollisionShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context)
     {
         return this.getPumpShape(state, worldIn, pos);
     }
 
-    protected VoxelShape getPumpShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context)
+    protected VoxelShape getPumpShape(BlockState state, BlockGetter worldIn, BlockPos pos)
     {
         List<VoxelShape> shapes = new ArrayList<>();
         shapes.add(super.getPipeShape(state, worldIn, pos));
@@ -67,13 +68,13 @@ public class FluidPumpBlock extends FluidPipeBlock
         return VoxelShapeHelper.combineAll(shapes);
     }
 
-    protected Direction getCollisionFacing(BlockState state)
+    protected Direction getCollisionFacing(@NotNull BlockState state)
     {
         return state.getValue(DIRECTION).getOpposite();
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result)
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, @NotNull BlockHitResult result)
     {
         if(super.use(state, world, pos, player, hand, result) == InteractionResult.SUCCESS)
         {
@@ -83,9 +84,8 @@ public class FluidPumpBlock extends FluidPipeBlock
         if(!world.isClientSide())
         {
             PipeTileEntity tileEntity = getPipeTileEntity(world, pos);
-            if(tileEntity instanceof PumpTileEntity)
+            if(tileEntity instanceof PumpTileEntity pumpTileEntity)
             {
-                PumpTileEntity pumpTileEntity = (PumpTileEntity) tileEntity;
 
                 /*if(!FMLLoader.isProduction())
                 {
@@ -158,9 +158,8 @@ public class FluidPumpBlock extends FluidPipeBlock
     {
         boolean disabled = false;
         BlockEntity tileEntity = world.getBlockEntity(pos);
-        if(tileEntity instanceof PumpTileEntity)
+        if(tileEntity instanceof PumpTileEntity pump)
         {
-            PumpTileEntity pump = (PumpTileEntity) tileEntity;
             disabled = !pump.getPowerMode().test(pump);
         }
         state = state.setValue(DISABLED, disabled);

@@ -7,9 +7,9 @@ import com.mrcrayfish.vehicle.item.FluidPipeItem;
 import com.mrcrayfish.vehicle.item.ItemTrafficCone;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.block.FlowingFluidBlock;
+import net.minecraftforge.fluids.ForgeFlowingFluid;
 import net.minecraft.world.level.material.Material;
-import net.minecraft.item.BlockItem;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
@@ -37,9 +37,9 @@ public class ModBlocks
     public static final RegistryObject<Block> VEHICLE_CRATE = register("vehicle_crate", new VehicleCrateBlock(), block -> new BlockItem(block, new Item.Properties().stacksTo(1).tab(VehicleMod.CREATIVE_TAB)));
     public static final RegistryObject<Block> JACK = register("jack", new JackBlock());
     public static final RegistryObject<Block> JACK_HEAD = register("jack_head", new JackHeadBlock(), null);
-    public static final RegistryObject<FlowingFluidBlock> FUELIUM = register("fuelium", new FlowingFluidBlock(ModFluids.FLOWING_FUELIUM, BlockBehaviour.Properties.of(Material.WATER).noCollission().strength(100.0F).noDrops()), null);
-    public static final RegistryObject<FlowingFluidBlock> ENDER_SAP = register("ender_sap", new FlowingFluidBlock(ModFluids.FLOWING_ENDER_SAP, BlockBehaviour.Properties.of(Material.WATER).noCollission().strength(100.0F).noDrops()), null);
-    public static final RegistryObject<FlowingFluidBlock> BLAZE_JUICE = register("blaze_juice", new FlowingFluidBlock(ModFluids.FLOWING_BLAZE_JUICE, BlockBehaviour.Properties.of(Material.WATER).noCollission().strength(100.0F).noDrops()), null);
+    public static final RegistryObject<ForgeFlowingFluid> FUELIUM = register("fuelium", new ForgeFlowingFluid(ModFluids.FLOWING_FUELIUM, BlockBehaviour.Properties.of(Material.WATER).noCollission().strength(100.0F).noDrops()), null);
+    public static final RegistryObject<ForgeFlowingFluid> ENDER_SAP = register("ender_sap", new ForgeFlowingFluid(ModFluids.FLOWING_ENDER_SAP, BlockBehaviour.Properties.of(Material.WATER).noCollission().strength(100.0F).noDrops()), null);
+    public static final RegistryObject<ForgeFlowingFluid> BLAZE_JUICE = register("blaze_juice", new ForgeFlowingFluid(ModFluids.FLOWING_BLAZE_JUICE, BlockBehaviour.Properties.of(Material.WATER).noCollission().strength(100.0F).noDrops()), null);
     //public static final Block BOOST_PAD = registerConstructor(new BlockBoostPad(), null);
     //public static final Block BOOST_RAMP = registerConstructor(new BlockBoostRamp(), null); //ItemBoostRamp::new
     //public static final Block STEEP_BOOST_RAMP = registerConstructor(new BlockSteepBoostRamp(), null);

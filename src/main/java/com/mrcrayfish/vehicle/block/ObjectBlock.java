@@ -8,10 +8,10 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.level.BlockGetter;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 /**
@@ -24,6 +24,7 @@ public class ObjectBlock extends Block
         super(properties);
     }
 
+    @ParametersAreNonnullByDefault
     @Override
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter reader, List<Component> list, TooltipFlag flag)
     {
@@ -33,7 +34,7 @@ public class ObjectBlock extends Block
         }
         else
         {
-            list.add(Component.translatable("vehicle.info_help")).withStyle(ChatFormatting.YELLOW));
+            list.add((Component.translatable("vehicle.info_help")).withStyle(ChatFormatting.YELLOW));
         }
     }
 }

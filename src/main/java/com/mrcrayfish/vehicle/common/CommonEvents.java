@@ -444,7 +444,7 @@ public class CommonEvents
         else if(event.getItemStack().getItem() instanceof FluidPipeItem)
         {
             BlockEntity relativeTileEntity = event.getWorld().getBlockEntity(event.getPos());
-            if(relativeTileEntity != null && relativeTileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, event.getFace()).isPresent())
+            if(relativeTileEntity != null && relativeTileEntity.getCapability(ForgeCapabilities.FLUID_HANDLER, event.getFace()).isPresent())
             {
                 event.setUseBlock(Event.Result.DENY);
                 event.setUseItem(Event.Result.ALLOW);

@@ -5,22 +5,28 @@ import com.mrcrayfish.vehicle.init.ModBlocks;
 import com.mrcrayfish.vehicle.init.ModFluids;
 import com.mrcrayfish.vehicle.init.ModItems;
 import net.minecraft.world.level.material.Fluid;
-import net.minecraft.fluid.FluidState;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * Author: MrCrayfish
  */
+@ParametersAreNonnullByDefault
 public abstract class Fuelium extends ForgeFlowingFluid
 {
     public Fuelium()
     {
-        super(new Properties(() -> ModFluids.FUELIUM.get(), () -> ModFluids.FLOWING_FUELIUM.get(), FluidAttributes.builder(new ResourceLocation(Reference.MOD_ID, "block/fuelium_still"), new ResourceLocation(Reference.MOD_ID, "block/fuelium_flowing")).sound(SoundEvents.BUCKET_FILL, SoundEvents.BUCKET_EMPTY).density(900).viscosity(900)).block(() -> ModBlocks.FUELIUM.get()));
+        super(new Properties(() -> ModFluids.FUELIUM.get().getFluidType(), ModFluids.FLOWING_FUELIUM,
+                new Properties(new ResourceLocation(Reference.MOD_ID, "block/fuelium_still"),
+                        new ResourceLocation(Reference.MOD_ID, "block/fuelium_flowing"))
+                        .sound(SoundEvents.BUCKET_FILL, SoundEvents.BUCKET_EMPTY).density(900).viscosity(900))
+                .block(ModBlocks.FUELIUM.get())); //wtf is going on here?
     }
 
     @Override

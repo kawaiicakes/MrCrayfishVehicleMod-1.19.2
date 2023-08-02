@@ -15,7 +15,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.inventory.IInventory;
+import net.minecraft.world.Container;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.world.MenuProvider;
@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
 /**
  * Author: MrCrayfish
  */
-public class FluidMixerTileEntity extends TileEntitySynced implements IInventory, ITickableTileEntity, MenuProvider, IFluidTankWriter
+public class FluidMixerTileEntity extends TileEntitySynced implements Container, ITickableTileEntity, MenuProvider, IFluidTankWriter
 {
     private NonNullList<ItemStack> inventory = NonNullList.withSize(7, ItemStack.EMPTY);
 
@@ -581,7 +581,7 @@ public class FluidMixerTileEntity extends TileEntitySynced implements IInventory
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, Direction facing)
     {
-        if(cap == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY)
+        if(cap == ForgeCapabilities.FLUID_HANDLER)
         {
             BlockState state = this.level.getBlockState(this.worldPosition);
             if(state.getProperties().contains(RotatedObjectBlock.DIRECTION))

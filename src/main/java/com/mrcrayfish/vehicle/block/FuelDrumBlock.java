@@ -4,6 +4,9 @@ import com.mrcrayfish.vehicle.Config;
 import com.mrcrayfish.vehicle.init.ModBlocks;
 import com.mrcrayfish.vehicle.tileentity.FuelDrumTileEntity;
 import com.mrcrayfish.vehicle.util.RenderUtil;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.contents.LiteralContents;
+import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -16,7 +19,7 @@ import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
-import net.minecraft.state.EnumProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -35,17 +38,20 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 /**
  * Author: MrCrayfish
  */
-public class FuelDrumBlock extends Block
+@SuppressWarnings("deprecation")
+public class FuelDrumBlock extends Block implements EntityBlock
 {
     public static final EnumProperty<Direction.Axis> AXIS = BlockStateProperties.AXIS;
     public static final BooleanProperty INVERTED = BlockStateProperties.INVERTED;
@@ -62,24 +68,27 @@ public class FuelDrumBlock extends Block
         this.registerDefaultState(this.defaultBlockState().setValue(AXIS, Direction.Axis.Y).setValue(INVERTED, false));
     }
 
+    @ParametersAreNonnullByDefault
     @Override
-    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) //CollisionContext context is normally the next param, but idk wtf this class is actually supposed to override in 1.17.1
+    public @NotNull VoxelShape getShape(@NotNull BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context)
     {
         return SHAPE[state.getValue(AXIS).ordinal()];
     }
 
+    @ParametersAreNonnullByDefault
     @Override
-    public VoxelShape getCollisionShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) //CollisionContext context is normally the next param, but idk wtf this class is actually supposed to override in 1.17.1
+    public @NotNull VoxelShape getCollisionShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context)
     {
         return SHAPE[state.getValue(AXIS).ordinal()];
     }
 
+    @ParametersAreNonnullByDefault
     @Override
     public void appendHoverText(ItemStack stack, @Nullable BlockGetter reader, List<Component> list, TooltipFlag advanced)
     {
         if(Screen.hasShiftDown())
         {
-            list.addAll(RenderUtil.lines(new TranslatableContents(ModBlocks.FUEL_DRUM.get().getDescriptionId() + ".info"), 150));
+            list.addAll(RenderUtil.lines(MutableComponent.create(new TranslatableContents(ModBlocks.FUEL_DRUM.get().getDescriptionId() + ".info")), 150));
         }
         else
         {
@@ -94,17 +103,18 @@ public class FuelDrumBlock extends Block
                     int amount = blockEntityTag.getInt("Amount");
                     if(fluid != null && amount > 0)
                     {
-                        list.add(new TranslatableContents(fluid.getAttributes().getTranslationKey())).withStyle(ChatFormatting.BLUE));
+                        list.add(Component.translatable(String.valueOf(new FluidStack(fluid, 1).getTranslationKey())).withStyle(ChatFormatting.BLUE));
                         list.add(MutableComponent.create(new LiteralContents(amount + " / " + this.getCapacity() + "mb")).withStyle(ChatFormatting.GRAY));
                     }
                 }
             }
-            list.add(new TranslatableContents("vehicle.info_help")).withStyle(ChatFormatting.YELLOW));
+            list.add((MutableComponent.create(new TranslatableContents("vehicle.info_help")).withStyle(ChatFormatting.YELLOW)));
         }
     }
 
+    @ParametersAreNonnullByDefault
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player playerEntity, InteractionHand hand, BlockHitResult result)
+    public @NotNull InteractionResult use(BlockState state, Level world, BlockPos pos, Player playerEntity, InteractionHand hand, BlockHitResult result)
     {
         if(!world.isClientSide())
         {
@@ -116,45 +126,36 @@ public class FuelDrumBlock extends Block
         return InteractionResult.SUCCESS;
     }
 
+    @ParametersAreNonnullByDefault
     @Override
-    public BlockState rotate(BlockState state, Rotation rotation)
+    public @NotNull BlockState rotate(BlockState state, Rotation rotation)
     {
-        switch(rotation)
-        {
-            case COUNTERCLOCKWISE_90:
-            case CLOCKWISE_90:
-                switch(state.getValue(AXIS))
-                {
-                    case X:
-                        return state.setValue(AXIS, Direction.Axis.Z);
-                    case Z:
-                        return state.setValue(AXIS, Direction.Axis.X);
-                    default:
-                        return state;
-                }
-            default:
+        switch (rotation) {
+            case COUNTERCLOCKWISE_90, CLOCKWISE_90 -> {
+                return switch (state.getValue(AXIS)) {
+                    case X -> state.setValue(AXIS, Direction.Axis.Z);
+                    case Z -> state.setValue(AXIS, Direction.Axis.X);
+                    default -> state;
+                };
+            }
+            default -> {
                 return state;
+            }
         }
     }
 
     @Override
-    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder)
+    protected void createBlockStateDefinition(StateDefinition.@NotNull Builder<Block, BlockState> builder)
     {
         builder.add(AXIS);
         builder.add(INVERTED);
     }
 
     @Override
-    public BlockState getStateForPlacement(BlockPlaceContext context)
+    public BlockState getStateForPlacement(@NotNull BlockPlaceContext context)
     {
         boolean inverted = context.getClickedFace().getAxisDirection() == Direction.AxisDirection.NEGATIVE;
         return this.defaultBlockState().setValue(AXIS, context.getClickedFace().getAxis()).setValue(INVERTED, inverted);
-    }
-
-    @Override
-    public boolean hasBlockEntity()
-    {
-        return true;
     }
 
     public int getCapacity()
@@ -162,6 +163,7 @@ public class FuelDrumBlock extends Block
         return Config.SERVER.fuelDrumCapacity.get();
     }
 
+    @ParametersAreNonnullByDefault
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state)

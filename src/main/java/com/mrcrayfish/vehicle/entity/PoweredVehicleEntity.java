@@ -36,7 +36,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.inventory.IInventory;
+import net.minecraft.world.Container;
 import net.minecraft.inventory.IInventoryChangedListener;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.inventory.container.Container;
@@ -920,7 +920,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
     }
 
     @Override
-    public void containerChanged(IInventory inventory)
+    public void containerChanged(Container inventory)
     {
         this.updateSlots();
     }

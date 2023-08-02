@@ -8,8 +8,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryHelper;
+import net.minecraft.world.Container;
+import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -20,16 +20,19 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * Author: MrCrayfish
  */
+@SuppressWarnings("deprecation")
+@ParametersAreNonnullByDefault
 public class FluidMixerBlock extends RotatedObjectBlock
 {
     public static final BooleanProperty ENABLED = BlockStateProperties.ENABLED;
@@ -41,7 +44,7 @@ public class FluidMixerBlock extends RotatedObjectBlock
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player playerEntity, InteractionHand hand, BlockHitResult result)
+    public @NotNull InteractionResult use(BlockState state, Level world, BlockPos pos, Player playerEntity, InteractionHand hand, BlockHitResult result)
     {
         if(!world.isClientSide)
         {
@@ -65,19 +68,13 @@ public class FluidMixerBlock extends RotatedObjectBlock
         if(state.getBlock() != newState.getBlock())
         {
             BlockEntity tileentity = worldIn.getBlockEntity(pos);
-            if(tileentity instanceof IInventory)
+            if(tileentity instanceof Container)
             {
-                InventoryHelper.dropContents(worldIn, pos, (IInventory) tileentity);
+                Containers.dropContents(worldIn, pos, (Container) tileentity);
                 worldIn.updateNeighbourForOutputSignal(pos, this);
             }
             super.onRemove(state, worldIn, pos, newState, isMoving);
         }
-    }
-
-    @Override
-    public boolean hasBlockEntity()
-    {
-        return true;
     }
 
     @Nullable

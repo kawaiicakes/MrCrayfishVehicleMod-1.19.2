@@ -4,6 +4,7 @@ import com.mrcrayfish.vehicle.entity.PoweredVehicleEntity;
 import com.mrcrayfish.vehicle.init.ModSounds;
 import com.mrcrayfish.vehicle.tileentity.BoostTileEntity;
 import com.mrcrayfish.vehicle.util.StateHelper;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -17,15 +18,18 @@ import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * Author: MrCrayfish
  */
+@SuppressWarnings("deprecation")
+@ParametersAreNonnullByDefault
 public class BoostRampBlock extends RotatedObjectBlock
 {
     public static final BooleanProperty STACKED = BooleanProperty.create("stacked");
@@ -33,7 +37,9 @@ public class BoostRampBlock extends RotatedObjectBlock
     public static final BooleanProperty RIGHT = BooleanProperty.create("right");
 
     //TODO redo collisions
-    /*private static final AABB COLLISION_BASE = new AABB(0.0, 0.0, 0.0, 1.0, 0.0625, 1.0);
+    /*
+    welp, guess i'll figure this out some time.
+    private static final AABB COLLISION_BASE = new AABB(0.0, 0.0, 0.0, 1.0, 0.0625, 1.0);
     private static final AABB COLLISION_STACKED_BASE = new AABB(0.0, 0.0, 0.0, 1.0, 0.5625, 1.0);
 
     private static final AABB[] COLLISION_ONE = new Bounds(2, 1, 0, 16, 2, 16).getRotatedBounds();
@@ -81,7 +87,7 @@ public class BoostRampBlock extends RotatedObjectBlock
                 }
                 poweredVehicle.setBoosting(true);
                 poweredVehicle.setLaunching(2);
-                //poweredVehicle.currentSpeed = poweredVehicle.getActualMaxSpeed();
+                //poweredVehicle.currentSpeed = poweredVehicle.getActualMaxSpeed(); what do these do?
                 poweredVehicle.setSpeedMultiplier(speedMultiplier);
                 Vec3 motion = poweredVehicle.getDeltaMovement();
                 //poweredVehicle.setDeltaMovement(new Vec3(motion.x, (poweredVehicle.currentSpeed * 0.5) / 20F + 0.1, motion.z));
@@ -90,7 +96,7 @@ public class BoostRampBlock extends RotatedObjectBlock
     }
 
     @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState neighbourState, LevelReader world, BlockPos pos, BlockPos neighbourPos)
+    public @NotNull BlockState updateShape(BlockState state, Direction direction, BlockState neighbourState, LevelAccessor world, BlockPos pos, BlockPos neighbourPos)
     {
         return this.getRampState(state, world, pos, state.getValue(DIRECTION));
     }
@@ -129,12 +135,6 @@ public class BoostRampBlock extends RotatedObjectBlock
         builder.add(STACKED);
         builder.add(LEFT);
         builder.add(RIGHT);
-    }
-
-    @Override
-    public boolean hasBlockEntity()
-    {
-        return true;
     }
 
     @Nullable

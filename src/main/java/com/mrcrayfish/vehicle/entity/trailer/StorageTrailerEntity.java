@@ -14,7 +14,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.inventory.InventoryHelper;
+import net.minecraft.world.Containers;
 import net.minecraft.item.BoneMealItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -94,7 +94,7 @@ public class StorageTrailerEntity extends TrailerEntity implements IStorage
         super.onVehicleDestroyed(entity);
         if(this.inventory != null)
         {
-            InventoryHelper.dropContents(this.level, this, this.inventory);
+            Containers.dropContents(this.level, this, this.inventory);
         }
     }
 

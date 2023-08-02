@@ -1,13 +1,17 @@
 package com.mrcrayfish.vehicle.block;
 
+import com.google.common.collect.ImmutableMap;
+import com.mojang.serialization.MapCodec;
 import com.mrcrayfish.vehicle.entity.PoweredVehicleEntity;
 import com.mrcrayfish.vehicle.init.ModSounds;
 import com.mrcrayfish.vehicle.tileentity.BoostTileEntity;
 import com.mrcrayfish.vehicle.util.Bounds;
 import com.mrcrayfish.vehicle.util.StateHelper;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -18,16 +22,18 @@ import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * Author: MrCrayfish
  */
+@SuppressWarnings("deprecation")
+@ParametersAreNonnullByDefault
 public class SteepBoostRampBlock extends RotatedObjectBlock
 {
     public static final BooleanProperty LEFT = BooleanProperty.create("left");
@@ -79,14 +85,14 @@ public class SteepBoostRampBlock extends RotatedObjectBlock
                 poweredVehicle.setLaunching(3);
                 //poweredVehicle.currentSpeed = poweredVehicle.getActualMaxSpeed();
                 poweredVehicle.setSpeedMultiplier(speedMultiplier);
-                Vec3 motion = poweredVehicle.getDeltaMovement();
+                //Vec3 motion = poweredVehicle.getDeltaMovement(); more commented out code lol
                 //poweredVehicle.setDeltaMovement(new Vec3(motion.x, poweredVehicle.currentSpeed / 20F + 0.1, motion.z));
             }
         }
     }
 
     @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState neighbourState, LevelReader world, BlockPos pos, BlockPos neighbourPos)
+    public @NotNull BlockState updateShape(BlockState state, Direction direction, BlockState neighbourState, LevelAccessor world, BlockPos pos, BlockPos neighbourPos)
     {
         return this.getRampState(state, world, pos, state.getValue(DIRECTION));
     }
@@ -126,16 +132,25 @@ public class SteepBoostRampBlock extends RotatedObjectBlock
         builder.add(RIGHT);
     }
 
-    @Override
-    public boolean hasBlockEntity()
-    {
-        return true;
-    }
-
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
     {
         return new BoostTileEntity(1.0F);
+    }
+
+    @SuppressWarnings("NullableProblems")
+    static class BlockStateBase extends BlockBehaviour.BlockStateBase {
+        protected BlockStateBase(Block p_60608_, ImmutableMap<Property<?>, Comparable<?>> p_60609_, MapCodec<BlockState> p_60610_) {
+            super(p_60608_, p_60609_, p_60610_);
+        }
+
+        @Override
+        protected BlockState asState() {
+            return null;
+        }
+
+        @Override
+        public boolean hasBlockEntity() {return true;}
     }
 }

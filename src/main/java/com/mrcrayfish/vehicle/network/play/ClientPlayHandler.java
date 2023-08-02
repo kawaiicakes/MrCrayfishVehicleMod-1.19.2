@@ -64,7 +64,7 @@ public class ClientPlayHandler
         if(entity == null)
             return;
 
-        LazyOptional<IFluidHandler> optional = entity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);
+        LazyOptional<IFluidHandler> optional = entity.getCapability(ForgeCapabilities.FLUID_HANDLER);
         optional.ifPresent(handler ->
         {
             if(handler instanceof FluidTank)

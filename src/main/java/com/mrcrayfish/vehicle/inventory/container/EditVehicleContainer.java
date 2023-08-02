@@ -7,7 +7,7 @@ import com.mrcrayfish.vehicle.item.EngineItem;
 import com.mrcrayfish.vehicle.item.WheelItem;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.IInventory;
+import net.minecraft.world.Container;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.Slot;
 import net.minecraft.world.item.ItemStack;
@@ -17,10 +17,10 @@ import net.minecraft.world.item.ItemStack;
  */
 public class EditVehicleContainer extends Container
 {
-    private final IInventory vehicleInventory;
+    private final Container vehicleInventory;
     private final PoweredVehicleEntity vehicle;
 
-    public EditVehicleContainer(int windowId, IInventory vehicleInventory, PoweredVehicleEntity vehicle, Player player, PlayerInventory playerInventory)
+    public EditVehicleContainer(int windowId, Container vehicleInventory, PoweredVehicleEntity vehicle, Player player, PlayerInventory playerInventory)
     {
         super(ModContainers.EDIT_VEHICLE.get(), windowId);
         this.vehicleInventory = vehicleInventory;
@@ -72,7 +72,7 @@ public class EditVehicleContainer extends Container
         }
     }
 
-    public IInventory getVehicleInventory()
+    public Container getVehicleInventory()
     {
         return vehicleInventory;
     }

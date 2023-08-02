@@ -2,11 +2,12 @@ package com.mrcrayfish.vehicle.block;
 
 import com.mrcrayfish.vehicle.Config;
 import com.mrcrayfish.vehicle.tileentity.IndustrialFuelDrumTileEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.BlockGetter;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 
 /**
  * Author: MrCrayfish
@@ -19,6 +20,7 @@ public class IndustrialFuelDrumBlock extends FuelDrumBlock
         return Config.SERVER.industrialFuelDrumCapacity.get();
     }
 
+    @ParametersAreNonnullByDefault
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state)

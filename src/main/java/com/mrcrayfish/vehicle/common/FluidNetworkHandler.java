@@ -70,7 +70,7 @@ public class FluidNetworkHandler
                     PipeTileEntity pipeTileEntity = (PipeTileEntity) tileEntity;
                     BlockState state = pipeTileEntity.getBlockState();
                     boolean disabled = pipeTileEntity.getPumps().isEmpty() || event.world.hasNeighborSignal(pos);
-                    event.world.setBlock(pos, state.setValue(FluidPipeBlock.DISABLED, disabled), Constants.BlockFlags.BLOCK_UPDATE | Constants.BlockFlags.RERENDER_MAIN_THREAD);
+                    event.world.setBlock(pos, state.setValue(FluidPipeBlock.DISABLED, disabled), Block.UPDATE_CLIENTS | Block.UPDATE_IMMEDIATE);
                 }
             });
         }

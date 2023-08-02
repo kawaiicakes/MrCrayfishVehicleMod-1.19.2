@@ -19,8 +19,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.InventoryHelper;
+import net.minecraft.world.Container;
+import net.minecraft.world.Containers;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -145,7 +145,7 @@ public class MopedEntity extends MotorcycleEntity implements IStorage, IAttachab
         super.onVehicleDestroyed(entity);
         if(this.hasChest() && this.inventory != null)
         {
-            InventoryHelper.dropContents(this.level, this, this.inventory);
+            Containers.dropContents(this.level, this, this.inventory);
         }
     }
 
@@ -238,7 +238,7 @@ public class MopedEntity extends MotorcycleEntity implements IStorage, IAttachab
         {
             if(player.containerMenu instanceof StorageContainer)
             {
-                IInventory container = ((StorageContainer) player.containerMenu).getStorageInventory();
+                Container container = ((StorageContainer) player.containerMenu).getStorageInventory();
                 if(container == this.inventory)
                 {
                     count++;

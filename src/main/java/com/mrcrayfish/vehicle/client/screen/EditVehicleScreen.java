@@ -23,7 +23,7 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.shader.Framebuffer;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.IInventory;
+import net.minecraft.world.Container;
 import net.minecraft.resources.ResourceLocation;
 import com.mojang.math.Matrix4f;
 import com.mojang.math.Quaternion;
@@ -44,7 +44,7 @@ public class EditVehicleScreen extends ContainerScreen<EditVehicleContainer>
     private static final ResourceLocation GUI_TEXTURES = new ResourceLocation("vehicle:textures/gui/edit_vehicle.png");
 
     private final PlayerInventory playerInventory;
-    private final IInventory vehicleInventory;
+    private final Container vehicleInventory;
     private final CachedVehicle cachedVehicle;
 
     private Framebuffer framebuffer;

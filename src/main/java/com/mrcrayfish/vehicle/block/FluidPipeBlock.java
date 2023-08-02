@@ -6,18 +6,16 @@ import com.mrcrayfish.vehicle.item.WrenchItem;
 import com.mrcrayfish.vehicle.tileentity.PipeTileEntity;
 import com.mrcrayfish.vehicle.tileentity.PumpTileEntity;
 import com.mrcrayfish.vehicle.util.VoxelShapeHelper;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.block.LeverBlock;
-import net.minecraft.block.SoundType;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.state.properties.AttachFace;
+import net.minecraft.world.level.block.state.properties.AttachFace;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.InteractionResult;
@@ -30,15 +28,15 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraft.world.phys.shapes.Shapes; //tbh idk if this is the right one (prev. Shapes)
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -49,7 +47,8 @@ import java.util.Set;
 /**
  * Author: MrCrayfish
  */
-public class FluidPipeBlock extends ObjectBlock
+@SuppressWarnings({"deprecation", "NullableProblems"})
+public class FluidPipeBlock extends ObjectBlock implements EntityBlock
 {
     public static final BooleanProperty[] CONNECTED_PIPES = {BlockStateProperties.DOWN, BlockStateProperties.UP, BlockStateProperties.NORTH, BlockStateProperties.SOUTH, BlockStateProperties.WEST, BlockStateProperties.EAST};
     public static final BooleanProperty DISABLED = BooleanProperty.create("disabled");
@@ -74,25 +73,25 @@ public class FluidPipeBlock extends ObjectBlock
     }
 
     @Nullable
-    public static PipeTileEntity getPipeTileEntity(BlockGetter world, BlockPos pos)
+    public static PipeTileEntity getPipeTileEntity(@NotNull BlockGetter world, BlockPos pos)
     {
         BlockEntity tileEntity = world.getBlockEntity(pos);
         return tileEntity instanceof PipeTileEntity ? (PipeTileEntity) tileEntity : null;
     }
 
     @Override
-    public VoxelShape getShape(BlockGetter worldIn, BlockPos pos, CollisionContext collision) //CollisionContext context is normally the next param, but idk wtf this class is actually supposed to override in 1.17.1
+    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext collision)
     {
         return this.getPipeShape(state, worldIn, pos);
     }
 
     @Override
-    public VoxelShape getCollisionShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) //CollisionContext context is normally the next param, but idk wtf this class is actually supposed to override in 1.17.1
+    public VoxelShape getCollisionShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context)
     {
         return this.getPipeShape(state, worldIn, pos);
     }
 
-    public VoxelShape getPipeShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context)
+    public VoxelShape getPipeShape(BlockState state, BlockGetter worldIn, BlockPos pos)
     {
         List<VoxelShape> shapes = new ArrayList<>();
         boolean[] disabledConnections = this.getDisabledConnections(worldIn, pos);
@@ -108,7 +107,7 @@ public class FluidPipeBlock extends ObjectBlock
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult result)
+    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, @NotNull BlockHitResult result)
     {
         PipeTileEntity pipe = getPipeTileEntity(world, pos);
         Pair<AABB, Direction> hit = this.getConnectionBox(world, pos, state, player, hand, result.getDirection(), result.getLocation(), pipe);
@@ -170,7 +169,7 @@ public class FluidPipeBlock extends ObjectBlock
                     if(adjacentBlock != ModBlocks.FLUID_PIPE.get() && adjacentBlock != ModBlocks.FLUID_PUMP.get())
                     {
                         BlockEntity adjacentTileEntity = world.getBlockEntity(adjacentPos);
-                        if(adjacentTileEntity == null || !adjacentTileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing.getOpposite()).isPresent())
+                        if(adjacentTileEntity == null || !adjacentTileEntity.getCapability(ForgeCapabilities.FLUID_HANDLER, facing.getOpposite()).isPresent())
                         {
                             return null;
                         }
@@ -192,7 +191,7 @@ public class FluidPipeBlock extends ObjectBlock
         if(state.getBlock() == newState.getBlock())
             return;
 
-        PipeTileEntity tileEntity = this.newBlockEntity(state, world);
+        PipeTileEntity tileEntity = this.newBlockEntity(pos, state);
         if(tileEntity != null)
         {
             for(Direction direction : Direction.values())
@@ -203,7 +202,7 @@ public class FluidPipeBlock extends ObjectBlock
                     tileEntity.getDisabledConnections()[direction.get3DDataValue()] = ((PipeTileEntity) relativeTileEntity).isConnectionDisabled(direction.getOpposite());
                 }
             }
-            world.setBlockEntity(pos, tileEntity);
+            world.setBlockEntity(tileEntity);
             FluidNetworkHandler.instance().addPipeForUpdate(tileEntity);
         }
     }
@@ -217,7 +216,7 @@ public class FluidPipeBlock extends ObjectBlock
             this.invalidatePipeNetwork(world, pos);
             if(state.getBlock() instanceof FluidPumpBlock)
             {
-                world.setBlock(pos, state.setValue(DISABLED, disabled), Constants.BlockFlags.BLOCK_UPDATE | Constants.BlockFlags.RERENDER_MAIN_THREAD);
+                world.setBlock(pos, state.setValue(DISABLED, disabled), Block.UPDATE_CLIENTS | Block.UPDATE_IMMEDIATE);
             }
         }
 
@@ -268,7 +267,7 @@ public class FluidPipeBlock extends ObjectBlock
     }
 
     @Override
-    public BlockState updateShape(BlockState state, Direction direction, BlockState neighbourState, LevelReader world, BlockPos pos, BlockPos neighbourPos)
+    public BlockState updateShape(BlockState state, Direction direction, BlockState neighbourState, LevelAccessor world, BlockPos pos, BlockPos neighbourPos)
     {
         return this.getPipeState(state, world, pos);
     }
@@ -295,9 +294,8 @@ public class FluidPipeBlock extends ObjectBlock
             {
                 BlockPos relativePos = pos.relative(direction);
                 BlockEntity relativeTileEntity = world.getBlockEntity(relativePos);
-                if(relativeTileEntity instanceof PipeTileEntity)
+                if(relativeTileEntity instanceof PipeTileEntity pipeTileEntity)
                 {
-                    PipeTileEntity pipeTileEntity = (PipeTileEntity) relativeTileEntity;
                     if(!pipeTileEntity.getDisabledConnections()[direction.getOpposite().get3DDataValue()])
                     {
                         BlockState relativeState = pipeTileEntity.getBlockState();
@@ -351,7 +349,7 @@ public class FluidPipeBlock extends ObjectBlock
             }
             return !((PipeTileEntity) adjacentTileEntity).isConnectionDisabled(direction.getOpposite());
         }
-        else if(adjacentTileEntity != null && adjacentTileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, direction.getOpposite()).isPresent())
+        else if(adjacentTileEntity != null && adjacentTileEntity.getCapability(ForgeCapabilities.FLUID_HANDLER, direction.getOpposite()).isPresent())
         {
             return true;
         }
@@ -387,12 +385,6 @@ public class FluidPipeBlock extends ObjectBlock
         super.createBlockStateDefinition(builder);
         builder.add(CONNECTED_PIPES);
         builder.add(DISABLED);
-    }
-
-    @Override
-    public boolean hasBlockEntity()
-    {
-        return true;
     }
 
     @Override

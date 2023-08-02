@@ -218,7 +218,7 @@ public class PumpTileEntity extends PipeTileEntity implements ITickableTileEntit
 
                     BlockPos relativePos = pos.relative(direction);
                     BlockEntity relativeTileEntity = this.level.getBlockEntity(relativePos);
-                    if(relativeTileEntity != null && relativeTileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, direction.getOpposite()).isPresent())
+                    if(relativeTileEntity != null && relativeTileEntity.getCapability(ForgeCapabilities.FLUID_HANDLER, direction.getOpposite()).isPresent())
                     {
                         this.fluidHandlers.add(Pair.of(relativePos, direction.getOpposite()));
                     }
@@ -235,7 +235,7 @@ public class PumpTileEntity extends PipeTileEntity implements ITickableTileEntit
 
             BlockPos relativePos = this.worldPosition.relative(direction);
             BlockEntity relativeTileEntity = this.level.getBlockEntity(relativePos);
-            if(relativeTileEntity != null && relativeTileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, direction.getOpposite()).isPresent())
+            if(relativeTileEntity != null && relativeTileEntity.getCapability(ForgeCapabilities.FLUID_HANDLER, direction.getOpposite()).isPresent())
             {
                 this.fluidHandlers.add(Pair.of(relativePos, direction.getOpposite()));
             }
@@ -265,7 +265,7 @@ public class PumpTileEntity extends PipeTileEntity implements ITickableTileEntit
                 BlockEntity tileEntity = world.getBlockEntity(pair.getLeft());
                 if(tileEntity != null)
                 {
-                    LazyOptional<IFluidHandler> lazyOptional = tileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, pair.getRight());
+                    LazyOptional<IFluidHandler> lazyOptional = tileEntity.getCapability(ForgeCapabilities.FLUID_HANDLER, pair.getRight());
                     if(lazyOptional.isPresent())
                     {
                         Optional<IFluidHandler> handler = lazyOptional.resolve();
@@ -283,7 +283,7 @@ public class PumpTileEntity extends PipeTileEntity implements ITickableTileEntit
         BlockEntity tileEntity = world.getBlockEntity(this.worldPosition.relative(direction.getOpposite()));
         if(tileEntity != null)
         {
-            LazyOptional<IFluidHandler> lazyOptional = tileEntity.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, direction);
+            LazyOptional<IFluidHandler> lazyOptional = tileEntity.getCapability(ForgeCapabilities.FLUID_HANDLER, direction);
             if(lazyOptional.isPresent())
             {
                 return lazyOptional.resolve();
@@ -302,7 +302,7 @@ public class PumpTileEntity extends PipeTileEntity implements ITickableTileEntit
             TileEntityUtil.sendUpdatePacket(this, super.save(compound));
             BlockState state = this.getBlockState();
             state = ((FluidPumpBlock) state.getBlock()).getDisabledState(state, this.level, this.worldPosition);
-            this.level.setBlock(this.worldPosition, state, Constants.BlockFlags.BLOCK_UPDATE | Constants.BlockFlags.RERENDER_MAIN_THREAD);
+            this.level.setBlock(this.worldPosition, state, Block.UPDATE_CLIENTS | Block.UPDATE_IMMEDIATE);
         }
     }
 

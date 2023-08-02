@@ -33,6 +33,7 @@ import net.minecraftforge.fluids.FluidUtil;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +42,8 @@ import java.util.Map;
 /**
  * Author: MrCrayfish
  */
+@SuppressWarnings("deprecation")
+@ParametersAreNonnullByDefault
 public class GasPumpBlock extends RotatedObjectBlock
 {
     public static final BooleanProperty TOP = BooleanProperty.create("top");
@@ -81,7 +84,7 @@ public class GasPumpBlock extends RotatedObjectBlock
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player playerEntity, InteractionHand hand, BlockHitResult result)
+    public @NotNull InteractionResult use(BlockState state, Level world, BlockPos pos, Player playerEntity, InteractionHand hand, BlockHitResult result)
     {
         if(world.isClientSide())
         {
@@ -91,9 +94,8 @@ public class GasPumpBlock extends RotatedObjectBlock
         if(state.getValue(TOP))
         {
             BlockEntity tileEntity = world.getBlockEntity(pos);
-            if(tileEntity instanceof GasPumpTileEntity)
+            if(tileEntity instanceof GasPumpTileEntity gasPump)
             {
-                GasPumpTileEntity gasPump = (GasPumpTileEntity) tileEntity;
                 if(gasPump.getFuelingEntity() != null && gasPump.getFuelingEntity().getId() == playerEntity.getId())
                 {
                     gasPump.setFuelingEntity(null);
@@ -121,7 +123,7 @@ public class GasPumpBlock extends RotatedObjectBlock
     }
 
     @Override
-    public void setPlacedBy(Level worldIn, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack)
+    public void setPlacedBy(Level worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack)
     {
         worldIn.setBlockAndUpdate(pos.above(), state.setValue(TOP, true));
     }
@@ -145,7 +147,7 @@ public class GasPumpBlock extends RotatedObjectBlock
     }
 
     @Override
-    public List<ItemStack> getDrops(BlockState state, LootContext.Builder builder)
+    public @NotNull List<ItemStack> getDrops(BlockState state, LootContext.Builder builder)
     {
         if (state.getValue(TOP))
         {
@@ -168,12 +170,6 @@ public class GasPumpBlock extends RotatedObjectBlock
     {
         super.createBlockStateDefinition(builder);
         builder.add(TOP);
-    }
-
-    @Override
-    public boolean hasBlockEntity()
-    {
-        return true;
     }
 
     @Nullable

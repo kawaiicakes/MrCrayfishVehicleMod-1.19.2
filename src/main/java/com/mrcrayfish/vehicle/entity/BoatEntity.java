@@ -1,7 +1,7 @@
 package com.mrcrayfish.vehicle.entity;
 
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.fluid.FluidState;
+import net.minecraft.world.level.material.FluidState;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.core.BlockPos;

@@ -3,21 +3,23 @@ package com.mrcrayfish.vehicle.block;
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.core.Direction;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.Property;
 
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * Author: MrCrayfish
  */
+@SuppressWarnings({"NullableProblems", "deprecation"})
 public abstract class RotatedObjectBlock extends ObjectBlock implements EntityBlock
 {
     public static final DirectionProperty DIRECTION = HorizontalDirectionalBlock.FACING;
@@ -31,7 +33,7 @@ public abstract class RotatedObjectBlock extends ObjectBlock implements EntityBl
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context)
     {
-        return super.getStateForPlacement(context).setValue(DIRECTION, context.getHorizontalDirection());
+        return Objects.requireNonNull(super.getStateForPlacement(context)).setValue(DIRECTION, context.getHorizontalDirection());
     }
 
     @Override
@@ -63,12 +65,14 @@ public abstract class RotatedObjectBlock extends ObjectBlock implements EntityBl
         protected BlockStateBase(Block p_60608_, ImmutableMap<Property<?>, Comparable<?>> p_60609_, MapCodec<BlockState> p_60610_) {
             super(p_60608_, p_60609_, p_60610_);
         }
+
         @Override
         protected BlockState asState() {
             return null;
         }
 
         @Override
-        public boolean hasBlockEntity() {return false;}
+        public boolean hasBlockEntity() {return true;}
     }
+
 }

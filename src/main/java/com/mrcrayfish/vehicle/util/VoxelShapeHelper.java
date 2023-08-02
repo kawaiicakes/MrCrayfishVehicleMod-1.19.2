@@ -3,7 +3,7 @@ package com.mrcrayfish.vehicle.util;
 import net.minecraft.core.Direction;
 import net.minecraft.util.math.shapes.IBooleanFunction;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraft.world.phys.shapes.Shapes; //tbh idk if this is the right one (prev. Shapes)
+import net.minecraft.world.phys.shapes.Shapes; 
 
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicReference;

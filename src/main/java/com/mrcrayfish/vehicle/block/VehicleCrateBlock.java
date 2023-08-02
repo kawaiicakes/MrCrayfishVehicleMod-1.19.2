@@ -1,14 +1,18 @@
 package com.mrcrayfish.vehicle.block;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableMap;
+import com.mojang.serialization.MapCodec;
 import com.mrcrayfish.vehicle.init.ModBlocks;
 import com.mrcrayfish.vehicle.init.ModItems;
 import com.mrcrayfish.vehicle.tileentity.VehicleCrateTileEntity;
 import com.mrcrayfish.vehicle.util.RenderUtil;
 import net.minecraft.nbt.Tag;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -34,25 +38,28 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraft.world.phys.shapes.Shapes; //tbh idk if this is the right one (prev. Shapes)
+import net.minecraft.world.phys.shapes.Shapes; 
 import net.minecraft.network.chat.Component;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.util.Constants;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Author: MrCrayfish
  */
+@SuppressWarnings("deprecation")
+@ParametersAreNonnullByDefault
 public class VehicleCrateBlock extends RotatedObjectBlock
 {
     public static final List<ResourceLocation> REGISTERED_CRATES = new ArrayList<>();
@@ -86,7 +93,7 @@ public class VehicleCrateBlock extends RotatedObjectBlock
     }
 
     @Override
-    public VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) //CollisionContext context is normally the next param, but idk wtf this class is actually supposed to override in 1.17.1
+    public @NotNull VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context)
     {
         BlockEntity te = worldIn.getBlockEntity(pos);
         if(te instanceof VehicleCrateTileEntity && ((VehicleCrateTileEntity)te).isOpened())
@@ -106,7 +113,7 @@ public class VehicleCrateBlock extends RotatedObjectBlock
         {
             BlockPos adjacentPos = pos.relative(side);
             BlockState state = reader.getBlockState(adjacentPos);
-            if(state.isAir(reader, pos))
+            if(state.isAir())
                 continue;
             if(!state.getMaterial().isReplaceable() || this.isBelowBlockTopSolid(reader, adjacentPos))
             {
@@ -122,7 +129,7 @@ public class VehicleCrateBlock extends RotatedObjectBlock
     }
 
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player playerEntity, InteractionHand hand, BlockHitResult result)
+    public @NotNull InteractionResult use(BlockState state, Level world, BlockPos pos, Player playerEntity, InteractionHand hand, BlockHitResult result)
     {
         if(result.getDirection() == Direction.UP && playerEntity.getItemInHand(hand).getItem() == ModItems.WRENCH.get())
         {
@@ -169,15 +176,19 @@ public class VehicleCrateBlock extends RotatedObjectBlock
             {
                 x = (j + 0.5D) / 4.0D;
                 z = (l + 0.5D) / 4.0D;
-                Minecraft.getInstance().particleEngine.add(factory.createParticle(new BlockParticleOption(ParticleTypes.BLOCK, state), world, pos.getX() + x, pos.getY() + y, pos.getZ() + z, x - 0.5D, y - 0.5D, z - 0.5D));
+                Minecraft.getInstance().particleEngine.add(
+                        Objects.requireNonNull(factory.createParticle(
+                                new BlockParticleOption(ParticleTypes.BLOCK, state),
+                                world,
+                                pos.getX() + x,
+                                pos.getY() + y,
+                                pos.getZ() + z,
+                                x - 0.5D,
+                                y - 0.5D,
+                                z - 0.5D)
+                        ));
             }
         }
-    }
-
-    @Override
-    public boolean hasBlockEntity()
-    {
-        return true;
     }
 
     @Nullable
@@ -188,14 +199,14 @@ public class VehicleCrateBlock extends RotatedObjectBlock
     }
 
     @Override
-    public RenderShape getRenderShape(BlockState state)
+    public @NotNull RenderShape getRenderShape(BlockState state)
     {
         return RenderShape.ENTITYBLOCK_ANIMATED;
     }
 
     @Override
     @OnlyIn(Dist.CLIENT)
-    public void appendHoverText(ItemStack stack, @Nullable BlockGetter reader, List<Component> list, TooltipFlag advanced)
+    public void appendHoverText(@NotNull ItemStack stack, @Nullable BlockGetter reader, @NotNull List<Component> list, @NotNull TooltipFlag advanced)
     {
         Component vehicleName = EntityType.PIG.getDescription();
         CompoundTag tagCompound = stack.getTag();
@@ -213,12 +224,12 @@ public class VehicleCrateBlock extends RotatedObjectBlock
         }
         if(Screen.hasShiftDown())
         {
-            list.addAll(RenderUtil.lines(new TranslatableContents(this.getDescriptionId() + ".info", vehicleName), 150));
+            list.addAll(RenderUtil.lines(Component.translatable(this.getDescriptionId() + ".info", vehicleName), 150));
         }
         else
         {
-            list.add(vehicleName.copy()).withStyle(ChatFormatting.BLUE));
-            list.add(new TranslatableContents("vehicle.info_help")).withStyle(ChatFormatting.YELLOW));
+            list.add(vehicleName.copy().withStyle(ChatFormatting.BLUE));
+            list.add(Component.translatable("vehicle.info_help").withStyle(ChatFormatting.YELLOW));
         }
     }
 
@@ -243,5 +254,20 @@ public class VehicleCrateBlock extends RotatedObjectBlock
             REGISTERED_CRATES.add(id);
             Collections.sort(REGISTERED_CRATES);
         }
+    }
+
+    @SuppressWarnings("NullableProblems")
+    static class BlockStateBase extends BlockBehaviour.BlockStateBase {
+        protected BlockStateBase(Block p_60608_, ImmutableMap<Property<?>, Comparable<?>> p_60609_, MapCodec<BlockState> p_60610_) {
+            super(p_60608_, p_60609_, p_60610_);
+        }
+
+        @Override
+        protected BlockState asState() {
+            return null;
+        }
+
+        @Override
+        public boolean hasBlockEntity() {return true;}
     }
 }
