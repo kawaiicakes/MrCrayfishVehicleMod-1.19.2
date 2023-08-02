@@ -6,8 +6,7 @@ import com.mrcrayfish.vehicle.client.model.VehicleModels;
 import com.mrcrayfish.vehicle.common.CommonEvents;
 import com.mrcrayfish.vehicle.common.FluidNetworkHandler;
 import com.mrcrayfish.vehicle.common.entity.HeldVehicleDataHandler;
-import com.mrcrayfish.vehicle.crafting.RecipeType;
-import net.minecraftforge.client.event.EntityRenderersEvent;
+import com.mrcrayfish.vehicle.crafting.ModRecipeTypes;
 import net.minecraftforge.common.crafting.CompoundIngredient;
 import com.mrcrayfish.vehicle.datagen.LootTableGen;
 import com.mrcrayfish.vehicle.datagen.RecipeGen;
@@ -70,6 +69,7 @@ public class VehicleMod
         ModParticleTypes.REGISTER.register(eventBus);
         ModSounds.REGISTER.register(eventBus);
         ModRecipeSerializers.REGISTER.register(eventBus);
+        ModRecipeTypes.REGISTER.register(eventBus);
         ModFluids.REGISTER.register(eventBus);
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, Config.serverSpec);
@@ -95,7 +95,7 @@ public class VehicleMod
 
     private void onCommonSetup(FMLCommonSetupEvent event)
     {
-        RecipeType.init();
+        ModRecipeTypes.init();
         VehicleProperties.loadDefaultProperties();
         PacketHandler.registerPlayMessage();
         HeldVehicleDataHandler.register();
