@@ -1,8 +1,8 @@
 package com.mrcrayfish.vehicle.block;
 
 import com.mrcrayfish.vehicle.init.ModItems;
-import com.mrcrayfish.vehicle.tileentity.PipeTileEntity;
-import com.mrcrayfish.vehicle.tileentity.PumpTileEntity;
+import com.mrcrayfish.vehicle.entity.block.PipeTileEntity;
+import com.mrcrayfish.vehicle.entity.block.PumpTileEntity;
 import com.mrcrayfish.vehicle.util.VoxelShapeHelper;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;

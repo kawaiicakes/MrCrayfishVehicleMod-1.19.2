@@ -2,7 +2,7 @@ package com.mrcrayfish.vehicle.crafting;
 
 import com.google.common.collect.ImmutableList;
 import com.mrcrayfish.vehicle.init.ModRecipeSerializers;
-import com.mrcrayfish.vehicle.tileentity.WorkstationTileEntity;
+import com.mrcrayfish.vehicle.entity.block.WorkstationTileEntity;
 import com.mrcrayfish.vehicle.util.InventoryUtil;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;

@@ -3,7 +3,7 @@ package com.mrcrayfish.vehicle.client.render.blockentity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
-import com.mrcrayfish.vehicle.tileentity.FuelDrumTileEntity;
+import com.mrcrayfish.vehicle.entity.block.FuelDrumTileEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;

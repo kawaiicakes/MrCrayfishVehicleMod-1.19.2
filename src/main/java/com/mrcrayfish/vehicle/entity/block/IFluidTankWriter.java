@@ -1,4 +1,4 @@
-package com.mrcrayfish.vehicle.tileentity;
+package com.mrcrayfish.vehicle.entity.block;
 
 import net.minecraft.nbt.CompoundTag;
 

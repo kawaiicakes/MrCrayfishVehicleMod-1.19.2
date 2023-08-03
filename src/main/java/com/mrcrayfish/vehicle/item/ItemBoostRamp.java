@@ -7,7 +7,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
+import net.minecraft.item.UseOnContext;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.core.Direction;
 
@@ -22,7 +22,7 @@ public class ItemBoostRamp extends BlockItem
     }
 
     @Override
-    public InteractionResult onItemUseFirst(ItemStack stack, ItemUseContext context)
+    public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context)
     {
         if(context.getClickedFace() == Direction.UP)
         {

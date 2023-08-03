@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.MapCodec;
 import com.mrcrayfish.vehicle.init.ModBlocks;
 import com.mrcrayfish.vehicle.init.ModItems;
-import com.mrcrayfish.vehicle.tileentity.VehicleCrateTileEntity;
+import com.mrcrayfish.vehicle.entity.block.VehicleCrateTileEntity;
 import com.mrcrayfish.vehicle.util.RenderUtil;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.block.Block;

@@ -2,7 +2,7 @@ package com.mrcrayfish.vehicle.block;
 
 import com.google.common.collect.ImmutableMap;
 import com.mojang.serialization.MapCodec;
-import com.mrcrayfish.vehicle.tileentity.FluidExtractorTileEntity;
+import com.mrcrayfish.vehicle.entity.block.FluidExtractorTileEntity;
 import com.mrcrayfish.vehicle.util.TileEntityUtil;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.Block;

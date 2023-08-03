@@ -30,7 +30,7 @@ import com.mrcrayfish.vehicle.inventory.container.WorkstationContainer;
 import com.mrcrayfish.vehicle.item.EngineItem;
 import com.mrcrayfish.vehicle.item.WheelItem;
 import com.mrcrayfish.vehicle.network.message.*;
-import com.mrcrayfish.vehicle.tileentity.WorkstationTileEntity;
+import com.mrcrayfish.vehicle.entity.block.WorkstationTileEntity;
 import com.mrcrayfish.vehicle.util.CommonUtils;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.entity.Entity;

@@ -1,7 +1,7 @@
 package com.mrcrayfish.vehicle.crafting;
 
 import com.mrcrayfish.vehicle.init.ModRecipeSerializers;
-import com.mrcrayfish.vehicle.tileentity.FluidMixerTileEntity;
+import com.mrcrayfish.vehicle.entity.block.FluidMixerTileEntity;
 import com.mrcrayfish.vehicle.util.InventoryUtil;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.item.ItemStack;

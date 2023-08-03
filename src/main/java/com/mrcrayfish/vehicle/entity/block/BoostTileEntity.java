@@ -1,4 +1,4 @@
-package com.mrcrayfish.vehicle.tileentity;
+package com.mrcrayfish.vehicle.entity.block;
 
 import com.mrcrayfish.vehicle.init.ModTileEntities;
 import net.minecraft.world.level.block.state.BlockState;

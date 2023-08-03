@@ -3,7 +3,7 @@ package com.mrcrayfish.vehicle.world.storage.loot.functions;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonObject;
 import com.mrcrayfish.vehicle.init.ModLootFunctions;
-import com.mrcrayfish.vehicle.tileentity.IFluidTankWriter;
+import com.mrcrayfish.vehicle.entity.block.IFluidTankWriter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.storage.loot.LootContext;

@@ -1,4 +1,4 @@
-package com.mrcrayfish.vehicle.tileentity;
+package com.mrcrayfish.vehicle.entity.block;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;

@@ -2,7 +2,7 @@ package com.mrcrayfish.vehicle.block;
 
 import com.mrcrayfish.vehicle.Config;
 import com.mrcrayfish.vehicle.init.ModBlocks;
-import com.mrcrayfish.vehicle.tileentity.FuelDrumTileEntity;
+import com.mrcrayfish.vehicle.entity.block.FuelDrumTileEntity;
 import com.mrcrayfish.vehicle.util.RenderUtil;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.contents.LiteralContents;
@@ -35,7 +35,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.fluids.FluidStack;
