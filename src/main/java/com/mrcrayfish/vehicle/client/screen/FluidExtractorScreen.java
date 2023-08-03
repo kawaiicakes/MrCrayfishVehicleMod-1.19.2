@@ -1,22 +1,24 @@
 package com.mrcrayfish.vehicle.client.screen;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mrcrayfish.vehicle.Config;
 import com.mrcrayfish.vehicle.crafting.FluidEntry;
 import com.mrcrayfish.vehicle.inventory.container.FluidExtractorContainer;
 import com.mrcrayfish.vehicle.tileentity.FluidExtractorTileEntity;
 import com.mrcrayfish.vehicle.util.FluidUtils;
 import com.mrcrayfish.vehicle.util.RenderUtil;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.contents.LiteralContents;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.fluids.FluidStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,8 +30,8 @@ public class FluidExtractorScreen extends AbstractContainerScreen<FluidExtractor
 {
     private static final ResourceLocation GUI = new ResourceLocation("vehicle:textures/gui/fluid_extractor.png");
 
-    private Inventory playerInventory;
-    private FluidExtractorTileEntity fluidExtractorTileEntity;
+    private final Inventory playerInventory;
+    private final FluidExtractorTileEntity fluidExtractorTileEntity;
 
     public FluidExtractorScreen(FluidExtractorContainer container, Inventory playerInventory, Component title)
     {
@@ -41,7 +43,7 @@ public class FluidExtractorScreen extends AbstractContainerScreen<FluidExtractor
     }
 
     @Override
-    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    public void render(@NotNull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         this.renderBackground(matrixStack); //TODO do I need this?
         super.render(matrixStack, mouseX, mouseY, partialTicks);
@@ -56,11 +58,11 @@ public class FluidExtractorScreen extends AbstractContainerScreen<FluidExtractor
             {
                 if(stack.getAmount() > 0)
                 {
-                    this.renderTooltip(matrixStack, Lists.transform(Arrays.asList(MutableComponent.create(new LiteralContents(stack.getDisplayName().getString()), MutableComponent.create(new LiteralContents(ChatFormatting.GRAY.toString() + this.fluidExtractorTileEntity.getFluidLevel() + "/" + this.fluidExtractorTileEntity.getCapacity() + " mB")), Component::getVisualOrderText), mouseX, mouseY);
+                    this.renderTooltip(matrixStack, Lists.transform(Arrays.asList(MutableComponent.create(new LiteralContents(stack.getDisplayName().getString())), MutableComponent.create(new LiteralContents(ChatFormatting.GRAY.toString() + this.fluidExtractorTileEntity.getFluidLevel() + "/" + this.fluidExtractorTileEntity.getCapacity() + " mB"))), Component::getVisualOrderText), mouseX, mouseY);
                 }
                 else
                 {
-                    this.renderTooltip(matrixStack, Lists.transform(Collections.singletonList(MutableComponent.create(new LiteralContents("No Fluid")), Component::getVisualOrderText), mouseX, mouseY);
+                    this.renderTooltip(matrixStack, Lists.transform(Collections.singletonList(MutableComponent.create(new LiteralContents("No Fluid"))), Component::getVisualOrderText), mouseX, mouseY);
                 }
             }
         }
@@ -69,20 +71,22 @@ public class FluidExtractorScreen extends AbstractContainerScreen<FluidExtractor
     }
 
     @Override
-    protected void renderLabels(PoseStack matrixStack, int mouseX, int mouseY)
+    protected void renderLabels(@NotNull PoseStack matrixStack, int mouseX, int mouseY)
     {
+        assert this.minecraft != null;
         this.minecraft.font.draw(matrixStack, this.fluidExtractorTileEntity.getDisplayName().getString(), 8, 6, 4210752);
         this.minecraft.font.draw(matrixStack, this.playerInventory.getDisplayName().getString(), 8, this.imageHeight - 96 + 2, 4210752);
     }
 
     @Override
-    protected void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY)
+    protected void renderBg(@NotNull PoseStack matrixStack, float partialTicks, int mouseX, int mouseY)
     {
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F); //TODO: color4f
         int startX = (this.width - this.imageWidth) / 2;
         int startY = (this.height - this.imageHeight) / 2;
 
-        this.minecraft.getTextureManager().bind(GUI);
+        assert this.minecraft != null;
+        this.minecraft.getTextureManager().bindForSetup(GUI);
         this.blit(matrixStack, startX, startY, 0, 0, this.imageWidth, this.imageHeight);
 
         if(this.fluidExtractorTileEntity.getRemainingFuel() >= 0)
@@ -113,13 +117,15 @@ public class FluidExtractorScreen extends AbstractContainerScreen<FluidExtractor
         this.drawFluidTank(this.fluidExtractorTileEntity.getFluidStackTank(), matrixStack, startX + 127, startY + 14, this.fluidExtractorTileEntity.getFluidLevel() / (double) this.fluidExtractorTileEntity.getCapacity(), 59);
     }
 
+    @SuppressWarnings("SameParameterValue") //TODO: height is always the same
     private void drawFluidTank(FluidStack fluid, PoseStack matrixStack, int x, int y, double level, int height)
     {
         FluidUtils.drawFluidTankInGUI(fluid, x, y, level, height);
-        Minecraft.getInstance().getTextureManager().bind(GUI);
+        Minecraft.getInstance().getTextureManager().bindForSetup(GUI);
         this.blit(matrixStack, x, y, 176, 44, 16, 59);
     }
 
+    @SuppressWarnings("SameParameterValue") //TODO: again, some params are always the same
     private boolean isMouseWithinRegion(int x, int y, int width, int height, int mouseX, int mouseY)
     {
         return mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;

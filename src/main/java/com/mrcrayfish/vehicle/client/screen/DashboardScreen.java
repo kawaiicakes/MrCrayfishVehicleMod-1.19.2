@@ -9,12 +9,12 @@ import com.mrcrayfish.vehicle.common.Seat;
 import com.mrcrayfish.vehicle.common.cosmetic.actions.OpenableAction;
 import com.mrcrayfish.vehicle.entity.VehicleEntity;
 import com.mrcrayfish.vehicle.entity.properties.VehicleProperties;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.network.chat.contents.LiteralContents;
+import net.minecraft.resources.ResourceLocation;
 
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
@@ -29,7 +29,7 @@ public class DashboardScreen extends AbstractToolbarScreen
 
     public DashboardScreen(@Nullable Screen parent, VehicleEntity vehicle)
     {
-        super(MutableComponent.create(new LiteralContents("Dashboard"), parent);
+        super(MutableComponent.create(new LiteralContents("Dashboard")), parent);
         this.vehicleRef = new WeakReference<>(vehicle);
     }
 
@@ -42,19 +42,18 @@ public class DashboardScreen extends AbstractToolbarScreen
     @Override
     protected void loadWidgets(List<AbstractWidget> widgets)
     {
-        widgets.add(new IconButton(20, 20, Icons.LEFT_DOOR, Component.translatable("vehicle.toolbar.label.doors"), onPress -> {
-            this.minecraft.setScreen(new DoorScreen(this, this.vehicleRef.get()));
-        }));
-        widgets.add(new IconButton(20, 20, Icons.SEAT_PASSENGER, Component.translatable("vehicle.toolbar.label.seats"), onPress -> {
-            this.minecraft.setScreen(new SeatScreen(this, this.vehicleRef.get()));
-        }));
+        assert this.minecraft != null;
+        widgets.add(new IconButton(20, 20, Icons.LEFT_DOOR, Component.translatable("vehicle.toolbar.label.doors"),
+                onPress -> this.minecraft.setScreen(new DoorScreen(this, this.vehicleRef.get()))));
+        widgets.add(new IconButton(20, 20, Icons.SEAT_PASSENGER, Component.translatable("vehicle.toolbar.label.seats"),
+                onPress -> this.minecraft.setScreen(new SeatScreen(this, this.vehicleRef.get()))));
     }
 
     private static class DoorScreen extends DashboardScreen
     {
         private DoorScreen(@Nullable Screen parent, VehicleEntity vehicle)
         {
-            super(parent, MutableComponent.create(new LiteralContents("Doors"), vehicle);
+            super(parent, MutableComponent.create(new LiteralContents("Doors")), vehicle);
         }
 
         @Override
@@ -64,11 +63,9 @@ public class DashboardScreen extends AbstractToolbarScreen
             if(vehicle != null)
             {
                 VehicleProperties properties = vehicle.getProperties();
-                properties.getCosmetics().forEach((cosmeticId, cosmeticProperties) -> {
-                    vehicle.getCosmeticTracker().getSelectedCosmeticEntry(cosmeticId)
-                        .flatMap(entry -> entry.getActions().stream().filter(action -> action instanceof OpenableAction).findAny())
-                        .ifPresent(action -> widgets.add(new DoorButton(vehicle, cosmeticProperties, (OpenableAction) action)));
-                });
+                properties.getCosmetics().forEach((cosmeticId, cosmeticProperties) -> vehicle.getCosmeticTracker().getSelectedCosmeticEntry(cosmeticId)
+                    .flatMap(entry -> entry.getActions().stream().filter(action -> action instanceof OpenableAction).findAny())
+                    .ifPresent(action -> widgets.add(new DoorButton(vehicle, cosmeticProperties, (OpenableAction) action))));
             }
         }
     }
@@ -77,7 +74,7 @@ public class DashboardScreen extends AbstractToolbarScreen
     {
         private SeatScreen(@Nullable Screen parent, VehicleEntity vehicle)
         {
-            super(parent, MutableComponent.create(new LiteralContents("Seats"), vehicle);
+            super(parent, MutableComponent.create(new LiteralContents("Seats")), vehicle);
         }
 
         @Override
@@ -121,6 +118,7 @@ public class DashboardScreen extends AbstractToolbarScreen
         }
 
         @Override
+        @SuppressWarnings("ConstantValue") //TODO: always returns as 10. why?
         public int getV()
         {
             return (this.ordinal() / 10) * 10;

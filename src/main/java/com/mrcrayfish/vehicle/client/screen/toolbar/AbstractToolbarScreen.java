@@ -9,6 +9,7 @@ import com.mrcrayfish.vehicle.client.screen.toolbar.widget.Spacer;
 import com.mrcrayfish.vehicle.util.CommonUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -89,11 +90,11 @@ public abstract class AbstractToolbarScreen extends Screen
         super.render(matrixStack, mouseX, mouseY, partialTicks);
 
         AbstractWidget hoveredWidget = null;
-        for(AbstractWidget widget : this.renderables) //FIXME am I even subclassing the right shit?
+        for(Widget widget : this.renderables) //TODO: rewrite this without relying on casts
         {
-            if(CommonUtils.isMouseWithin(mouseX, mouseY, widget.x, widget.y, widget.getWidth(), widget.getHeight()))
+            if(CommonUtils.isMouseWithin(mouseX, mouseY, ((AbstractWidget) widget).x, ((AbstractWidget) widget).y, ((AbstractWidget) widget).getWidth(), ((AbstractWidget) widget).getHeight()))
             {
-                hoveredWidget = widget;
+                hoveredWidget = ((AbstractWidget) widget);
                 break;
             }
         }
@@ -145,6 +146,7 @@ public abstract class AbstractToolbarScreen extends Screen
     }
 
     //TODO what is contentHeight for? it's always 24...
+    @SuppressWarnings("SameParameterValue")
     private Pair<Integer, Integer> getDimensionsForWindow(int contentWidth, int contentHeight)
     {
         return Pair.of(contentWidth + 8, contentHeight + 8);

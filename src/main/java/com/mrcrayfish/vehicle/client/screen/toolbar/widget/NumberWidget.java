@@ -1,20 +1,20 @@
 package com.mrcrayfish.vehicle.client.screen.toolbar.widget;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.network.chat.Component;
 
 /**
  * Author: MrCrayfish
  */
-public class NumberWidget extends TextFieldWidget
+public class NumberWidget extends EditBox
 {
     private int min = Integer.MIN_VALUE;
-    private int max = Integer.MAX_VALUE;
+    private final int max = Integer.MAX_VALUE;
 
     public NumberWidget(int width)
     {
-        super(Minecraft.getInstance().font, 0, 0, width, 20, TextComponent.EMPTY);
+        super(Minecraft.getInstance().font, 0, 0, width, 20, Component.empty());
         this.setFilter(s ->
         {
             try
