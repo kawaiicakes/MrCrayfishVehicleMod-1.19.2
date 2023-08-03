@@ -1,8 +1,13 @@
 package com.mrcrayfish.vehicle.client.screen;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.pipeline.MainTarget;
+import com.mojang.blaze3d.platform.Lighting;
+import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Quaternion;
 import com.mrcrayfish.vehicle.client.render.AbstractVehicleRenderer;
 import com.mrcrayfish.vehicle.client.render.Axis;
 import com.mrcrayfish.vehicle.client.render.CachedVehicle;
@@ -11,27 +16,19 @@ import com.mrcrayfish.vehicle.entity.EngineType;
 import com.mrcrayfish.vehicle.entity.properties.PoweredProperties;
 import com.mrcrayfish.vehicle.inventory.container.EditVehicleContainer;
 import com.mrcrayfish.vehicle.util.CommonUtils;
-import net.minecraft.client.MainWindow;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import com.mojang.blaze3d.vertex.BufferBuilder;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderHelper;
-import com.mojang.blaze3d.vertex.Tesselator;
-import net.minecraft.client.renderer.WorldVertexBufferUploader;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.client.shader.Framebuffer;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.Container;
-import net.minecraft.resources.ResourceLocation;
-import com.mojang.math.Matrix4f;
-import com.mojang.math.Quaternion;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.contents.LiteralContents;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Inventory;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -47,7 +44,7 @@ public class EditVehicleScreen extends AbstractContainerScreen<EditVehicleContai
     private final Container vehicleInventory;
     private final CachedVehicle cachedVehicle;
 
-    private Framebuffer framebuffer;
+    private MainTarget framebuffer;
     private boolean showHelp = true;
     private int windowZoom = 10;
     private int windowX, windowY;
@@ -66,11 +63,11 @@ public class EditVehicleScreen extends AbstractContainerScreen<EditVehicleContai
     }
 
     @Override
-    protected void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY)
+    protected void renderBg(@NotNull PoseStack matrixStack, float partialTicks, int mouseX, int mouseY)
     {
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F); //TODO color4f
         Minecraft minecraft = Minecraft.getInstance();
-        minecraft.getTextureManager().bind(GUI_TEXTURES);
+        minecraft.getTextureManager().bindForSetup(GUI_TEXTURES);
         int left = (this.width - this.imageWidth) / 2;
         int top = (this.height - this.imageHeight) / 2;
         this.blit(matrixStack, left, top, 0, 0, this.imageWidth, this.imageHeight);
@@ -112,15 +109,13 @@ public class EditVehicleScreen extends AbstractContainerScreen<EditVehicleContai
             builder.vertex(pose, startX, startY + 70, this.getBlitOffset()).uv(0, 0).endVertex();
             builder.vertex(pose, startX + 142, startY + 70, this.getBlitOffset()).uv(1, 0).endVertex();
             builder.vertex(pose, startX + 142, startY, this.getBlitOffset()).uv(1, 1).endVertex();
-            builder.end();
-            RenderSystem.enableAlphaTest();
-            WorldVertexBufferUploader.end(builder);
+
+            BufferBuilder.RenderedBuffer renderedBuilder = builder.end();
+            BufferUploader.drawWithShader(renderedBuilder);
         }
     }
-
     @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    protected void renderLabels(PoseStack matrixStack, int mouseX, int mouseY)
+    protected void renderLabels(@NotNull PoseStack matrixStack, int mouseX, int mouseY)
     {
         Minecraft minecraft = Minecraft.getInstance();
         minecraft.font.draw(matrixStack, this.title.getString(), 8, 6, 4210752);
@@ -128,25 +123,33 @@ public class EditVehicleScreen extends AbstractContainerScreen<EditVehicleContai
 
         if(this.showHelp)
         {
-            RenderSystem.pushMatrix();
-            RenderSystem.scalef(0.5F, 0.5F, 0.5F);
+            PoseStack poseStack = RenderSystem.getModelViewStack();
+            poseStack.pushPose();
+            poseStack.scale(0.5F, 0.5F, 0.5F);
             minecraft.font.draw(matrixStack, I18n.get("container.edit_vehicle.window_help"), 56, 38, 0xFFFFFF);
-            RenderSystem.popMatrix();
+            poseStack.popPose();
         }
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private void renderVehicleToBuffer(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    @SuppressWarnings({"unchecked", "rawtypes"})    //TODO: suppressed parameter is unused
+    private void renderVehicleToBuffer(PoseStack matrixStack, int mouseX, int mouseY, @SuppressWarnings("unused") float partialTicks)
     {
-        RenderSystem.matrixMode(GL11.GL_PROJECTION);
-        RenderSystem.pushMatrix();
-        RenderSystem.loadIdentity();
+        PoseStack poseStack = RenderSystem.getModelViewStack();
+        poseStack.pushPose();
+
+        PoseStack.Pose poseStack$Pose = poseStack.last();
+        poseStack$Pose.normal().setIdentity();
+        poseStack$Pose.pose().setIdentity();
+
         Matrix4f projectionMatrix = Matrix4f.perspective(30, 142.0F / 70.0F, 0.5F, 200.0F);
-        RenderSystem.multMatrix(projectionMatrix);
-        RenderSystem.matrixMode(GL11.GL_MODELVIEW);
-        RenderSystem.pushMatrix();
-        RenderSystem.loadIdentity();
-        RenderHelper.setupLevel(matrixStack.last().pose());
+        RenderSystem.backupProjectionMatrix();
+        RenderSystem.setProjectionMatrix(projectionMatrix);
+        poseStack.pushPose();
+
+        poseStack$Pose.normal().setIdentity();
+        poseStack$Pose.pose().setIdentity();
+
+        Lighting.setupLevel(matrixStack.last().pose());
 
         AbstractVehicleRenderer renderer = this.cachedVehicle.getRenderer();
         if(renderer != null)
@@ -154,7 +157,7 @@ public class EditVehicleScreen extends AbstractContainerScreen<EditVehicleContai
             this.bindFrameBuffer();
 
             matrixStack.pushPose();
-            PoseStack.Entry last = matrixStack.last();
+            PoseStack.Pose last = matrixStack.last();
             last.pose().setIdentity();
             last.normal().setIdentity();
             matrixStack.translate(0, -20, -150);
@@ -177,7 +180,7 @@ public class EditVehicleScreen extends AbstractContainerScreen<EditVehicleContai
             matrixStack.mulPose(Axis.POSITIVE_Z.rotationDegrees((float) position.getRotZ()));
             matrixStack.translate(position.getX(), position.getY(), position.getZ());
 
-            MultiBufferSource.Impl renderTypeBuffer = Minecraft.getInstance().renderBuffers().bufferSource();
+            MultiBufferSource.BufferSource renderTypeBuffer = Minecraft.getInstance().renderBuffers().bufferSource();
             renderer.setupTransformsAndRender(this.menu.getVehicle(), matrixStack, renderTypeBuffer, Minecraft.getInstance().getFrameTime(), 15728880);
             renderTypeBuffer.endBatch();
 
@@ -186,12 +189,8 @@ public class EditVehicleScreen extends AbstractContainerScreen<EditVehicleContai
             this.unbindFrameBuffer();
         }
 
-        RenderSystem.matrixMode(GL11.GL_PROJECTION);
-        RenderSystem.popMatrix();
-        RenderSystem.matrixMode(GL11.GL_MODELVIEW);
-        RenderSystem.popMatrix();
-        RenderHelper.setupFor3DItems();
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        Lighting.setupFor3DItems();
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
     }
 
     @Override
@@ -258,7 +257,7 @@ public class EditVehicleScreen extends AbstractContainerScreen<EditVehicleContai
     }
 
     @Override
-    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    public void render(@NotNull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         this.renderVehicleToBuffer(matrixStack, mouseX, mouseY, partialTicks);
         this.renderBackground(matrixStack);
@@ -275,11 +274,11 @@ public class EditVehicleScreen extends AbstractContainerScreen<EditVehicleContai
             {
                 if(this.cachedVehicle.getProperties().getExtended(PoweredProperties.class).getEngineType() != EngineType.NONE)
                 {
-                    this.renderTooltip(matrixStack, Lists.transform(Collections.singletonList(MutableComponent.create(new LiteralContents("Engine")), Component::getVisualOrderText), mouseX, mouseY); //TODO localise
+                    this.renderTooltip(matrixStack, Lists.transform(Collections.singletonList(MutableComponent.create(new LiteralContents("Engine"))), Component::getVisualOrderText), mouseX, mouseY); //TODO localise
                 }
                 else
                 {
-                    this.renderTooltip(matrixStack, Lists.transform(Arrays.asList(MutableComponent.create(new LiteralContents("Engine"), MutableComponent.create(new LiteralContents(ChatFormatting.GRAY + "Not applicable")), Component::getVisualOrderText), mouseX, mouseY); //TODO localise
+                    this.renderTooltip(matrixStack, Lists.transform(Arrays.asList(MutableComponent.create(new LiteralContents("Engine")), MutableComponent.create(new LiteralContents(ChatFormatting.GRAY + "Not applicable"))), Component::getVisualOrderText), mouseX, mouseY); //TODO localise
                 }
             }
         }
@@ -290,11 +289,11 @@ public class EditVehicleScreen extends AbstractContainerScreen<EditVehicleContai
             {
                 if(this.cachedVehicle.getProperties().canChangeWheels())
                 {
-                    this.renderTooltip(matrixStack, Lists.transform(Collections.singletonList(MutableComponent.create(new LiteralContents("Wheels")), Component::getVisualOrderText), mouseX, mouseY);
+                    this.renderTooltip(matrixStack, Lists.transform(Collections.singletonList(MutableComponent.create(new LiteralContents("Wheels"))), Component::getVisualOrderText), mouseX, mouseY);
                 }
                 else
                 {
-                    this.renderTooltip(matrixStack, Lists.transform(Arrays.asList(MutableComponent.create(new LiteralContents("Wheels"), MutableComponent.create(new LiteralContents(ChatFormatting.GRAY + "Not applicable")), Component::getVisualOrderText), mouseX, mouseY);
+                    this.renderTooltip(matrixStack, Lists.transform(Arrays.asList(MutableComponent.create(new LiteralContents("Wheels")), MutableComponent.create(new LiteralContents(ChatFormatting.GRAY + "Not applicable"))), Component::getVisualOrderText), mouseX, mouseY);
                 }
             }
         }
@@ -303,12 +302,12 @@ public class EditVehicleScreen extends AbstractContainerScreen<EditVehicleContai
     private void bindFrameBuffer()
     {
         Minecraft minecraft = Minecraft.getInstance();
-        MainWindow window = minecraft.getWindow();
+        Window window = minecraft.getWindow();
         int windowWidth = (int) (142 * window.getGuiScale());
         int windowHeight = (int) (70 * window.getGuiScale());
         if(this.framebuffer == null)
         {
-            this.framebuffer = new Framebuffer(windowWidth, windowHeight, true, Minecraft.ON_OSX);
+            this.framebuffer = new MainTarget(windowWidth, windowHeight); //TODO: find out why args true, Minecraft.ON_OSX existed
             this.framebuffer.setClearColor(0.0F, 0.0F, 0.0F, 0.0F);
         }
         else if(this.framebuffer.width != windowWidth || this.framebuffer.height != windowHeight)
@@ -327,6 +326,7 @@ public class EditVehicleScreen extends AbstractContainerScreen<EditVehicleContai
             this.framebuffer.unbindWrite();
         }
         // Rebind the main buffer
+        assert this.minecraft != null;
         this.minecraft.getMainRenderTarget().bindWrite(true);
     }
 
