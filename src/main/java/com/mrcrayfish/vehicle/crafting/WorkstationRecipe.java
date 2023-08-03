@@ -7,22 +7,22 @@ import com.mrcrayfish.vehicle.util.InventoryUtil;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.IRecipeType;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
 /**
  * Author: MrCrayfish
  */
-public class WorkstationRecipe implements IRecipe<WorkstationTileEntity>
+public class WorkstationRecipe implements Recipe<WorkstationTileEntity>
 {
     private ResourceLocation id;
     private EntityType<?> vehicle;
-    private ImmutableList<CompoundIngredient> materials;
+    private ImmutableList<WorkstationIngredient> materials;
 
-    public WorkstationRecipe(ResourceLocation id, EntityType<?> vehicle, ImmutableList<CompoundIngredient> materials)
+    public WorkstationRecipe(ResourceLocation id, EntityType<?> vehicle, ImmutableList<WorkstationIngredient> materials)
     {
         this.id = id;
         this.vehicle = vehicle;
@@ -34,7 +34,7 @@ public class WorkstationRecipe implements IRecipe<WorkstationTileEntity>
         return this.vehicle;
     }
 
-    public ImmutableList<CompoundIngredient> getMaterials()
+    public ImmutableList<WorkstationIngredient> getMaterials()
     {
         return this.materials;
     }
@@ -76,14 +76,14 @@ public class WorkstationRecipe implements IRecipe<WorkstationTileEntity>
     }
 
     @Override
-    public IRecipeType<?> getType()
+    public RecipeType<?> getType()
     {
         return RecipeType.WORKSTATION;
     }
 
     public boolean hasMaterials(Player player)
     {
-        for(CompoundIngredient ingredient : this.getMaterials())
+        for(WorkstationIngredient ingredient : this.getMaterials())
         {
             if(!InventoryUtil.hasWorkstationIngredient(player, ingredient))
             {
@@ -95,7 +95,7 @@ public class WorkstationRecipe implements IRecipe<WorkstationTileEntity>
 
     public void consumeMaterials(Player player)
     {
-        for(CompoundIngredient ingredient : this.getMaterials())
+        for(WorkstationIngredient ingredient : this.getMaterials())
         {
             InventoryUtil.removeWorkstationIngredient(player, ingredient);
         }

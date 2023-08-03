@@ -11,27 +11,25 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.crafting.IIngredientSerializer;
+import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 /**
  * Author: MrCrayfish
  */
-public class CompoundIngredient extends Ingredient
+public class WorkstationIngredient extends Ingredient
+    //TODO reassess need for this class
 {
     private final ItemValue itemList;
     private final int count;
 
-    protected CompoundIngredient(Stream<? extends ItemValue> itemList, int count)
-    {
-        super(itemList);
-        this.itemList = null;
-        this.count = count;
-    }
-
-    private CompoundIngredient(ItemValue itemList, int count)
+    private WorkstationIngredient(ItemValue itemList, int count)
     {
         super(Stream.of(itemList));
         this.itemList = itemList;
@@ -44,68 +42,69 @@ public class CompoundIngredient extends Ingredient
     }
 
     @Override
-    public IIngredientSerializer<? extends Ingredient> getSerializer()
+    public @NotNull IIngredientSerializer<? extends Ingredient> getSerializer()
     {
         return Serializer.INSTANCE;
     }
 
-    public static CompoundIngredient fromJson(JsonObject object)
+    public static WorkstationIngredient fromJson(JsonObject object)
     {
         Value value = valueFromJson(object);
         int count = GsonHelper.getAsInt(object, "count", 1);
-        return new CompoundIngredient(Stream.of(value), count);
+        return new WorkstationIngredient((ItemValue) Stream.of(value), count);
     }
 
     @Override
-    public JsonElement toJson()
+    public @NotNull JsonElement toJson()
     {
         JsonObject object = this.itemList.serialize();
         object.addProperty("count", this.count);
         return object;
     }
 
-    public static CompoundIngredient of(ItemLike provider, int count)
-    {
-        return new CompoundIngredient(new Ingredient(new ItemStack(provider)), count);
+    public static WorkstationIngredient of(ItemLike provider, int count)
+    { //TODO make sure this ghetto impl actually works lmfao
+        return new WorkstationIngredient(new Ingredient.ItemValue(
+                Arrays.stream(Ingredient.of(provider).getItems()).findAny().orElseThrow()), count);
     }
 
-    public static CompoundIngredient of(ItemStack stack, int count)
+    public static WorkstationIngredient of(ItemStack stack, int count)
     {
-        return new CompoundIngredient(new Ingredient.SingleItemList(stack), count);
+        return new WorkstationIngredient(new Ingredient.ItemValue(stack), count);
     }
 
-    public static CompoundIngredient of(TagKey<Item> tag, int count)
-    {
-        return new CompoundIngredient(new Ingredient.TagList(tag), count);
+    public static WorkstationIngredient of(TagKey<Item> tag, int count)
+    { //TODO make sure this ghetto impl actually works lmfao
+        return new WorkstationIngredient(new ItemValue(new TagValue(tag).getItems().stream().findAny().orElseThrow()), count);
     }
 
-    public static CompoundIngredient of(ResourceLocation id, int count)
+    public static WorkstationIngredient of(ResourceLocation id, int count)
     {
-        return new CompoundIngredient(new MissingSingleItemList(id), count);
+        return new WorkstationIngredient(new MissingSingleItemList(id), count);
     }
 
-    public static class Serializer implements IIngredientSerializer<CompoundIngredient>
+    public static class Serializer implements IIngredientSerializer<WorkstationIngredient>
     {
-        public static final CompoundIngredient.Serializer INSTANCE = new CompoundIngredient.Serializer();
+        public static final WorkstationIngredient.Serializer INSTANCE = new WorkstationIngredient.Serializer();
 
         @Override
-        public CompoundIngredient parse(FriendlyByteBuf buffer)
+        public @NotNull WorkstationIngredient parse(FriendlyByteBuf buffer)
         {
             int itemCount = buffer.readVarInt();
             int count = buffer.readVarInt();
-            Stream<Ingredient.SingleItemList> values = Stream.generate(() ->
-                    new SingleItemList(buffer.readItem())).limit(itemCount);
-            return new CompoundIngredient(values, count);
+            Stream<Ingredient.ItemValue> values = Stream.generate(() ->
+                    new ItemValue(buffer.readItem())).limit(itemCount);
+            return new WorkstationIngredient((ItemValue) values, count);
         }
 
         @Override
-        public CompoundIngredient parse(JsonObject object)
+        public @NotNull WorkstationIngredient parse(@NotNull JsonObject object)
         {
-            return CompoundIngredient.fromJson(object);
+            return WorkstationIngredient.fromJson(object);
         }
 
         @Override
-        public void write(FriendlyByteBuf buffer, CompoundIngredient ingredient)
+        public void write(FriendlyByteBuf buffer, WorkstationIngredient ingredient)
         {
             buffer.writeVarInt(ingredient.getItems().length);
             buffer.writeVarInt(ingredient.count);
@@ -120,24 +119,25 @@ public class CompoundIngredient extends Ingredient
 
     /**
      * Allows ability to define an ingredient from another mod without depending. Serializes the data
-     * to be read by the regular {@link SingleItemList}. Only use this for generating data.
+     * to be read by the regular {@link Ingredient.ItemValue}. Only use this for generating data.
      */
     public static class MissingSingleItemList extends ItemValue {
         private final ResourceLocation id;
 
         public MissingSingleItemList(ResourceLocation id)
         {
+            super(Objects.requireNonNull(ForgeRegistries.ITEMS.getValue(id)).getDefaultInstance());
             this.id = id;
         }
 
         @Override
-        public Collection<ItemStack> getItems()
+        public @NotNull Collection<ItemStack> getItems()
         {
             return Collections.emptyList();
         }
 
         @Override
-        public JsonObject serialize()
+        public @NotNull JsonObject serialize()
         {
             JsonObject object = new JsonObject();
             object.addProperty("item", this.id.toString());
