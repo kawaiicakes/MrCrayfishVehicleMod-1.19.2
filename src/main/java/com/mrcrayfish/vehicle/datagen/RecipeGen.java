@@ -382,7 +382,7 @@ public class RecipeGen extends RecipeProvider
         workstationCrafting(consumer, ModEntities.VEHICLE_TRAILER.get(), CompoundIngredient.of(Tags.Items.INGOTS_IRON, 48), CompoundIngredient.of(ModItems.PANEL.get(), 2));
 
         // Furniture
-        //workstationCrafting(consumer, new ResourceLocation("cfm:sofacopter"), CompoundIngredient.of(Tags.Items.INGOTS_IRON, 80), CompoundIngredient.of(ModItems.PANEL.get(), 10));
+        //workstationCrafting(consumer, new ResourceLocation("cfm:sofacopter"), WorkstationIngredient.of(Tags.Items.INGOTS_IRON, 80), WorkstationIngredient.of(ModItems.PANEL.get(), 10));
 
         fluidExtracting(consumer, Items.BLAZE_ROD, FluidEntry.of(ModFluids.BLAZE_JUICE.get(), 450));
         fluidExtracting(consumer, Items.ENDER_PEARL, FluidEntry.of(ModFluids.ENDER_SAP.get(), 600));

@@ -5,10 +5,10 @@ import com.mrcrayfish.vehicle.inventory.IStorageBlock;
 import com.mrcrayfish.vehicle.inventory.container.WorkstationContainer;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.inventory.ItemStackHelper;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.item.DyeItem;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.core.NonNullList;
@@ -58,12 +58,12 @@ public class WorkstationTileEntity extends TileEntitySynced implements IStorageB
     @Override
     public Component getDisplayName()
     {
-        return new TranslatableContents("container.vehicle.workstation");
+        return Component.translatable("container.vehicle.workstation");
     }
 
     @Nullable
     @Override
-    public Container createMenu(int windowId, PlayerInventory playerInventory, Player playerEntity)
+    public Container createMenu(int windowId, Inventory playerInventory, Player playerEntity)
     {
         return new WorkstationContainer(windowId, playerInventory, this);
     }

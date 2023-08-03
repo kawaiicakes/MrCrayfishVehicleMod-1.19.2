@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.mrcrayfish.vehicle.init.ModRecipeSerializers;
 import com.mrcrayfish.vehicle.item.IDyeable;
 import net.minecraft.inventory.CraftingInventory;
-import net.minecraft.item.DyeItem;
+import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.item.crafting.SpecialRecipe;

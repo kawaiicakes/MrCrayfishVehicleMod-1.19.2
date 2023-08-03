@@ -22,12 +22,12 @@ public class WorkstationRecipeSerializer extends net.minecraftforge.registries.F
     @Override
     public WorkstationRecipe fromJson(ResourceLocation recipeId, JsonObject parent)
     {
-        ImmutableList.Builder<CompoundIngredient> builder = ImmutableList.builder();
+        ImmutableList.Builder<WorkstationIngredient> builder = ImmutableList.builder();
         JsonArray input = GsonHelper.getAsJsonArray(parent, "materials");
         for(int i = 0; i < input.size(); i++)
         {
             JsonObject object = input.get(i).getAsJsonObject();
-            builder.add(CompoundIngredient.fromJson(object));
+            builder.add(WorkstationIngredient.fromJson(object));
         }
         if(!parent.has("vehicle"))
         {
@@ -47,11 +47,11 @@ public class WorkstationRecipeSerializer extends net.minecraftforge.registries.F
     public WorkstationRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer)
     {
         EntityType<?> entityType = ForgeRegistries.ENTITIES.getValue(buffer.readResourceLocation());
-        ImmutableList.Builder<CompoundIngredient> builder = ImmutableList.builder();
+        ImmutableList.Builder<WorkstationIngredient> builder = ImmutableList.builder();
         int size = buffer.readVarInt();
         for(int i = 0; i < size; i++)
         {
-            builder.add((CompoundIngredient) Ingredient.fromNetwork(buffer));
+            builder.add((WorkstationIngredient) Ingredient.fromNetwork(buffer));
         }
         return new WorkstationRecipe(recipeId, entityType, builder.build());
     }
@@ -61,7 +61,7 @@ public class WorkstationRecipeSerializer extends net.minecraftforge.registries.F
     {
         buffer.writeResourceLocation(recipe.getVehicle().builtInRegistryHolder().key().location());
         buffer.writeVarInt(recipe.getMaterials().size());
-        for(CompoundIngredient stack : recipe.getMaterials())
+        for(WorkstationIngredient stack : recipe.getMaterials())
         {
             stack.toNetwork(buffer);
         }

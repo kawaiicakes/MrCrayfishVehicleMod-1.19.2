@@ -25,11 +25,11 @@ public class WrenchItem extends Item
     {
         if(Screen.hasShiftDown())
         {
-            list.addAll(RenderUtil.lines(new TranslatableContents(this.getDescriptionId() + ".info"), 150));
+            list.addAll(RenderUtil.lines(Component.translatable(this.getDescriptionId() + ".info"), 150));
         }
         else
         {
-            list.add(new TranslatableContents("vehicle.info_help")).withStyle(ChatFormatting.YELLOW));
+            list.add(Component.translatable("vehicle.info_help")).withStyle(ChatFormatting.YELLOW));
         }
     }
 }

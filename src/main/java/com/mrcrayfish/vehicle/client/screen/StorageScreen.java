@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mrcrayfish.vehicle.inventory.container.StorageContainer;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.api.distmarker.Dist;
@@ -14,13 +14,13 @@ import net.minecraftforge.api.distmarker.OnlyIn;
  * Author: MrCrayfish
  */
 @OnlyIn(Dist.CLIENT)
-public class StorageScreen extends ContainerScreen<StorageContainer>
+public class StorageScreen extends AbstractContainerScreen<StorageContainer>
 {
     private static final ResourceLocation CHEST_GUI_TEXTURE = new ResourceLocation("textures/gui/container/generic_54.png");
-    private final PlayerInventory playerInventory;
+    private final Inventory playerInventory;
     private final int inventoryRows;
 
-    public StorageScreen(StorageContainer container, PlayerInventory playerInventory, Component title)
+    public StorageScreen(StorageContainer container, Inventory playerInventory, Component title)
     {
         super(container, playerInventory, title);
         this.playerInventory = playerInventory;

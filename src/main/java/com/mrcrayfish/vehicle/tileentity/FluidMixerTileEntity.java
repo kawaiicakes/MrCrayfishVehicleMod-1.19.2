@@ -5,19 +5,18 @@ import com.mrcrayfish.vehicle.block.FluidMixerBlock;
 import com.mrcrayfish.vehicle.block.RotatedObjectBlock;
 import com.mrcrayfish.vehicle.crafting.FluidEntry;
 import com.mrcrayfish.vehicle.crafting.FluidMixerRecipe;
-import com.mrcrayfish.vehicle.crafting.RecipeType;
+import com.mrcrayfish.vehicle.crafting.ModRecipeTypes;
 import com.mrcrayfish.vehicle.init.ModFluids;
 import com.mrcrayfish.vehicle.init.ModTileEntities;
 import com.mrcrayfish.vehicle.inventory.container.FluidMixerContainer;
 import com.mrcrayfish.vehicle.util.InventoryUtil;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.Container;
 import net.minecraft.inventory.ItemStackHelper;
-import net.minecraft.inventory.container.Container;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -27,7 +26,6 @@ import net.minecraft.util.IIntArray;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeHooks;
@@ -458,7 +456,7 @@ public class FluidMixerTileEntity extends TileEntitySynced implements Container,
     @Override
     public Component getDisplayName()
     {
-        return this.hasCustomName() ? MutableComponent.create(new LiteralContents(this.getName()) : new TranslatableContents(this.getName());
+        return this.hasCustomName() ? MutableComponent.create(new LiteralContents(this.getName()) : Component.translatable(this.getName());
     }
 
     @Nullable
@@ -511,7 +509,7 @@ public class FluidMixerTileEntity extends TileEntitySynced implements Container,
 
     @Nullable
     @Override
-    public Container createMenu(int windowId, PlayerInventory playerInventory, Player playerEntity)
+    public Container createMenu(int windowId, Inventory playerInventory, Player playerEntity)
     {
         return new FluidMixerContainer(windowId, playerInventory, this);
     }
@@ -529,18 +527,18 @@ public class FluidMixerTileEntity extends TileEntitySynced implements Container,
 
     public Optional<FluidMixerRecipe> getRecipe()
     {
-        return this.level.getRecipeManager().getRecipeFor(RecipeType.FLUID_MIXER, this, this.level);
+        return this.level.getRecipeManager().getRecipeFor(ModRecipeTypes.FLUID_MIXER, this, this.level);
     }
 
     private boolean isValidIngredient(ItemStack ingredient)
     {
-        List<FluidMixerRecipe> recipes = this.level.getRecipeManager().getRecipes().stream().filter(recipe -> recipe.getType() == RecipeType.FLUID_MIXER).map(recipe -> (FluidMixerRecipe) recipe).collect(Collectors.toList());
+        List<FluidMixerRecipe> recipes = this.level.getRecipeManager().getRecipes().stream().filter(recipe -> recipe.getType() == ModRecipeTypes.FLUID_MIXER).map(recipe -> (FluidMixerRecipe) recipe).collect(Collectors.toList());
         return recipes.stream().anyMatch(recipe -> InventoryUtil.areItemStacksEqualIgnoreCount(ingredient, recipe.getIngredient()));
     }
 
     private boolean isValidFluid(FluidStack stack)
     {
-        List<FluidMixerRecipe> recipes = this.level.getRecipeManager().getRecipes().stream().filter(recipe -> recipe.getType() == RecipeType.FLUID_MIXER).map(recipe -> (FluidMixerRecipe) recipe).collect(Collectors.toList());
+        List<FluidMixerRecipe> recipes = this.level.getRecipeManager().getRecipes().stream().filter(recipe -> recipe.getType() == ModRecipeTypes.FLUID_MIXER).map(recipe -> (FluidMixerRecipe) recipe).collect(Collectors.toList());
         return recipes.stream().anyMatch(recipe ->
         {
             for(FluidEntry entry : recipe.getInputs())

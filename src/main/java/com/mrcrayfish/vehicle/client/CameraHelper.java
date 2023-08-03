@@ -166,7 +166,8 @@ public class CameraHelper
 
             // Applies the vehicle's body rotations to the camera
             //TODO add this back
-            /*if(Config.CLIENT.shouldFollowYaw.get())
+            /* what is happening here
+            if(Config.CLIENT.shouldFollowYaw.get())
             {
                 rotation.mul(Vector3f.YP.rotationDegrees(-this.getYaw(partialTicks)));
             }

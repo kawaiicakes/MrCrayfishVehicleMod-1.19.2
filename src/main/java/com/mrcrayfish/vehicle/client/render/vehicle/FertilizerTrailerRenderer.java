@@ -1,6 +1,7 @@
 package com.mrcrayfish.vehicle.client.render.vehicle;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3f;
 import com.mrcrayfish.vehicle.client.model.VehicleModels;
 import com.mrcrayfish.vehicle.client.raytrace.RayTraceTransforms;
 import com.mrcrayfish.vehicle.client.raytrace.TransformHelper;
@@ -16,7 +17,6 @@ import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
-import com.mojang.math.Vector3f;
 
 import javax.annotation.Nullable;
 
@@ -66,7 +66,7 @@ public class FertilizerTrailerRenderer extends AbstractTrailerRenderer<Fertilize
                             matrixStack.mulPose(Vector3f.ZP.rotationDegrees(47F * index));
                             matrixStack.mulPose(Vector3f.XP.rotationDegrees(2F * layerIndex));
                             matrixStack.translate(layer * 0.001, layer * 0.001, layer * 0.001); // Fixes Z fighting
-                            Minecraft.getInstance().getItemRenderer().render(stack, ItemTransforms.TransformType.NONE, false, matrixStack, renderTypeBuffer, light, OverlayTexture.NO_OVERLAY, RenderUtil.getModel(stack));
+                            Minecraft.getInstance().getItemRenderer().render(stack, ItemTransforms.TransformType.NONE, false, matrixStack, renderTypeBuffer, light, OverlayTexture.NO_OVERLAY, RenderUtil.getModel());
                         }
                         matrixStack.popPose();
                         index++;
@@ -97,8 +97,6 @@ public class FertilizerTrailerRenderer extends AbstractTrailerRenderer<Fertilize
     public RayTraceTransforms getRayTraceTransforms()
     {
         return (tracer, transforms, parts) ->
-        {
-            TransformHelper.createTransformListForPart(VehicleModels.FERTILIZER_TRAILER, parts, transforms);
-        };
+                TransformHelper.createTransformListForPart(VehicleModels.FERTILIZER_TRAILER, parts, transforms);
     }
 }

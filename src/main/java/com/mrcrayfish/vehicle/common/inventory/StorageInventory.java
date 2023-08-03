@@ -2,10 +2,10 @@ package com.mrcrayfish.vehicle.common.inventory;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.SimpleContainer;
 import net.minecraft.inventory.container.ChestContainer;
-import net.minecraft.inventory.container.Container;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.inventory.container.IContainerProvider;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.inventory.container.SimpleNamedContainerProvider;

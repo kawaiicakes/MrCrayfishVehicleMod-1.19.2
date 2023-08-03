@@ -1,6 +1,8 @@
 package com.mrcrayfish.vehicle.util;
 
 import com.mrcrayfish.vehicle.Config;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -8,8 +10,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import com.mojang.math.Vector3f;
-import net.minecraft.network.chat.contents.TranslatableContents;
-import net.minecraftforge.common.util.Constants;
 
 /**
  * Author: MrCrayfish
@@ -46,7 +46,7 @@ public class CommonUtils
     {
         if(player instanceof ServerPlayer)
         {
-            player.displayClientMessage(new TranslatableContents(message), true);
+            player.displayClientMessage(Component.translatable(message), true);
         }
     }
 

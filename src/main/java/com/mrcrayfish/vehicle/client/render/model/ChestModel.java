@@ -25,7 +25,7 @@ public class ChestModel
     private final ModelPart latch;
     private final boolean christmas;
 
-    public ChestModel()
+    public ChestModel() //TODO proper impl of this. bake models with other EntityRendererHandlers.
     {
         Calendar c = Calendar.getInstance();
         this.christmas = c.get(Calendar.MONTH) + 1 == 12 && c.get(Calendar.DAY_OF_MONTH) >= 24 && c.get(Calendar.DAY_OF_MONTH) <= 26;

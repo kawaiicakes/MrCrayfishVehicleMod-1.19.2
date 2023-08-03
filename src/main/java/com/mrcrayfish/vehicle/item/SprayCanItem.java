@@ -46,7 +46,7 @@ public class SprayCanItem extends Item implements IDyeable
     {
         if(Screen.hasShiftDown())
         {
-            tooltip.addAll(RenderUtil.lines(new TranslatableContents(this.getDescriptionId() + ".info"), 150));
+            tooltip.addAll(RenderUtil.lines(Component.translatable(this.getDescriptionId() + ".info"), 150));
         }
         else
         {
@@ -56,9 +56,9 @@ public class SprayCanItem extends Item implements IDyeable
             }
             else
             {
-                tooltip.add(new TranslatableContents(this.getDescriptionId() + ".empty")).withStyle(ChatFormatting.RED));
+                tooltip.add(Component.translatable(this.getDescriptionId() + ".empty")).withStyle(ChatFormatting.RED));
             }
-            tooltip.add(new TranslatableContents("vehicle.info_help")).withStyle(ChatFormatting.YELLOW));
+            tooltip.add(Component.translatable("vehicle.info_help")).withStyle(ChatFormatting.YELLOW));
         }
     }
 

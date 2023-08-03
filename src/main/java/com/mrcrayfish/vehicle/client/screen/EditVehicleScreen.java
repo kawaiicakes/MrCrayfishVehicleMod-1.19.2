@@ -14,15 +14,15 @@ import com.mrcrayfish.vehicle.util.CommonUtils;
 import net.minecraft.client.MainWindow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.renderer.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.renderer.Tessellator;
+import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.renderer.WorldVertexBufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.client.shader.Framebuffer;
-import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.Container;
 import net.minecraft.resources.ResourceLocation;
 import com.mojang.math.Matrix4f;
@@ -39,11 +39,11 @@ import java.util.Collections;
 /**
  * Author: MrCrayfish
  */
-public class EditVehicleScreen extends ContainerScreen<EditVehicleContainer>
+public class EditVehicleScreen extends AbstractContainerScreen<EditVehicleContainer>
 {
     private static final ResourceLocation GUI_TEXTURES = new ResourceLocation("vehicle:textures/gui/edit_vehicle.png");
 
-    private final PlayerInventory playerInventory;
+    private final Inventory playerInventory;
     private final Container vehicleInventory;
     private final CachedVehicle cachedVehicle;
 
@@ -56,7 +56,7 @@ public class EditVehicleScreen extends ContainerScreen<EditVehicleContainer>
     private int mouseGrabbedButton;
     private int mouseClickedX, mouseClickedY;
 
-    public EditVehicleScreen(EditVehicleContainer container, PlayerInventory playerInventory, Component title)
+    public EditVehicleScreen(EditVehicleContainer container, Inventory playerInventory, Component title)
     {
         super(container, playerInventory, title);
         this.playerInventory = playerInventory;
@@ -106,8 +106,8 @@ public class EditVehicleScreen extends ContainerScreen<EditVehicleContainer>
             int startY = top + 17;
             RenderSystem.disableCull();
             Matrix4f pose = matrixStack.last().pose();
-            BufferBuilder builder = Tessellator.getInstance().getBuilder();
-            builder.begin(GL11.GL_QUADS, DefaultVertexFormat.POSITION_TEX);
+            BufferBuilder builder = Tesselator.getInstance().getBuilder();
+            builder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
             builder.vertex(pose, startX, startY, this.getBlitOffset()).uv(0, 1).endVertex();
             builder.vertex(pose, startX, startY + 70, this.getBlitOffset()).uv(0, 0).endVertex();
             builder.vertex(pose, startX + 142, startY + 70, this.getBlitOffset()).uv(1, 0).endVertex();

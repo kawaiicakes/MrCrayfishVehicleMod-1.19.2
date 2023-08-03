@@ -63,7 +63,7 @@ public class JerryCanItem extends Item
     {
         if(Screen.hasShiftDown())
         {
-            tooltip.addAll(RenderUtil.lines(new TranslatableContents(this.getDescriptionId() + ".info"), 150));
+            tooltip.addAll(RenderUtil.lines(Component.translatable(this.getDescriptionId() + ".info"), 150));
         }
         else if(worldIn != null)
         {
@@ -72,12 +72,12 @@ public class JerryCanItem extends Item
                 FluidStack fluidStack = handler.getFluidInTank(0);
                 if(!fluidStack.isEmpty())
                 {
-                    tooltip.add(new TranslatableContents(fluidStack.getTranslationKey())).withStyle(ChatFormatting.BLUE));
+                    tooltip.add(Component.translatable(fluidStack.getTranslationKey())).withStyle(ChatFormatting.BLUE));
                     tooltip.add(MutableComponent.create(new LiteralContents(this.getCurrentFuel(stack) + " / " + this.capacitySupplier.get() + "mb")).withStyle(ChatFormatting.GRAY));
                 }
                 else
                 {
-                    tooltip.add(new TranslatableContents("item.vehicle.jerry_can.empty")).withStyle(ChatFormatting.RED));
+                    tooltip.add(Component.translatable("item.vehicle.jerry_can.empty")).withStyle(ChatFormatting.RED));
                 }
             });
             tooltip.add(MutableComponent.create(new LiteralContents(ChatFormatting.YELLOW + I18n.get("vehicle.info_help")));

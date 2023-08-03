@@ -1,37 +1,40 @@
 package com.mrcrayfish.vehicle.client.screen;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mrcrayfish.vehicle.Config;
 import com.mrcrayfish.vehicle.init.ModFluids;
 import com.mrcrayfish.vehicle.inventory.container.FluidMixerContainer;
 import com.mrcrayfish.vehicle.tileentity.FluidMixerTileEntity;
 import com.mrcrayfish.vehicle.util.FluidUtils;
 import com.mrcrayfish.vehicle.util.RenderUtil;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
+import net.minecraft.ChatFormatting;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.contents.LiteralContents;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraftforge.fluids.FluidStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Objects;
 
 /**
  * Author: MrCrayfish
  */
-public class FluidMixerScreen extends ContainerScreen<FluidMixerContainer>
+public class FluidMixerScreen extends AbstractContainerScreen<FluidMixerContainer>
 {
     private static final ResourceLocation GUI = new ResourceLocation("vehicle:textures/gui/fluid_mixer.png");
 
-    private PlayerInventory playerInventory;
-    private FluidMixerTileEntity fluidMixerTileEntity;
+    private final Inventory playerInventory;
+    private final FluidMixerTileEntity fluidMixerTileEntity;
 
-    public FluidMixerScreen(FluidMixerContainer container, PlayerInventory playerInventory, Component title)
+    public FluidMixerScreen(FluidMixerContainer container, Inventory playerInventory, Component title)
     {
         super(container, playerInventory, title);
         this.playerInventory = playerInventory;
@@ -41,7 +44,7 @@ public class FluidMixerScreen extends ContainerScreen<FluidMixerContainer>
     }
 
     @Override
-    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    public void render(@NotNull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         this.renderBackground(matrixStack);
         super.render(matrixStack, mouseX, mouseY, partialTicks);
@@ -56,11 +59,30 @@ public class FluidMixerScreen extends ContainerScreen<FluidMixerContainer>
             {
                 if(stack.getAmount() > 0)
                 {
-                    this.renderTooltip(matrixStack, Lists.transform(Arrays.asList(MutableComponent.create(new LiteralContents(stack.getDisplayName().getString()), MutableComponent.create(new LiteralContents(ChatFormatting.GRAY.toString() + this.fluidMixerTileEntity.getBlazeLevel() + "/" + this.fluidMixerTileEntity.getBlazeTank().getCapacity() + " mB")), Component::getVisualOrderText), mouseX, mouseY);
+                    this.renderTooltip(
+                            matrixStack,
+                            Lists.transform(
+                                    Arrays.asList(
+                                            MutableComponent.create(
+                                                    new LiteralContents(stack.getDisplayName().getString())),
+                                            MutableComponent.create(
+                                                    new LiteralContents(
+                                                            ChatFormatting.GRAY.toString()
+                                                                    + this.fluidMixerTileEntity.getBlazeLevel() + "/"
+                                                                    + this.fluidMixerTileEntity.getBlazeTank().getCapacity() + " mB"))
+                                    ),
+                                    MutableComponent::getVisualOrderText
+                            ),
+                            mouseX,
+                            mouseY
+                    );
                 }
                 else
                 {
-                    this.renderTooltip(matrixStack, Lists.transform(Collections.singletonList(MutableComponent.create(new LiteralContents("No Fluid")), Component::getVisualOrderText), mouseX, mouseY);
+                    this.renderTooltip(
+                            matrixStack,
+                            Lists.transform(Collections.singletonList(MutableComponent.create(
+                                    new LiteralContents("No Fluid"))), Component::getVisualOrderText), mouseX, mouseY);
                 }
             }
         }
@@ -72,11 +94,31 @@ public class FluidMixerScreen extends ContainerScreen<FluidMixerContainer>
             {
                 if(stack.getAmount() > 0)
                 {
-                    this.renderTooltip(matrixStack, Lists.transform(Arrays.asList(MutableComponent.create(new LiteralContents(stack.getDisplayName().getString()), MutableComponent.create(new LiteralContents(ChatFormatting.GRAY.toString() + this.fluidMixerTileEntity.getEnderSapLevel() + "/" + this.fluidMixerTileEntity.getEnderSapTank().getCapacity() + " mB")), Component::getVisualOrderText), mouseX, mouseY);
+                    this.renderTooltip(
+                            matrixStack,
+                            Lists.transform(
+                                    Arrays.asList(
+                                            MutableComponent.create(
+                                                    new LiteralContents(stack.getDisplayName().getString())),
+                                            MutableComponent.create(
+                                                    new LiteralContents(
+                                                            ChatFormatting.GRAY.toString()
+                                                                    + this.fluidMixerTileEntity.getEnderSapLevel() + "/"
+                                                                    + this.fluidMixerTileEntity.getEnderSapTank().getCapacity() + " mB"))
+                                    ),
+                                    MutableComponent::getVisualOrderText),
+                            mouseX,
+                            mouseY);
                 }
                 else
                 {
-                    this.renderTooltip(matrixStack, Lists.transform(Collections.singletonList(MutableComponent.create(new LiteralContents("No Fluid")), Component::getVisualOrderText), mouseX, mouseY);
+                    this.renderTooltip(matrixStack, Lists.transform(
+                            Collections.singletonList(
+                                    MutableComponent.create(new LiteralContents("No Fluid"))
+                            ),
+                            Component::getVisualOrderText),
+                            mouseX,
+                            mouseY);
                 }
             }
         }
@@ -88,11 +130,28 @@ public class FluidMixerScreen extends ContainerScreen<FluidMixerContainer>
             {
                 if(stack.getAmount() > 0)
                 {
-                    this.renderTooltip(matrixStack, Lists.transform(Arrays.asList(MutableComponent.create(new LiteralContents(stack.getDisplayName().getString()), MutableComponent.create(new LiteralContents(ChatFormatting.GRAY.toString() + this.fluidMixerTileEntity.getFueliumLevel() + "/" + this.fluidMixerTileEntity.getFueliumTank().getCapacity() + " mB")), Component::getVisualOrderText), mouseX, mouseY);
+                    this.renderTooltip(
+                            matrixStack,
+                            Lists.transform(Arrays.asList(
+                                    MutableComponent.create(
+                                            new LiteralContents(stack.getDisplayName().getString())),
+                                    MutableComponent.create(
+                                            new LiteralContents(ChatFormatting.GRAY.toString()
+                                                    + this.fluidMixerTileEntity.getFueliumLevel() + "/"
+                                                    + this.fluidMixerTileEntity.getFueliumTank().getCapacity() + " mB"))
+                                    ),
+                                    Component::getVisualOrderText
+                            ),
+                            mouseX,
+                            mouseY);
                 }
                 else
                 {
-                    this.renderTooltip(matrixStack, Lists.transform(Collections.singletonList(MutableComponent.create(new LiteralContents("No Fluid")), Component::getVisualOrderText), mouseX, mouseY);
+                    this.renderTooltip(
+                            matrixStack,
+                            Lists.transform(Collections.singletonList(
+                                    MutableComponent.create(
+                                            new LiteralContents("No Fluid"))), Component::getVisualOrderText), mouseX, mouseY);
                 }
             }
         }
@@ -101,20 +160,22 @@ public class FluidMixerScreen extends ContainerScreen<FluidMixerContainer>
     }
 
     @Override
-    protected void renderLabels(PoseStack matrixStack, int mouseX, int mouseY)
+    protected void renderLabels(@NotNull PoseStack matrixStack, int mouseX, int mouseY)
     {
+        assert this.minecraft != null;
         this.minecraft.font.draw(matrixStack, this.fluidMixerTileEntity.getDisplayName().getString(), 8, 6, 4210752);
         this.minecraft.font.draw(matrixStack, this.playerInventory.getDisplayName().getString(), 8, this.imageHeight - 96 + 2, 4210752);
     }
 
     @Override
-    protected void renderBg(PoseStack matrixStack, float partialTicks, int mouseX, int mouseY)
+    protected void renderBg(@NotNull PoseStack matrixStack, float partialTicks, int mouseX, int mouseY)
     {
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F); //FIXME color4f
         int startX = (this.width - this.imageWidth) / 2;
         int startY = (this.height - this.imageHeight) / 2;
 
-        this.minecraft.getTextureManager().bind(GUI);
+        assert this.minecraft != null;
+        this.minecraft.getTextureManager().bindForSetup(GUI);
         this.blit(matrixStack, startX, startY, 0, 0, this.imageWidth, this.imageHeight);
 
         if(this.fluidMixerTileEntity.getRemainingFuel() >= 0)
@@ -125,8 +186,8 @@ public class FluidMixerScreen extends ContainerScreen<FluidMixerContainer>
 
         if(this.fluidMixerTileEntity.canMix())
         {
-            int blazeColorRGB = FluidUtils.getAverageFluidColor(this.fluidMixerTileEntity.getBlazeFluidStack().getFluid());
-            int sapColorRGB = FluidUtils.getAverageFluidColor(this.fluidMixerTileEntity.getEnderSapFluidStack().getFluid());
+            int blazeColorRGB = FluidUtils.getAverageFluidColor(Objects.requireNonNull(this.fluidMixerTileEntity.getBlazeFluidStack()).getFluid());
+            int sapColorRGB = FluidUtils.getAverageFluidColor(Objects.requireNonNull(this.fluidMixerTileEntity.getEnderSapFluidStack()).getFluid());
             int blazeColor = (130 << 24) | blazeColorRGB;
             int sapColor = (130 << 24) | sapColorRGB;
             int redBlaze = blazeColor >> 16 & 255;
@@ -213,17 +274,20 @@ public class FluidMixerScreen extends ContainerScreen<FluidMixerContainer>
     private void drawFluidTank(FluidStack fluid, PoseStack matrixStack, int x, int y, double level)
     {
         FluidUtils.drawFluidTankInGUI(fluid, x, y, level, 59);
-        this.minecraft.getTextureManager().bind(GUI);
+        assert this.minecraft != null;
+        this.minecraft.getTextureManager().bindForSetup(GUI);
         this.blit(matrixStack, x, y, 176, 44, 16, 59);
     }
 
     private void drawSmallFluidTank(FluidStack fluid, PoseStack matrixStack, int x, int y, double level)
     {
         FluidUtils.drawFluidTankInGUI(fluid, x, y, level, 29);
-        this.minecraft.getTextureManager().bind(GUI);
+        assert this.minecraft != null;
+        this.minecraft.getTextureManager().bindForSetup(GUI);
         this.blit(matrixStack, x, y, 176, 44, 16, 29);
     }
 
+    @SuppressWarnings("SameParameterValue") //TODO width
     private boolean isMouseWithinRegion(int x, int y, int width, int height, int mouseX, int mouseY)
     {
         return mouseX >= x && mouseX < x + width && mouseY >= y && mouseY < y + height;

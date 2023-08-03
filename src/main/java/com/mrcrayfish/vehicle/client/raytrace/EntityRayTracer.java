@@ -198,7 +198,7 @@ public class EntityRayTracer
      */
     public synchronized <T extends VehicleEntity> void registerDynamicRayTraceData(EntityType<T> type, Function<T, List<RayTraceData>> function)
     {
-        //looks like this needs to be generified. I don't like unchecked casts. Maybe this is fine though
+        //FIXME looks like this needs to be generified. I don't like unchecked casts. Maybe this is fine though
         this.entityDynamicRayTraceData.put(type, (Function<VehicleEntity, List<RayTraceData>>) function);
     }
 
@@ -242,7 +242,7 @@ public class EntityRayTracer
         try
         {
             RandomSource random = RandomSource.create();
-            random.setSeed(42L);
+            random.setSeed(42L); //FIXME casting IForgeBakedModel model to ModelData.
             createTrianglesFromBakedModel(model.getQuads(null, null, random, model, null), matrix, triangles);
             for(Direction facing : Direction.values())
             {
@@ -720,7 +720,7 @@ public class EntityRayTracer
      * 
      * @param entity raytraced entity
      * @param matrixStack the current matrix stack
-     * @param builder tessellator's vertex buffer
+     * @param builder tesselator's vertex buffer
      */
     @SuppressWarnings("unchecked")
     private <T extends VehicleEntity> void renderRayTraceTriangles(T entity, PoseStack matrixStack, VertexConsumer builder)

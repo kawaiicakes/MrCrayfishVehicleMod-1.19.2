@@ -11,7 +11,7 @@ import com.mrcrayfish.vehicle.util.FluidUtils;
 import com.mrcrayfish.vehicle.util.RenderUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -24,14 +24,14 @@ import java.util.Collections;
 /**
  * Author: MrCrayfish
  */
-public class FluidExtractorScreen extends ContainerScreen<FluidExtractorContainer>
+public class FluidExtractorScreen extends AbstractContainerScreen<FluidExtractorContainer>
 {
     private static final ResourceLocation GUI = new ResourceLocation("vehicle:textures/gui/fluid_extractor.png");
 
-    private PlayerInventory playerInventory;
+    private Inventory playerInventory;
     private FluidExtractorTileEntity fluidExtractorTileEntity;
 
-    public FluidExtractorScreen(FluidExtractorContainer container, PlayerInventory playerInventory, Component title)
+    public FluidExtractorScreen(FluidExtractorContainer container, Inventory playerInventory, Component title)
     {
         super(container, playerInventory, title);
         this.playerInventory = playerInventory;

@@ -3,18 +3,17 @@ package com.mrcrayfish.vehicle.tileentity;
 import com.mrcrayfish.vehicle.Config;
 import com.mrcrayfish.vehicle.block.FluidMixerBlock;
 import com.mrcrayfish.vehicle.crafting.FluidExtractorRecipe;
-import com.mrcrayfish.vehicle.crafting.RecipeType;
+import com.mrcrayfish.vehicle.crafting.ModRecipeTypes;
 import com.mrcrayfish.vehicle.init.ModTileEntities;
 import com.mrcrayfish.vehicle.inventory.container.FluidExtractorContainer;
 import com.mrcrayfish.vehicle.util.InventoryUtil;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.Container;
 import net.minecraft.inventory.ItemStackHelper;
-import net.minecraft.inventory.container.Container;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -25,7 +24,6 @@ import net.minecraft.util.INameable;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeHooks;
@@ -380,7 +378,7 @@ public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements 
     @Override
     public Component getDisplayName()
     {
-        return this.hasCustomName() ? MutableComponent.create(new LiteralContents(this.customName) : new TranslatableContents("container.fluid_extractor");
+        return this.hasCustomName() ? MutableComponent.create(new LiteralContents(this.customName) : Component.translatable("container.fluid_extractor");
     }
 
     private void shrinkItem(int index)
@@ -395,7 +393,7 @@ public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements 
 
     @Nullable
     @Override
-    public Container createMenu(int windowId, PlayerInventory playerInventory, Player playerEntity)
+    public Container createMenu(int windowId, Inventory playerInventory, Player playerEntity)
     {
         return new FluidExtractorContainer(windowId, playerInventory, this);
     }
@@ -413,12 +411,12 @@ public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements 
 
     public Optional<FluidExtractorRecipe> getRecipe()
     {
-        return this.level.getRecipeManager().getRecipeFor(RecipeType.FLUID_EXTRACTOR, this, this.level);
+        return this.level.getRecipeManager().getRecipeFor(ModRecipeTypes.FLUID_EXTRACTOR, this, this.level);
     }
 
     public boolean isValidIngredient(ItemStack ingredient)
     {
-        List<FluidExtractorRecipe> recipes = this.level.getRecipeManager().getRecipes().stream().filter(recipe -> recipe.getType() == RecipeType.FLUID_EXTRACTOR).map(recipe -> (FluidExtractorRecipe) recipe).collect(Collectors.toList());
+        List<FluidExtractorRecipe> recipes = this.level.getRecipeManager().getRecipes().stream().filter(recipe -> recipe.getType() == ModRecipeTypes.FLUID_EXTRACTOR).map(recipe -> (FluidExtractorRecipe) recipe).collect(Collectors.toList());
         return recipes.stream().anyMatch(recipe -> InventoryUtil.areItemStacksEqualIgnoreCount(ingredient, recipe.getIngredient()));
     }
 

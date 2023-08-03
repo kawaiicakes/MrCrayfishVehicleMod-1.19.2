@@ -5,15 +5,15 @@ import com.mrcrayfish.vehicle.inventory.container.slot.FuelSlot;
 import com.mrcrayfish.vehicle.tileentity.FluidExtractorTileEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.Container;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.Slot;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.ForgeHooks;
 
 /**
  * Author: MrCrayfish
  */
-public class FluidExtractorContainer extends Container
+public class FluidExtractorContainer extends AbstractContainerMenu
 {
     private int extractionProgress;
     private int remainingFuel;

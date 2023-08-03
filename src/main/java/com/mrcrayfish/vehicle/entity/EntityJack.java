@@ -12,6 +12,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 import net.minecraftforge.network.NetworkHooks;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Author: MrCrayfish
@@ -54,7 +55,7 @@ public class EntityJack extends Entity implements IEntityAdditionalSpawnData
 
         if(!level.isClientSide && this.getPassengers().size() == 0)
         {
-            this.remove();
+            this.remove(RemovalReason.DISCARDED);
         }
 
         if(!this.isAlive())
@@ -78,15 +79,14 @@ public class EntityJack extends Entity implements IEntityAdditionalSpawnData
         }
 
         BlockEntity tileEntity = this.level.getBlockEntity(new BlockPos(this.initialX, this.initialY, this.initialZ));
-        if(tileEntity instanceof JackTileEntity)
+        if(tileEntity instanceof JackTileEntity jackTileEntity)
         {
-            JackTileEntity jackTileEntity = (JackTileEntity) tileEntity;
             this.setPos(this.initialX, this.initialY + 0.5 * (jackTileEntity.liftProgress / (double) JackTileEntity.MAX_LIFT_PROGRESS), this.initialZ);
         }
     }
 
     @Override
-    protected void addPassenger(Entity passenger)
+    protected void addPassenger(@NotNull Entity passenger)
     {
         super.addPassenger(passenger);
         if(this.getPassengers().contains(passenger))
@@ -101,18 +101,17 @@ public class EntityJack extends Entity implements IEntityAdditionalSpawnData
     }
 
     @Override
-    public Packet<?> getAddEntityPacket()
+    public @NotNull Packet<?> getAddEntityPacket()
     {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
-    public void positionRider(Entity passenger)
+    public void positionRider(@NotNull Entity passenger)
     {
-        if(passenger instanceof VehicleEntity)
+        if(passenger instanceof VehicleEntity vehicle)
         {
-            VehicleEntity vehicle = (VehicleEntity) passenger;
-            Vec3 heldOffset = vehicle.getProperties().getHeldOffset().yRot(passenger.yRot * 0.017453292F);
+            Vec3 heldOffset = vehicle.getProperties().getHeldOffset().yRot(passenger.getYRot() * 0.017453292F);
             vehicle.setPos(this.getX() - heldOffset.z * 0.0625, this.getY() - heldOffset.y * 0.0625 - 2 * 0.0625, this.getZ() - heldOffset.x * 0.0625);
         }
     }
@@ -147,7 +146,7 @@ public class EntityJack extends Entity implements IEntityAdditionalSpawnData
         this.initialX = buffer.readDouble();
         this.initialY = buffer.readDouble();
         this.initialZ = buffer.readDouble();
-        this.moveTo(this.initialX, this.initialY, this.initialZ, this.yRot, this.xRot);
+        this.moveTo(this.initialX, this.initialY, this.initialZ, this.getYRot(), this.getXRot());
         this.xo = this.initialX;
         this.yo = this.initialY;
         this.zo = this.initialZ;

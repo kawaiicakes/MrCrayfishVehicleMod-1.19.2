@@ -1,7 +1,7 @@
 package com.mrcrayfish.vehicle.item;
 
 import com.mrcrayfish.vehicle.util.CommonUtils;
-import net.minecraft.item.DyeItem;
+import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.common.util.Constants;

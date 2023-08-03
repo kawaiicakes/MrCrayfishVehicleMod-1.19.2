@@ -6,6 +6,7 @@ import com.mrcrayfish.vehicle.entity.VehicleEntity;
 import com.mrcrayfish.vehicle.network.PacketHandler;
 import com.mrcrayfish.vehicle.network.message.MessageSetSeat;
 import net.minecraft.network.chat.contents.TranslatableContents;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.ref.WeakReference;
 
@@ -19,7 +20,7 @@ public class SeatButton extends IconButton
 
     public SeatButton(VehicleEntity entity, int index, boolean driver)
     {
-        super(20, 20, driver ? DashboardScreen.Icons.SEAT_DRIVER : DashboardScreen.Icons.SEAT_PASSENGER, new TranslatableContents(driver ? "vehicle.toolbar.label.driver_seat" : "vehicle.toolbar.label.passenger_seat"), onPress -> {
+        super(20, 20, driver ? DashboardScreen.Icons.SEAT_DRIVER : DashboardScreen.Icons.SEAT_PASSENGER, Component.translatable(driver ? "vehicle.toolbar.label.driver_seat" : "vehicle.toolbar.label.passenger_seat"), onPress -> {
             PacketHandler.getPlayChannel().sendToServer(new MessageSetSeat(index));
         });
         this.vehicleRef = new WeakReference<>(entity);
@@ -27,7 +28,7 @@ public class SeatButton extends IconButton
     }
 
     @Override
-    public void renderButton(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks)
+    public void renderButton(@NotNull PoseStack matrixStack, int mouseX, int mouseY, float partialTicks)
     {
         VehicleEntity entity = this.vehicleRef.get();;
         this.active = entity != null && entity.getSeatTracker().isSeatAvailable(this.index);

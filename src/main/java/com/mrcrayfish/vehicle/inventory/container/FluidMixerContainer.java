@@ -4,16 +4,17 @@ import com.mrcrayfish.vehicle.init.ModContainers;
 import com.mrcrayfish.vehicle.inventory.container.slot.FuelSlot;
 import com.mrcrayfish.vehicle.tileentity.FluidMixerTileEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.Slot;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.ForgeHooks;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Author: MrCrayfish
  */
-public class FluidMixerContainer extends Container
+public class FluidMixerContainer extends AbstractContainerMenu
 {
     private int extractionProgress;
     private int remainingFuel;
@@ -22,9 +23,9 @@ public class FluidMixerContainer extends Container
     private int enderSapLevel;
     private int fueliumLevel;
 
-    private FluidMixerTileEntity fluidExtractor;
+    private final FluidMixerTileEntity fluidExtractor;
 
-    public FluidMixerContainer(int windowId, PlayerInventory playerInventory, FluidMixerTileEntity fluidExtractor)
+    public FluidMixerContainer(int windowId, Inventory playerInventory, FluidMixerTileEntity fluidExtractor)
     {
         super(ModContainers.FLUID_MIXER.get(), windowId);
         this.fluidExtractor = fluidExtractor;
@@ -54,13 +55,13 @@ public class FluidMixerContainer extends Container
     }
 
     @Override
-    public boolean stillValid(Player playerIn)
+    public boolean stillValid(@NotNull Player playerIn)
     {
         return true;
     }
 
     @Override
-    public ItemStack quickMoveStack(Player playerIn, int index)
+    public @NotNull ItemStack quickMoveStack(@NotNull Player playerIn, int index)
     {
         ItemStack stack = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);

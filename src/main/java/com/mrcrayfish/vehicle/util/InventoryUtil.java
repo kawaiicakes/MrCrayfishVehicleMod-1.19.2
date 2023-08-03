@@ -1,21 +1,23 @@
 package com.mrcrayfish.vehicle.util;
 
-import net.minecraftforge.common.crafting.CompoundIngredient;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.Container;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
+import com.mrcrayfish.vehicle.crafting.WorkstationIngredient;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.Container;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.util.Constants;
 
 import java.util.Random;
 
 /**
  * Author: MrCrayfish
  */
+@SuppressWarnings("unused") //TODO necessity of unused methods check
 public class InventoryUtil
 {
     private static final Random RANDOM = new Random();
@@ -37,7 +39,8 @@ public class InventoryUtil
         compound.put(tagName, tagList);
     }
 
-    public static <T extends Container> T readInventoryToNBT(CompoundTag compound, String tagName, T t)
+    @SuppressWarnings("UnusedReturnValue") //TODO unused return
+    public static <T extends AbstractContainerMenu> T readInventoryToNBT(CompoundTag compound, String tagName, T t)
     {
         if(compound.contains(tagName, Tag.TAG_LIST))
         {
@@ -46,9 +49,12 @@ public class InventoryUtil
             {
                 CompoundTag tagCompound = tagList.getCompound(i);
                 byte slot = tagCompound.getByte("Slot");
-                if(slot >= 0 && slot < t.getContainerSize())
+                if(slot >= 0 && slot < t.slots.size())
                 {
-                    t.setItem(slot, ItemStack.of(tagCompound));
+                    t.setItem(slot, 420_69_1337, ItemStack.of(tagCompound));
+                    //FIXME the second int changes this.stateId. What is it? Proper impl?
+                    //It looks like whatever stateId is is only changed when either #setItem or #initializeContents
+                    //is called on this AbstractContainerMenu. I will just arbitrarily set it to 420691337.
                 }
             }
         }
@@ -162,7 +168,7 @@ public class InventoryUtil
         return find.getCount() <= count;
     }
 
-    public static boolean hasWorkstationIngredient(Player player, CompoundIngredient find)
+    public static boolean hasWorkstationIngredient(Player player, WorkstationIngredient find)
     {
         int count = 0;
         for(ItemStack stack : player.getInventory().items)
@@ -199,7 +205,8 @@ public class InventoryUtil
         return false;
     }
 
-    public static boolean removeWorkstationIngredient(Player player, CompoundIngredient find)
+    @SuppressWarnings("UnusedReturnValue") //TODO necessity check
+    public static boolean removeWorkstationIngredient(Player player, WorkstationIngredient find)
     {
         int amount = find.getCount();
         for(int i = 0; i < player.getInventory().getContainerSize(); i++)

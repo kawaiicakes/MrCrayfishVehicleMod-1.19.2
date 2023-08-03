@@ -7,14 +7,14 @@ import com.mrcrayfish.vehicle.init.ModContainers;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.Container;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.Slot;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
 /**
  * Author: MrCrayfish
  */
-public class StorageContainer extends Container
+public class StorageContainer extends AbstractContainerMenu
 {
     private final StorageInventory storageInventory;
     private final int numRows;

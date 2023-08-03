@@ -34,12 +34,12 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.entity.MoverType;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.inventory.IInventoryChangedListener;
 import net.minecraft.world.SimpleContainer;
-import net.minecraft.inventory.container.Container;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
@@ -1046,7 +1046,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
 
     @Nullable
     @Override
-    public Container createMenu(int windowId, PlayerInventory playerInventory, Player playerEntity)
+    public Container createMenu(int windowId, Inventory playerInventory, Player playerEntity)
     {
         return new EditVehicleContainer(windowId, this.getVehicleInventory(), this, playerEntity, playerInventory);
     }

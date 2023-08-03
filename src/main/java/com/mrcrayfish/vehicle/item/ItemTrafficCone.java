@@ -39,11 +39,11 @@ public class ItemTrafficCone extends BlockItem
     {
         if(Screen.hasShiftDown())
         {
-            tooltip.addAll(RenderUtil.lines(new TranslatableContents(this.getDescriptionId() + ".info"), 150));
+            tooltip.addAll(RenderUtil.lines(Component.translatable(this.getDescriptionId() + ".info"), 150));
         }
         else
         {
-            tooltip.add(new TranslatableContents("vehicle.info_help")).withStyle(ChatFormatting.YELLOW));
+            tooltip.add(Component.translatable("vehicle.info_help")).withStyle(ChatFormatting.YELLOW));
         }
     }
 }

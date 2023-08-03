@@ -88,7 +88,7 @@ public class FuelDrumBlock extends Block implements EntityBlock
     {
         if(Screen.hasShiftDown())
         {
-            list.addAll(RenderUtil.lines(MutableComponent.create(new TranslatableContents(ModBlocks.FUEL_DRUM.get().getDescriptionId() + ".info")), 150));
+            list.addAll(RenderUtil.lines(MutableComponent.create(Component.translatable(ModBlocks.FUEL_DRUM.get().getDescriptionId() + ".info")), 150));
         }
         else
         {
@@ -108,7 +108,7 @@ public class FuelDrumBlock extends Block implements EntityBlock
                     }
                 }
             }
-            list.add((MutableComponent.create(new TranslatableContents("vehicle.info_help")).withStyle(ChatFormatting.YELLOW)));
+            list.add((MutableComponent.create(Component.translatable("vehicle.info_help")).withStyle(ChatFormatting.YELLOW)));
         }
     }
 

@@ -6,21 +6,22 @@ import com.mrcrayfish.vehicle.init.ModContainers;
 import com.mrcrayfish.vehicle.item.EngineItem;
 import com.mrcrayfish.vehicle.item.WheelItem;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.Container;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.Slot;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Author: MrCrayfish
  */
-public class EditVehicleContainer extends Container
+public class EditVehicleContainer extends AbstractContainerMenu
 {
     private final Container vehicleInventory;
     private final PoweredVehicleEntity vehicle;
 
-    public EditVehicleContainer(int windowId, Container vehicleInventory, PoweredVehicleEntity vehicle, Player player, PlayerInventory playerInventory)
+    public EditVehicleContainer(int windowId, Container vehicleInventory, PoweredVehicleEntity vehicle, Player player, Inventory playerInventory)
     {
         super(ModContainers.EDIT_VEHICLE.get(), windowId);
         this.vehicleInventory = vehicleInventory;
@@ -46,7 +47,7 @@ public class EditVehicleContainer extends Container
         this.addSlot(new Slot(EditVehicleContainer.this.vehicleInventory, 1, 8, 35)
         {
             @Override
-            public boolean mayPlace(ItemStack stack)
+            public boolean mayPlace(@NotNull ItemStack stack)
             {
                 return vehicle.canChangeWheels() && stack.getItem() instanceof WheelItem;
             }
@@ -83,13 +84,13 @@ public class EditVehicleContainer extends Container
     }
 
     @Override
-    public boolean stillValid(Player player)
+    public boolean stillValid(@NotNull Player player)
     {
         return vehicleInventory.stillValid(player) && vehicle.isAlive() && vehicle.distanceTo(player) < 8.0F;
     }
 
     @Override
-    public ItemStack quickMoveStack(Player playerIn, int index)
+    public @NotNull ItemStack quickMoveStack(@NotNull Player playerIn, int index)
     {
         ItemStack stack = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
@@ -132,7 +133,7 @@ public class EditVehicleContainer extends Container
     }
 
     @Override
-    public void removed(Player player)
+    public void removed(@NotNull Player player)
     {
         super.removed(player);
         vehicleInventory.stopOpen(player);

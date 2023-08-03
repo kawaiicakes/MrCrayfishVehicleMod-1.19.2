@@ -8,6 +8,6 @@ import net.minecraft.network.chat.contents.TranslatableContents;
  */
 public class VehicleTextComponents
 {
-    public static final Component TRUNK = new TranslatableContents("container.vehicle.storage.trunk");
-    public static final Component GLOVE_BOX = new TranslatableContents("container.vehicle.storage.glove_box");
+    public static final Component TRUNK = Component.translatable("container.vehicle.storage.trunk");
+    public static final Component GLOVE_BOX = Component.translatable("container.vehicle.storage.glove_box");
 }

@@ -4,10 +4,10 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferBuilder;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.Tessellator;
+import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.particle.SpriteSet;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
@@ -130,14 +130,14 @@ public class FluidUtils
     @OnlyIn(Dist.CLIENT)
     private static void drawQuad(double x, double y, double width, double height, float minU, float minV, float maxU, float maxV)
     {
-        Tessellator tessellator = Tessellator.getInstance();
-        BufferBuilder buffer = tessellator.getBuilder();
-        buffer.begin(GL11.GL_QUADS, DefaultVertexFormat.POSITION_TEX);
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder buffer = tesselator.getBuilder();
+        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
         buffer.vertex(x, y + height, 0).uv(minU, maxV).endVertex();
         buffer.vertex(x + width, y + height, 0).uv(maxU, maxV).endVertex();
         buffer.vertex(x + width, y, 0).uv(maxU, minV).endVertex();
         buffer.vertex(x, y, 0).uv(minU, minV).endVertex();
-        tessellator.end();
+        tesselator.end();
     }
 
     @OnlyIn(Dist.CLIENT)

@@ -2,13 +2,13 @@ package com.mrcrayfish.vehicle.client.screen.toolbar.widget;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.AbstractGui;
-import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.network.chat.MutableComponent;
 
 /**
  * Author: MrCrayfish
  */
-public class Spacer extends Widget
+public class Spacer extends AbstractWidget
 {
     public Spacer(int widthIn)
     {

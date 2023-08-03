@@ -14,6 +14,6 @@ public interface IEngineType
 
     default TranslatableContents getEngineName()
     {
-        return new TranslatableContents(this.getId().getNamespace() + ".engine_type." + this.getId().getPath() + ".name");
+        return Component.translatable(this.getId().getNamespace() + ".engine_type." + this.getId().getPath() + ".name");
     }
 }

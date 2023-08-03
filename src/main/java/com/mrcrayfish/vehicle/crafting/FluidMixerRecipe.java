@@ -5,9 +5,9 @@ import com.mrcrayfish.vehicle.tileentity.FluidMixerTileEntity;
 import com.mrcrayfish.vehicle.util.InventoryUtil;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.item.crafting.IRecipe;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.item.crafting.IRecipeSerializer;
-import net.minecraft.item.crafting.IRecipeType;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
 
@@ -16,7 +16,7 @@ import java.util.Objects;
 /**
  * Author: MrCrayfish
  */
-public class FluidMixerRecipe implements IRecipe<FluidMixerTileEntity>
+public class FluidMixerRecipe implements Recipe<FluidMixerTileEntity>
 {
     private ResourceLocation id;
     private FluidEntry[] inputs;
@@ -139,7 +139,7 @@ public class FluidMixerRecipe implements IRecipe<FluidMixerTileEntity>
     }
 
     @Override
-    public IRecipeType<?> getType()
+    public RecipeType<?> getType()
     {
         return RecipeType.FLUID_MIXER;
     }

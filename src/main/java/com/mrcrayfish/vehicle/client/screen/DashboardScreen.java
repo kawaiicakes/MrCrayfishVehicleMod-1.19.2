@@ -10,7 +10,7 @@ import com.mrcrayfish.vehicle.common.cosmetic.actions.OpenableAction;
 import com.mrcrayfish.vehicle.entity.VehicleEntity;
 import com.mrcrayfish.vehicle.entity.properties.VehicleProperties;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.gui.widget.Widget;
+import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -40,12 +40,12 @@ public class DashboardScreen extends AbstractToolbarScreen
     }
 
     @Override
-    protected void loadWidgets(List<Widget> widgets)
+    protected void loadWidgets(List<AbstractWidget> widgets)
     {
-        widgets.add(new IconButton(20, 20, Icons.LEFT_DOOR, new TranslatableContents("vehicle.toolbar.label.doors"), onPress -> {
+        widgets.add(new IconButton(20, 20, Icons.LEFT_DOOR, Component.translatable("vehicle.toolbar.label.doors"), onPress -> {
             this.minecraft.setScreen(new DoorScreen(this, this.vehicleRef.get()));
         }));
-        widgets.add(new IconButton(20, 20, Icons.SEAT_PASSENGER, new TranslatableContents("vehicle.toolbar.label.seats"), onPress -> {
+        widgets.add(new IconButton(20, 20, Icons.SEAT_PASSENGER, Component.translatable("vehicle.toolbar.label.seats"), onPress -> {
             this.minecraft.setScreen(new SeatScreen(this, this.vehicleRef.get()));
         }));
     }
@@ -58,7 +58,7 @@ public class DashboardScreen extends AbstractToolbarScreen
         }
 
         @Override
-        protected void loadWidgets(List<Widget> widgets)
+        protected void loadWidgets(List<AbstractWidget> widgets)
         {
             VehicleEntity vehicle = this.vehicleRef.get();
             if(vehicle != null)
@@ -81,7 +81,7 @@ public class DashboardScreen extends AbstractToolbarScreen
         }
 
         @Override
-        protected void loadWidgets(List<Widget> widgets)
+        protected void loadWidgets(List<AbstractWidget> widgets)
         {
             VehicleEntity vehicle = this.vehicleRef.get();
             if(vehicle != null)

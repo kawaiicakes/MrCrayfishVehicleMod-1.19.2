@@ -4,13 +4,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.Container;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.NonNullList;
 
 /**
  * Author: MrCrayfish
  */
-public interface IStorageBlock extends Container, MenuProvider
+public interface IStorageBlock extends AbstractContainerMenu, MenuProvider
 {
     NonNullList<ItemStack> getInventory();
 

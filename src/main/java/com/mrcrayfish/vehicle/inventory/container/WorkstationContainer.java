@@ -6,16 +6,16 @@ import com.mrcrayfish.vehicle.item.WheelItem;
 import com.mrcrayfish.vehicle.tileentity.WorkstationTileEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.Container;
-import net.minecraft.inventory.container.Container;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.DyeItem;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.BlockPos;
 
 /**
  * Author: MrCrayfish
  */
-public class WorkstationContainer extends Container
+public class WorkstationContainer extends AbstractContainerMenu
 {
     private WorkstationTileEntity workstationTileEntity;
     private BlockPos pos;
