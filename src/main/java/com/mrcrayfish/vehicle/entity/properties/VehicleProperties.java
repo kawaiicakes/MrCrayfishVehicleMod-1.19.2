@@ -16,42 +16,39 @@ import com.mrcrayfish.vehicle.entity.Wheel;
 import com.mrcrayfish.vehicle.network.HandshakeMessages;
 import com.mrcrayfish.vehicle.util.ExtraJSONUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.ReloadListener;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.profiler.IProfiler;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.contents.LiteralContents;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.GsonHelper;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.profiling.ProfilerFiller;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.event.AddReloadListenerEvent;
+import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.thread.EffectiveSide;
-import net.minecraftforge.fml.event.server.FMLServerStoppedEvent;
 import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.fml.util.thread.EffectiveSide;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -59,6 +56,7 @@ import java.util.stream.StreamSupport;
 /**
  * Author: MrCrayfish
  */
+@SuppressWarnings("deprecation")
 @Mod.EventBusSubscriber(modid = Reference.MOD_ID, value = Dist.CLIENT)
 public class VehicleProperties
 {
@@ -338,7 +336,7 @@ public class VehicleProperties
         if(DEFAULT_VEHICLE_PROPERTIES.size() != propertiesMap.size())
             return false;
 
-        // Validate that all the keys exist in the default properties and we don't have anything missing
+        // Validate that all the keys exist in the default properties, and we don't have anything missing
         for(ResourceLocation key : propertiesMap.keySet())
         {
             if(!DEFAULT_VEHICLE_PROPERTIES.containsKey(key))
@@ -355,7 +353,7 @@ public class VehicleProperties
     }
 
     @SubscribeEvent
-    public static void onClientDisconnect(ClientPlayerNetworkEvent.LoggedOutEvent event)
+    public static void onClientDisconnect(ClientPlayerNetworkEvent.LoggingOut event)
     {
         NETWORK_VEHICLE_PROPERTIES.clear();
     }
@@ -387,11 +385,11 @@ public class VehicleProperties
             VehiclePropertiesProvider provider = supplier.get();
             provider.setScaleWheels(true);
             provider.registerProperties();
-            provider.getVehiclePropertiesMap().forEach(DEFAULT_VEHICLE_PROPERTIES::put);
-            provider.getVehiclePropertiesMap().forEach(NETWORK_VEHICLE_PROPERTIES::put);
+            DEFAULT_VEHICLE_PROPERTIES.putAll(provider.getVehiclePropertiesMap());
+            NETWORK_VEHICLE_PROPERTIES.putAll(provider.getVehiclePropertiesMap());
         });
-
-        Minecraft.getInstance().gui.setOverlayMessage(MutableComponent.create(new LiteralContents("Refreshed vehicle properties!"), false);
+        //TODO: localize
+        Minecraft.getInstance().gui.setOverlayMessage(MutableComponent.create(new LiteralContents("Refreshed vehicle properties!")), false);
     }
 
     public static class Serializer implements JsonDeserializer<VehicleProperties>, JsonSerializer<VehicleProperties>
@@ -542,10 +540,11 @@ public class VehicleProperties
             }
         }
 
+        @SuppressWarnings("ConstantValue")
         private void readCosmetics(VehicleProperties.Builder builder, JsonObject object)
         {
             JsonArray cosmetics = GsonHelper.getAsJsonArray(object, "cosmetics", new JsonArray());
-            if(cosmetics != null)
+            if(cosmetics != null) //FIXME: always false?
             {
                 StreamSupport.stream(cosmetics.spliterator(), false).filter(JsonElement::isJsonObject).forEach(element -> {
                     JsonObject properties = element.getAsJsonObject();
@@ -574,6 +573,7 @@ public class VehicleProperties
         return new Builder();
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public static class Builder
     {
         private float maxHealth = DEFAULT_MAX_HEALTH;
@@ -586,15 +586,16 @@ public class VehicleProperties
         private boolean immuneToFallDamage = DEFAULT_IMMUNE_TO_FALL_DAMAGE;
         private boolean canPlayerCarry = DEFAULT_CAN_PLAYER_CARRY;
         private boolean canFitInTrailer = DEFAULT_CAN_FIT_IN_TRAILER;
-        private List<Wheel> wheels = new ArrayList<>();
+        private final List<Wheel> wheels = new ArrayList<>();
         private Transform bodyTransform = DEFAULT_BODY_TRANSFORM;
         private Transform displayTransform = DEFAULT_DISPLAY_TRANSFORM;
-        private List<Seat> seats = new ArrayList<>();
+        private final List<Seat> seats = new ArrayList<>();
         private boolean canBePainted = DEFAULT_CAN_BE_PAINTED;
         private CameraProperties camera = CameraProperties.DEFAULT_CAMERA;
-        private Map<ResourceLocation, ExtendedProperties> extended = new HashMap<>();
-        private Map<ResourceLocation, CosmeticProperties> cosmetics = new HashMap<>();
+        private final Map<ResourceLocation, ExtendedProperties> extended = new HashMap<>();
+        private final Map<ResourceLocation, CosmeticProperties> cosmetics = new HashMap<>();
 
+        @SuppressWarnings("unused") //FIXME: unused
         public Builder setMaxHealth(float maxHealth)
         {
             this.maxHealth = maxHealth;
@@ -643,6 +644,7 @@ public class VehicleProperties
             return this;
         }
 
+        @SuppressWarnings("UnusedReturnValue") //FIXME: unused return
         public Builder setTrailerOffset(Vec3 vec)
         {
             this.trailerOffset = vec;
@@ -655,13 +657,13 @@ public class VehicleProperties
             return this;
         }
 
-        public Builder setImmuneToFallDamage(boolean immuneToFallDamage)
+        public Builder setImmuneToFallDamage(boolean immuneToFallDamage) //FIXME: unused return
         {
             this.immuneToFallDamage = immuneToFallDamage;
             return this;
         }
 
-        public Builder setCanPlayerCarry(boolean canPlayerCarry)
+        public Builder setCanPlayerCarry(boolean canPlayerCarry) //FIXME: unused return
         {
             this.canPlayerCarry = canPlayerCarry;
             return this;
@@ -673,7 +675,7 @@ public class VehicleProperties
             return this;
         }
 
-        public Builder addWheel(Wheel wheel)
+        public Builder addWheel(Wheel wheel) //FIXME: unused return
         {
             this.wheels.add(wheel);
             return this;
@@ -782,7 +784,7 @@ public class VehicleProperties
     }
 
     @Mod.EventBusSubscriber(modid = Reference.MOD_ID)
-    public static class Manager extends ReloadListener<Map<ResourceLocation, VehicleProperties>>
+    public static class Manager extends SimplePreparableReloadListener<Map<ResourceLocation, VehicleProperties>>
     {
         private static final String PROPERTIES_DIRECTORY = "vehicles/properties";
         private static final String COSMETICS_DIRECTORY = "vehicles/cosmetics";
@@ -793,24 +795,25 @@ public class VehicleProperties
         private Map<ResourceLocation, VehicleProperties> vehicleProperties;
 
         @Override
-        protected Map<ResourceLocation, VehicleProperties> prepare(ResourceManager manager, IProfiler profiler)
+        protected @NotNull Map<ResourceLocation, VehicleProperties> prepare(ResourceManager manager, @NotNull ProfilerFiller profiler)
         {
             Map<ResourceLocation, VehicleProperties> propertiesMap = new HashMap<>();
-            manager.listResources(PROPERTIES_DIRECTORY, location -> location.endsWith(FILE_SUFFIX))
+            manager.listResources(PROPERTIES_DIRECTORY, location -> location.toString().endsWith(FILE_SUFFIX))
+                .entrySet()
                 .stream()
-                .filter(location -> DEFAULT_VEHICLE_PROPERTIES.containsKey(format(location, PROPERTIES_DIRECTORY)))
-                .forEach(location -> {
+                .filter(entry -> DEFAULT_VEHICLE_PROPERTIES.containsKey(format(entry.getKey(), PROPERTIES_DIRECTORY)))
+                .forEach(entry -> {
                     try
                     {
-                        Resource resource = manager.getResource(location);
-                        InputStream stream = resource.getInputStream();
+                        Resource resource = manager.getResource(entry.getKey()).orElseThrow();
+                        InputStream stream = resource.open();
                         VehicleProperties properties = loadPropertiesFromStream(stream);
-                        propertiesMap.put(format(location, PROPERTIES_DIRECTORY), properties);
+                        propertiesMap.put(format(entry.getKey(), PROPERTIES_DIRECTORY), properties);
                         stream.close();
                     }
                     catch(IOException e)
                     {
-                        VehicleMod.LOGGER.error("Couldn't parse vehicle properties {}", location);
+                        VehicleMod.LOGGER.error("Couldn't parse vehicle properties {}", entry.getKey());
                     }
                 });
 
@@ -822,15 +825,17 @@ public class VehicleProperties
 
                 // Loads the cosmetics json for applicable vehicles
                 Map<ResourceLocation, List<Pair<ResourceLocation, List<ResourceLocation>>>> modelMap = new HashMap<>();
-                manager.listResources(COSMETICS_DIRECTORY, fileName -> {
-                    return fileName.equals(id.getPath() + FILE_SUFFIX);
-                }).stream().sorted(Comparator.comparing(ResourceLocation::getNamespace, (n1, n2) -> {
-                    return n1.equals(n2) ? 0 : n1.equals(Reference.MOD_ID) ? 1 : -1;
-                })).forEach(location -> {
-                    ResourceLocation vehicleId = format(location, COSMETICS_DIRECTORY);
-                    if(!vehicleId.getNamespace().equals(id.getNamespace()))
-                        return;
-                    CosmeticProperties.deserializeModels(location, manager, modelMap);
+                manager.listResources(COSMETICS_DIRECTORY, fileName -> fileName.toString().equals(id.getPath() + FILE_SUFFIX))
+                        .entrySet()
+                        .stream()
+                        .sorted(Comparator.comparing(
+                                (entry) -> entry.getKey().getPath(),
+                                (n1, n2) -> n1.equals(n2) ? 0 : n1.equals(Reference.MOD_ID) ? 1 : -1))
+                                    .forEach(entry -> {
+                                ResourceLocation vehicleId = format(entry.getKey(), COSMETICS_DIRECTORY);
+                                if(!vehicleId.getNamespace().equals(id.getNamespace()))
+                                    return;
+                                CosmeticProperties.deserializeModels(entry.getKey(), manager, modelMap);
                 });
 
                 // Applies the list of valid model locations to the corresponding cosmetic
@@ -846,7 +851,8 @@ public class VehicleProperties
         }
 
         @Override
-        protected void apply(Map<ResourceLocation, VehicleProperties> propertiesMap, ResourceManager manager, IProfiler profiler)
+        @ParametersAreNonnullByDefault
+        protected void apply(Map<ResourceLocation, VehicleProperties> propertiesMap, ResourceManager manager, ProfilerFiller profiler)
         {
             this.vehicleProperties = ImmutableMap.copyOf(propertiesMap);
         }
@@ -869,7 +875,7 @@ public class VehicleProperties
         }
 
         @SubscribeEvent
-        public static void onServerStopped(FMLServerStoppedEvent event)
+        public static void onServerStopped(ServerStoppedEvent event)
         {
             Manager.instance = null;
         }
