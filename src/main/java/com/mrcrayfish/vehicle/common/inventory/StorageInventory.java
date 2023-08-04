@@ -1,5 +1,6 @@
 package com.mrcrayfish.vehicle.common.inventory;
 
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.player.Inventory;
@@ -13,6 +14,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
@@ -21,8 +23,7 @@ import java.util.function.Predicate;
 /**
  * Author: MrCrayfish
  */
-public class StorageInventory extends SimpleContainer
-{
+public class StorageInventory extends SimpleContainer {
     private final WeakReference<Entity> entityRef;
     private final Component displayName;
     private final Predicate<ItemStack> itemPredicate;
@@ -59,7 +60,8 @@ public class StorageInventory extends SimpleContainer
         return this.itemPredicate.test(stack);
     }
 
-    public ListTag createTag()
+    @Override
+    public @NotNull ListTag createTag()
     {
         ListTag tagList = new ListTag();
         for(int i = 0; i < this.getContainerSize(); i++)
@@ -92,7 +94,7 @@ public class StorageInventory extends SimpleContainer
     }
 
     @Override
-    public boolean stillValid(Player player)
+    public boolean stillValid(@NotNull Player player)
     {
         Entity entity = this.entityRef.get();
         return entity != null && entity.isAlive();

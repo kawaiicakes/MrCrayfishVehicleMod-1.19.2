@@ -12,8 +12,10 @@ import com.mrcrayfish.vehicle.network.PacketHandler;
 import com.mrcrayfish.vehicle.network.message.MessageAttachTrailer;
 import com.mrcrayfish.vehicle.network.message.MessageSyncStorage;
 import com.mrcrayfish.vehicle.util.InventoryUtil;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.Container;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.block.IGrowable;
+import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -21,7 +23,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
-import net.minecraft.item.BoneMealItem;
+import net.minecraft.world.item.BoneMealItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.InteractionResult;
@@ -35,6 +37,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.network.PacketDistributor;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
@@ -46,8 +49,8 @@ public class FertilizerTrailerEntity extends TrailerEntity implements IStorage
     private static final String INVENTORY_STORAGE_KEY = "SimpleContainer";
 
     private int inventoryTimer;
-    private StorageInventory inventory;
-    private BlockPos[] lastPos = new BlockPos[3];
+    private Container inventory;
+    private final BlockPos[] lastPos = new BlockPos[3];
 
     public FertilizerTrailerEntity(EntityType<? extends FertilizerTrailerEntity> type, Level worldIn)
     {
@@ -56,13 +59,13 @@ public class FertilizerTrailerEntity extends TrailerEntity implements IStorage
     }
 
     @Override
-    protected boolean canAddPassenger(Entity passenger)
+    protected boolean canAddPassenger(@NotNull Entity passenger)
     {
         return false;
     }
 
     @Override
-    public InteractionResult interact(Player player, InteractionHand hand)
+    public @NotNull InteractionResult interact(@NotNull Player player, @NotNull InteractionHand hand)
     {
         ItemStack heldItem = player.getItemInHand(hand);
         if((heldItem.isEmpty() || !(heldItem.getItem() instanceof SprayCanItem)) && player instanceof ServerPlayer)
@@ -111,7 +114,7 @@ public class FertilizerTrailerEntity extends TrailerEntity implements IStorage
     private boolean applyFertilizer(Vec3 vec, int index)
     {
         Vec3 prevPosVec = new Vec3(xo, yo + 0.25, zo);
-        prevPosVec = prevPosVec.add(new Vec3(0, 0, -1).yRot(-this.yRot * 0.017453292F));
+        prevPosVec = prevPosVec.add(new Vec3(0, 0, -1).yRot(-this.getYRot() * 0.017453292F));
         BlockPos pos = new BlockPos(prevPosVec.x + vec.x, prevPosVec.y, prevPosVec.z + vec.z);
 
         if(lastPos[index] != null && lastPos[index].equals(pos))
@@ -121,9 +124,8 @@ public class FertilizerTrailerEntity extends TrailerEntity implements IStorage
         lastPos[index] = pos;
 
         BlockState state = level.getBlockState(pos);
-        if(state.getBlock() instanceof IGrowable)
+        if(state.getBlock() instanceof BonemealableBlock growable)
         {
-            IGrowable growable = (IGrowable) state.getBlock();
             if(growable.isValidBonemealTarget(level, pos, state, false))
             {
                 if(growable.isBonemealSuccess(level, random, pos, state))
@@ -244,6 +246,7 @@ public class FertilizerTrailerEntity extends TrailerEntity implements IStorage
         }, (entity, rightClick) -> {
             if(rightClick) {
                 PacketHandler.getPlayChannel().sendToServer(new MessageAttachTrailer(entity.getId()));
+                assert Minecraft.getInstance().player != null;
                 Minecraft.getInstance().player.swing(InteractionHand.MAIN_HAND);
             }
         }, entity -> true);

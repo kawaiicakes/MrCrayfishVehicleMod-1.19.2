@@ -28,6 +28,7 @@ import com.mrcrayfish.vehicle.util.InventoryUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerListener;
 import net.minecraft.nbt.CompoundTag;
@@ -233,7 +234,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements Cont
     }
 
     @Override
-    public InteractionResult interact(Player player, InteractionHand hand)
+    public @NotNull InteractionResult interact(@NotNull Player player, @NotNull InteractionHand hand)
     {
         ItemStack stack = player.getItemInHand(hand);
         if(!level.isClientSide)
@@ -801,7 +802,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements Cont
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public void onSyncedDataUpdated(EntityDataAccessor<?> key)
+    public void onSyncedDataUpdated(@NotNull EntityDataAccessor<?> key)
     {
         super.onSyncedDataUpdated(key);
         if(level.isClientSide)
@@ -818,11 +819,11 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements Cont
     }
 
     @Override
-    public boolean causeFallDamage(float distance, float damageMultiplier)
+    public boolean causeFallDamage(float distance, float damageMultiplier, @NotNull DamageSource source)
     {
         if(!this.disableFallDamage)
         {
-            super.causeFallDamage(distance, damageMultiplier);
+            super.causeFallDamage(distance, damageMultiplier, source);
         }
         if(this.launchingTimer <= 0 && distance > 3)
         {

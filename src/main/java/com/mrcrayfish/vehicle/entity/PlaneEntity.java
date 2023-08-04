@@ -9,6 +9,7 @@ import com.mrcrayfish.vehicle.network.PacketHandler;
 import com.mrcrayfish.vehicle.network.datasync.VehicleDataValue;
 import com.mrcrayfish.vehicle.network.message.MessagePlaneInput;
 import com.mrcrayfish.vehicle.util.CommonUtils;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -23,6 +24,7 @@ import com.mojang.math.Vector3f;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -473,7 +475,7 @@ public abstract class PlaneEntity extends PoweredVehicleEntity
      * Overridden to prevent players from taking fall damage when landing a plane
      */
     @Override
-    public boolean causeFallDamage(float distance, float damageMultiplier)
+    public boolean causeFallDamage(float distance, float damageMultiplier, @NotNull DamageSource source)
     {
         return false;
     }

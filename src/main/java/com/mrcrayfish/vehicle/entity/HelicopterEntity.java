@@ -8,6 +8,7 @@ import com.mrcrayfish.vehicle.network.message.MessageHelicopterInput;
 import com.mrcrayfish.vehicle.util.CommonUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.nbt.CompoundTag;
@@ -20,6 +21,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Author: MrCrayfish
@@ -268,7 +270,7 @@ public abstract class HelicopterEntity extends PoweredVehicleEntity
      * Overridden to prevent players from taking fall damage when landing a plane
      */
     @Override
-    public boolean causeFallDamage(float distance, float damageMultiplier)
+    public boolean causeFallDamage(float distance, float damageMultiplier, @NotNull DamageSource source)
     {
         return false;
     }

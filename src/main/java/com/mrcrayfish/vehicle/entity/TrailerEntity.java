@@ -16,6 +16,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
@@ -185,7 +186,7 @@ public abstract class TrailerEntity extends VehicleEntity
     }
 
     @Override
-    protected boolean canRide(Entity entityIn)
+    protected boolean canRide(@NotNull Entity entityIn)
     {
         return false;
     }

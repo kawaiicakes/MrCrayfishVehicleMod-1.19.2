@@ -59,7 +59,7 @@ import java.util.Objects;
  * Author: MrCrayfish
  */
 @SuppressWarnings("deprecation")
-@ParametersAreNonnullByDefault
+@ParametersAreNonnullByDefault //FIXME: aggressive annotation
 public class VehicleCrateBlock extends RotatedObjectBlock
 {
     public static final List<ResourceLocation> REGISTERED_CRATES = new ArrayList<>();

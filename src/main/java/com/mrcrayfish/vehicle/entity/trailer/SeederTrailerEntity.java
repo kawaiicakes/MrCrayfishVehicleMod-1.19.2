@@ -39,6 +39,7 @@ import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
@@ -59,13 +60,13 @@ public class SeederTrailerEntity extends TrailerEntity implements IStorage
     }
 
     @Override
-    protected boolean canAddPassenger(Entity passenger)
+    protected boolean canAddPassenger(@NotNull Entity passenger)
     {
         return false;
     }
 
     @Override
-    public InteractionResult interact(Player player, InteractionHand hand)
+    public @NotNull InteractionResult interact(@NotNull Player player, @NotNull InteractionHand hand)
     {
         ItemStack heldItem = player.getItemInHand(hand);
         if((heldItem.isEmpty() || !(heldItem.getItem() instanceof SprayCanItem)) && player instanceof ServerPlayer)

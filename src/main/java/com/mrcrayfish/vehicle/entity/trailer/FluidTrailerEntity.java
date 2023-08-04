@@ -7,24 +7,25 @@ import com.mrcrayfish.vehicle.network.PacketHandler;
 import com.mrcrayfish.vehicle.network.message.MessageAttachTrailer;
 import com.mrcrayfish.vehicle.network.message.MessageEntityFluid;
 import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.common.util.LazyOptional;
-import net.minecraftforge.fluids.ForgeFlowingFluid.Properties;
-import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
-import net.minecraftforge.fluids.capability.templates.FluidTank;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.entity.IEntityAdditionalSpawnData;
+import net.minecraftforge.fluids.FluidType;
+import net.minecraftforge.fluids.FluidUtil;
+import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.network.PacketDistributor;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 
@@ -33,7 +34,7 @@ import javax.annotation.Nonnull;
  */
 public class FluidTrailerEntity extends TrailerEntity implements IEntityAdditionalSpawnData
 {
-    protected FluidTank tank = new FluidTank(FluidAttributes.BUCKET_VOLUME * 100)
+    protected FluidTank tank = new FluidTank(FluidType.BUCKET_VOLUME * 100)
     {
         @Override
         protected void onContentsChanged()
@@ -48,7 +49,7 @@ public class FluidTrailerEntity extends TrailerEntity implements IEntityAddition
     }
 
     @Override
-    public InteractionResult interact(Player player, InteractionHand hand)
+    public @NotNull InteractionResult interact(@NotNull Player player, @NotNull InteractionHand hand)
     {
         if(!level.isClientSide && !player.isCrouching())
         {
@@ -118,11 +119,11 @@ public class FluidTrailerEntity extends TrailerEntity implements IEntityAddition
     @OnlyIn(Dist.CLIENT)
     public static void registerInteractionBoxes()
     {
-        EntityRayTracer.instance().registerInteractionBox(ModEntities.FLUID_TRAILER.get(), () -> {
-            return createScaledBoundingBox(-7.0, -0.5, 12.0, 7.0, 3.5, 24.0, 0.0625);
-        }, (entity, rightClick) -> {
+        EntityRayTracer.instance().registerInteractionBox(ModEntities.FLUID_TRAILER.get(), () ->
+                createScaledBoundingBox(-7.0, -0.5, 12.0, 7.0, 3.5, 24.0, 0.0625), (entity, rightClick) -> {
             if(rightClick) {
                 PacketHandler.getPlayChannel().sendToServer(new MessageAttachTrailer(entity.getId()));
+                assert Minecraft.getInstance().player != null;
                 Minecraft.getInstance().player.swing(InteractionHand.MAIN_HAND);
             }
         }, entity -> true);
