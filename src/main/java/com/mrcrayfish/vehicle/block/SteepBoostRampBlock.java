@@ -34,7 +34,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
  */
 @SuppressWarnings("deprecation")
 @ParametersAreNonnullByDefault
-public class SteepBoostRampBlock extends RotatedObjectBlock
+public class SteepBoostRampBlock extends RotatedObjectBlock //FIXME: this class looks defunct?
 {
     public static final BooleanProperty LEFT = BooleanProperty.create("left");
     public static final BooleanProperty RIGHT = BooleanProperty.create("right");
@@ -136,10 +136,10 @@ public class SteepBoostRampBlock extends RotatedObjectBlock
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
     {
-        return new BoostTileEntity(1.0F);
+        return new BoostTileEntity(1.0F, pos, state);
     }
 
-    @SuppressWarnings("NullableProblems")
+    @SuppressWarnings({"NullableProblems", "unused"}) //FIXME: proper impl of nested class extending superclass's nested class lol
     static class BlockStateBase extends BlockBehaviour.BlockStateBase {
         protected BlockStateBase(Block p_60608_, ImmutableMap<Property<?>, Comparable<?>> p_60609_, MapCodec<BlockState> p_60610_) {
             super(p_60608_, p_60609_, p_60610_);
@@ -148,7 +148,7 @@ public class SteepBoostRampBlock extends RotatedObjectBlock
         @Override
         protected BlockState asState() {
             return null;
-        }
+        } //FIXME: non-null impl
 
         @Override
         public boolean hasBlockEntity() {return true;}
