@@ -11,19 +11,18 @@ import com.mrcrayfish.vehicle.network.message.MessageAttachTrailer;
 import com.mrcrayfish.vehicle.network.message.MessageOpenStorage;
 import com.mrcrayfish.vehicle.util.InventoryUtil;
 import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.Containers;
 import net.minecraft.world.item.BoneMealItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.util.Constants;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
@@ -102,11 +101,10 @@ public class StorageTrailerEntity extends TrailerEntity implements IStorage
     @OnlyIn(Dist.CLIENT)
     public static void registerInteractionBoxes()
     {
-        EntityRayTracer.instance().registerInteractionBox(ModEntities.STORAGE_TRAILER.get(), () -> {
-            return createScaledBoundingBox(-6.0, -0.5, 9.0, 6.0, 3.5, 17.0, 0.0625);
-        }, (entity, rightClick) -> {
+        EntityRayTracer.instance().registerInteractionBox(ModEntities.STORAGE_TRAILER.get(), () -> createScaledBoundingBox(-6.0, -0.5, 9.0, 6.0, 3.5, 17.0, 0.0625), (entity, rightClick) -> {
             if(rightClick) {
                 PacketHandler.getPlayChannel().sendToServer(new MessageAttachTrailer(entity.getId()));
+                assert Minecraft.getInstance().player != null;
                 Minecraft.getInstance().player.swing(InteractionHand.MAIN_HAND);
             }
         }, entity -> true);
@@ -118,6 +116,7 @@ public class StorageTrailerEntity extends TrailerEntity implements IStorage
         }, (entity, rightClick) -> {
             if(rightClick) {
                 PacketHandler.getPlayChannel().sendToServer(new MessageOpenStorage(entity.getId(), INVENTORY_STORAGE_KEY));
+                assert Minecraft.getInstance().player != null;
                 Minecraft.getInstance().player.swing(InteractionHand.MAIN_HAND);
             }
         }, entity -> true);

@@ -43,10 +43,10 @@ public class VehicleTrailerEntity extends TrailerEntity
     {
         if(passenger instanceof VehicleEntity)
         {
-            Vec3 offset = ((VehicleEntity) passenger).getProperties().getTrailerOffset().yRot((float) Math.toRadians(-this.yRot));
+            Vec3 offset = ((VehicleEntity) passenger).getProperties().getTrailerOffset().yRot((float) Math.toRadians(-this.getYRot()));
             passenger.setPos(this.getX() + offset.x, this.getY() + getPassengersRidingOffset() + offset.y, this.getZ() + offset.z);
             passenger.yRotO = this.yRotO;
-            passenger.yRot = this.yRot;
+            passenger.setYRot(this.getYRot()); //TODO: does this actually work in replacing the previous expression? or could it fail if passenger is not initialized?
         }
     }
 
@@ -59,11 +59,10 @@ public class VehicleTrailerEntity extends TrailerEntity
     @OnlyIn(Dist.CLIENT)
     public static void registerInteractionBoxes()
     {
-        EntityRayTracer.instance().registerInteractionBox(ModEntities.VEHICLE_TRAILER.get(), () -> {
-            return createScaledBoundingBox(-7.0, -0.5, 14.0, 7.0, 3.5, 24.0, 0.0625);
-        }, (entity, rightClick) -> {
+        EntityRayTracer.instance().registerInteractionBox(ModEntities.VEHICLE_TRAILER.get(), () -> createScaledBoundingBox(-7.0, -0.5, 14.0, 7.0, 3.5, 24.0, 0.0625), (entity, rightClick) -> {
             if(rightClick) {
                 PacketHandler.getPlayChannel().sendToServer(new MessageAttachTrailer(entity.getId()));
+                assert Minecraft.getInstance().player != null;
                 Minecraft.getInstance().player.swing(InteractionHand.MAIN_HAND);
             }
         }, entity -> true);

@@ -12,30 +12,27 @@ import com.mrcrayfish.vehicle.network.PacketHandler;
 import com.mrcrayfish.vehicle.network.message.MessageAttachTrailer;
 import com.mrcrayfish.vehicle.network.message.MessageSyncStorage;
 import com.mrcrayfish.vehicle.util.InventoryUtil;
-import net.minecraft.nbt.Tag;
-import net.minecraft.world.Container;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Containers;
 import net.minecraft.world.item.BoneMealItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.Vec3;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.level.Level;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.block.BonemealableBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
@@ -49,7 +46,7 @@ public class FertilizerTrailerEntity extends TrailerEntity implements IStorage
     private static final String INVENTORY_STORAGE_KEY = "SimpleContainer";
 
     private int inventoryTimer;
-    private Container inventory;
+    private StorageInventory inventory;
     private final BlockPos[] lastPos = new BlockPos[3];
 
     public FertilizerTrailerEntity(EntityType<? extends FertilizerTrailerEntity> type, Level worldIn)
@@ -241,9 +238,7 @@ public class FertilizerTrailerEntity extends TrailerEntity implements IStorage
     @OnlyIn(Dist.CLIENT)
     public static void registerInteractionBoxes()
     {
-        EntityRayTracer.instance().registerInteractionBox(ModEntities.FERTILIZER.get(), () -> {
-            return createScaledBoundingBox(-7.0, 1.5, 7.0, 7.0, 3.5, 18.0, 0.0625);
-        }, (entity, rightClick) -> {
+        EntityRayTracer.instance().registerInteractionBox(ModEntities.FERTILIZER.get(), () -> createScaledBoundingBox(-7.0, 1.5, 7.0, 7.0, 3.5, 18.0, 0.0625), (entity, rightClick) -> {
             if(rightClick) {
                 PacketHandler.getPlayChannel().sendToServer(new MessageAttachTrailer(entity.getId()));
                 assert Minecraft.getInstance().player != null;
