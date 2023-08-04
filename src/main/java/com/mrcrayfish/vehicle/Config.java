@@ -42,8 +42,8 @@ public class Config
                 {
                     this.renderOutlines = builder.comment("If true, renders an outline of all the elements on a vehicle's model. Useful for debugging interactions.").translation(Reference.MOD_ID + ".config.client.debug.render_outlines").define("renderOutlines", false);
                     this.renderDebugging = builder.comment("If true, renders lines to help visualise steering direction and target position.").translation(Reference.MOD_ID + ".config.client.debug.render_steering_debug").define("renderSteeringDebug", false);
-                    this.reloadRayTracerEachTick = builder.comment("If true, the raytracer will be reloaded each tick.").translation(Reference.MOD_ID + ".config.client.debug.raytracer.continuous_reload").define("reloadRaytracerEachTick", false);
-                    this.reloadVehiclePropertiesEachTick = builder.comment("If true, the vehicle properties will be reloaded each tick.").translation(Reference.MOD_ID + ".config.client.debug.properties.continuous_reload").define("reloadVehiclePropertiesEachTick", false);
+                    this.reloadRayTracerEachTick = builder.comment("If true, the raytracer will be reloaded each tickServer.").translation(Reference.MOD_ID + ".config.client.debug.raytracer.continuous_reload").define("reloadRaytracerEachTick", false);
+                    this.reloadVehiclePropertiesEachTick = builder.comment("If true, the vehicle properties will be reloaded each tickServer.").translation(Reference.MOD_ID + ".config.client.debug.properties.continuous_reload").define("reloadVehiclePropertiesEachTick", false);
                     this.forceRenderAllInteractableBoxes = builder.comment("If true, when rendering debug outlines all interactables boxes will be rendered rather than just the active").translation(Reference.MOD_ID + ".config.client.debug.properties.force_render_all_interactable_boxes").define("forceRenderAllInteractableBoxes", false);
                     this.debugCamera = builder.comment("Enables use of debug camera tools").define("debugCamera", false);
                 }
@@ -136,7 +136,7 @@ public class Config
                     builder.pop();
 
                     builder.comment("Configuration options for fluid pumps").push("fluid_pump");
-                    this.pumpTransferAmount = builder.comment("The amount of fluid a pump will transfer each tick").translation(Reference.MOD_ID + ".config.server.pump_transfer_amount").defineInRange("pumpTransferAmount", 50, 1, Integer.MAX_VALUE);
+                    this.pumpTransferAmount = builder.comment("The amount of fluid a pump will transfer each tickServer").translation(Reference.MOD_ID + ".config.server.pump_transfer_amount").defineInRange("pumpTransferAmount", 50, 1, Integer.MAX_VALUE);
                     this.pumpCapacity = builder.comment("The fluid capacity of the fluid pump in millibuckets").translation(Reference.MOD_ID + ".config.server.fluid_pump_capacity").defineInRange("pumpCapacity", 500, 1, Integer.MAX_VALUE);
                     builder.pop();
 

@@ -31,8 +31,9 @@ public class ModTileEntities
     public static final RegistryObject<BlockEntityType<GasPumpTileEntity>> GAS_PUMP = register("gas_pump", GasPumpTileEntity::new, () -> new Block[]{ModBlocks.GAS_PUMP.get()});
     public static final RegistryObject<BlockEntityType<GasPumpTankTileEntity>> GAS_PUMP_TANK = register("gas_pump_tank", GasPumpTankTileEntity::new, () -> new Block[]{ModBlocks.GAS_PUMP.get()});
 
-    private static <T extends BlockEntity> RegistryObject<BlockEntityType<T>> register(String id, Supplier<T> factoryIn, Supplier<Block[]> validBlocksSupplier)
+    private static <T extends BlockEntity> RegistryObject<BlockEntityType<T>> register(String id, Supplier<T> factoryIn, Supplier<Block[]> invalidBlocksSupplier)
     {
-        return REGISTER.register(id, () -> BlockEntityType.Builder.of(factoryIn, validBlocksSupplier.get()).build(null));
+
+        return REGISTER.register(id, () -> BlockEntityType.Builder.of(factoryIn, invalidBlocksSupplier.get()).build(null));
     }
 }

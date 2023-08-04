@@ -31,7 +31,7 @@ import java.util.Optional;
 public interface RayTraceFunction
 {
     /**
-     * Checks if fuel can be transferred from a jerry can to a powered vehicle, and sends a packet to do so every other tick, if it can
+     * Checks if fuel can be transferred from a jerry can to a powered vehicle, and sends a packet to do so every other tickServer, if it can
      *
      * @return whether fueling can continue
      */

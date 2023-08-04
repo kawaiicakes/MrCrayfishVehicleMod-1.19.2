@@ -46,6 +46,8 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
+import static net.minecraft.network.chat.Component.translatable;
+
 /**
  * Author: MrCrayfish
  */
@@ -87,7 +89,7 @@ public class FuelDrumBlock extends Block implements EntityBlock
     {
         if(Screen.hasShiftDown())
         {
-            list.addAll(RenderUtil.lines(MutableComponent.create(Component.translatable(ModBlocks.FUEL_DRUM.get().getDescriptionId() + ".info")), 150));
+            list.addAll(RenderUtil.lines(Component.translatable(ModBlocks.FUEL_DRUM.get().getDescriptionId() + ".info"), 150));
         }
         else
         {
@@ -102,12 +104,12 @@ public class FuelDrumBlock extends Block implements EntityBlock
                     int amount = blockEntityTag.getInt("Amount");
                     if(fluid != null && amount > 0)
                     {
-                        list.add(Component.translatable(String.valueOf(new FluidStack(fluid, 1).getTranslationKey())).withStyle(ChatFormatting.BLUE));
+                        list.add(translatable(String.valueOf(new FluidStack(fluid, 1).getTranslationKey())).withStyle(ChatFormatting.BLUE));
                         list.add(MutableComponent.create(new LiteralContents(amount + " / " + this.getCapacity() + "mb")).withStyle(ChatFormatting.GRAY));
                     }
                 }
             }
-            list.add((MutableComponent.create(Component.translatable("vehicle.info_help")).withStyle(ChatFormatting.YELLOW)));
+            list.add((Component.translatable("vehicle.info_help")).withStyle(ChatFormatting.YELLOW));
         }
     }
 
@@ -167,6 +169,6 @@ public class FuelDrumBlock extends Block implements EntityBlock
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
     {
-        return new FuelDrumTileEntity();
+        return new FuelDrumTileEntity(pos, state);
     }
 }

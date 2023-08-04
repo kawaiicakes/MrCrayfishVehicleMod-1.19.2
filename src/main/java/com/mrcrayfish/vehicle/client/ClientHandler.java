@@ -142,7 +142,7 @@ public class ClientHandler
             VehicleUtil.registerVehicleRenderer(event, ModEntities.SOFACOPTER.get(), SofaHelicopterRenderer::new);
         }
 
-        event.registerEntityRenderer(ModEntities.JACK.get(), com.mrcrayfish.vehicle.client.render.JackRenderer::new);
+        event.registerEntityRenderer(ModEntities.JACK.get(), JackRenderer::new);
     }
 
     @SubscribeEvent

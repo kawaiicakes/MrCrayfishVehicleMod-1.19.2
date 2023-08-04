@@ -8,7 +8,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 /**
  * A wrapper class for data parameters that are registered on vehicles. The returned value depends
  * if the local player is currently the controlling passenger of the vehicle. Since data parameters
- * update from server to client, tick sensitive logic uses the data can sometimes be messed up due
+ * update from server to client, tickServer sensitive logic uses the data can sometimes be messed up due
  * to latency. For a good experience driving vehicles, the physics need to be updated instantly with
  * local input. Due to the latency issues faced with sending the input to the server then having it
  * synced back to the client via a data parameter, you can see how this would affect driving, especially

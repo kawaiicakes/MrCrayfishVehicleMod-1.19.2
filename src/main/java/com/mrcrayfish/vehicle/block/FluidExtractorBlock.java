@@ -47,8 +47,9 @@ public class FluidExtractorBlock extends RotatedObjectBlock
         this.registerDefaultState(this.getStateDefinition().any().setValue(DIRECTION, Direction.NORTH).setValue(ENABLED, false));
     }
 
+    @SuppressWarnings("deprecation")
     @Override
-    public InteractionResult use(BlockState state, Level world, BlockPos pos, Player playerEntity, InteractionHand hand, BlockHitResult result)
+    public @NotNull InteractionResult use(BlockState state, Level world, BlockPos pos, Player playerEntity, InteractionHand hand, BlockHitResult result)
     {
         if(!world.isClientSide)
         {
@@ -90,7 +91,7 @@ public class FluidExtractorBlock extends RotatedObjectBlock
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
     {
-        return new FluidExtractorTileEntity();
+        return new FluidExtractorTileEntity(pos, state);
     }
 
     @Override

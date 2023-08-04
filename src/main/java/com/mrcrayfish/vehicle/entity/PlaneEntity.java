@@ -425,7 +425,7 @@ public abstract class PlaneEntity extends PoweredVehicleEntity
     }
 
     /**
-     * This controls how much of the max flap angle is applied each tick to the planes motion
+     * This controls how much of the max flap angle is applied each tickServer to the planes motion
      */
     public final float getFlapSensitivity()
     {
@@ -449,7 +449,7 @@ public abstract class PlaneEntity extends PoweredVehicleEntity
     }
 
     /**
-     * This controls how much of the max elevator angle is applied each tick to the planes motion
+     * This controls how much of the max elevator angle is applied each tickServer to the planes motion
      */
     public final float getElevatorSensitivity()
     {

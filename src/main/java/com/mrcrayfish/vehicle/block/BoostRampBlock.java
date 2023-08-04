@@ -141,6 +141,6 @@ public class BoostRampBlock extends RotatedObjectBlock
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
     {
-        return new BoostTileEntity(1.0F);
+        return new BoostTileEntity(1.0F, pos, state);
     }
 }

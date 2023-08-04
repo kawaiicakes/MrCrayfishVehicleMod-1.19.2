@@ -10,50 +10,60 @@ import com.mrcrayfish.vehicle.init.ModFluids;
 import com.mrcrayfish.vehicle.init.ModTileEntities;
 import com.mrcrayfish.vehicle.inventory.container.FluidMixerContainer;
 import com.mrcrayfish.vehicle.util.InventoryUtil;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.Container;
-import net.minecraft.inventory.ItemStackHelper;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.util.IIntArray;
 import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.contents.LiteralContents;
+import net.minecraft.world.Container;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Author: MrCrayfish
  */
-public class FluidMixerTileEntity extends TileEntitySynced implements Container, BaseEntityBlock, MenuProvider, IFluidTankWriter
+@SuppressWarnings("deprecation") //lots of deprecated holder calls. Oh well.
+public class FluidMixerTileEntity extends TileEntitySynced implements Container, EntityBlock, MenuProvider, IFluidTankWriter
 {
     private NonNullList<ItemStack> inventory = NonNullList.withSize(7, ItemStack.EMPTY);
 
-    private FluidTank tankBlaze = new FluidTank(Config.SERVER.mixerInputCapacity.get(), this::isValidFluid);
-    private FluidTank tankEnderSap = new FluidTank(Config.SERVER.mixerInputCapacity.get(), this::isValidFluid);
-    private FluidTank tankFuelium = new FluidTank(Config.SERVER.mixerOutputCapacity.get(), stack -> stack.getFluid() == ModFluids.FUELIUM.get());
+    private final FluidTank tankBlaze = new FluidTank(Config.SERVER.mixerInputCapacity.get(), this::isValidFluid);
+    private final FluidTank tankEnderSap = new FluidTank(Config.SERVER.mixerInputCapacity.get(), this::isValidFluid);
+    private final FluidTank tankFuelium = new FluidTank(Config.SERVER.mixerOutputCapacity.get(), stack -> stack.getFluid() == ModFluids.FUELIUM.get());
 
     private static final int SLOT_FUEL = 0;
     public static final int SLOT_INGREDIENT = 1;
@@ -64,76 +74,50 @@ public class FluidMixerTileEntity extends TileEntitySynced implements Container,
     private int extractionProgress;
     private boolean mixing = false;
 
-    private String customName;
+    private MutableComponent customName;
 
-    protected final IIntArray fluidMixerData = new IIntArray()
+    protected final ContainerData fluidMixerData = new ContainerData()
     {
         public int get(int index)
         {
-            switch(index)
-            {
-                case 0:
-                    return extractionProgress;
-                case 1:
-                    return remainingFuel;
-                case 2:
-                    return fuelMaxProgress;
-                case 3:
-                    return tankBlaze.getFluidAmount();
-                case 4:
-                    return tankEnderSap.getFluidAmount();
-                case 5:
-                    return tankFuelium.getFluidAmount();
-                case 6:
-                    return tankBlaze.getFluid().getFluid().builtInRegistryHolder().key().location().hashCode();
-                case 7:
-                    return tankEnderSap.getFluid().getFluid().builtInRegistryHolder().key().location().hashCode();
-                case 8:
-                    return tankFuelium.getFluid().getFluid().builtInRegistryHolder().key().location().hashCode();
-            }
-            return 0;
+            return switch (index) {
+                case 0 -> extractionProgress;
+                case 1 -> remainingFuel;
+                case 2 -> fuelMaxProgress;
+                case 3 -> tankBlaze.getFluidAmount();
+                case 4 -> tankEnderSap.getFluidAmount();
+                case 5 -> tankFuelium.getFluidAmount();
+                case 6 -> tankBlaze.getFluid().getFluid().builtInRegistryHolder().key().location().hashCode();
+                case 7 -> tankEnderSap.getFluid().getFluid().builtInRegistryHolder().key().location().hashCode();
+                case 8 -> tankFuelium.getFluid().getFluid().builtInRegistryHolder().key().location().hashCode();
+                default -> 0;
+            };
         }
 
         public void set(int index, int value)
         {
-            switch(index)
-            {
-                case 0:
-                    extractionProgress = value;
-                    break;
-                case 1:
-                    remainingFuel = value;
-                    break;
-                case 2:
-                    fuelMaxProgress = value;
-                    break;
-                case 3:
-                    if(!tankBlaze.isEmpty() || tankBlaze.getFluid().getRawFluid() != Fluids.EMPTY)
-                    {
+            switch (index) {
+                case 0 -> extractionProgress = value;
+                case 1 -> remainingFuel = value;
+                case 2 -> fuelMaxProgress = value;
+                case 3 -> {
+                    if (!tankBlaze.isEmpty() || tankBlaze.getFluid().getRawFluid() != Fluids.EMPTY) {
                         tankBlaze.getFluid().setAmount(value);
                     }
-                    break;
-                case 4:
-                    if(!tankEnderSap.isEmpty() || tankEnderSap.getFluid().getRawFluid() != Fluids.EMPTY)
-                    {
+                }
+                case 4 -> {
+                    if (!tankEnderSap.isEmpty() || tankEnderSap.getFluid().getRawFluid() != Fluids.EMPTY) {
                         tankEnderSap.getFluid().setAmount(value);
                     }
-                    break;
-                case 5:
-                    if(!tankFuelium.isEmpty() || tankFuelium.getFluid().getRawFluid() != Fluids.EMPTY)
-                    {
+                }
+                case 5 -> {
+                    if (!tankFuelium.isEmpty() || tankFuelium.getFluid().getRawFluid() != Fluids.EMPTY) {
                         tankFuelium.getFluid().setAmount(value);
                     }
-                    break;
-                case 6:
-                    updateFluid(tankBlaze, value);
-                    break;
-                case 7:
-                    updateFluid(tankEnderSap, value);
-                    break;
-                case 8:
-                    updateFluid(tankFuelium, value);
-                    break;
+                }
+                case 6 -> updateFluid(tankBlaze, value);
+                case 7 -> updateFluid(tankEnderSap, value);
+                case 8 -> updateFluid(tankFuelium, value);
             }
         }
 
@@ -145,7 +129,16 @@ public class FluidMixerTileEntity extends TileEntitySynced implements Container,
 
     public FluidMixerTileEntity()
     {
-        super(ModTileEntities.FLUID_MIXER.get());
+        super(ModTileEntities.FLUID_MIXER.get(), null, null);
+    }
+
+    public FluidMixerTileEntity(BlockPos pos, BlockState state) {
+        super(ModTileEntities.FLUID_MIXER.get(), pos, state);
+    }
+
+    @Override
+    public @NotNull BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
+        return new FluidMixerTileEntity(pos, state);
     }
 
     @Override
@@ -168,15 +161,15 @@ public class FluidMixerTileEntity extends TileEntitySynced implements Container,
     }
 
     @Override
-    public ItemStack getItem(int index)
+    public @NotNull ItemStack getItem(int index)
     {
         return this.inventory.get(index);
     }
 
     @Override
-    public ItemStack removeItem(int index, int count)
+    public @NotNull ItemStack removeItem(int index, int count)
     {
-        ItemStack stack = ItemStackHelper.removeItem(this.inventory, index, count);
+        ItemStack stack = ContainerHelper.removeItem(this.inventory, index, count);
         if(!stack.isEmpty())
         {
             this.setChanged();
@@ -185,13 +178,13 @@ public class FluidMixerTileEntity extends TileEntitySynced implements Container,
     }
 
     @Override
-    public ItemStack removeItemNoUpdate(int index)
+    public @NotNull ItemStack removeItemNoUpdate(int index)
     {
-        return ItemStackHelper.takeItem(this.inventory, index);
+        return ContainerHelper.takeItem(this.inventory, index);
     }
 
     @Override
-    public void setItem(int index, ItemStack stack)
+    public void setItem(int index, @NotNull ItemStack stack)
     {
         this.inventory.set(index, stack);
         if(stack.getCount() > this.getMaxStackSize())
@@ -202,17 +195,18 @@ public class FluidMixerTileEntity extends TileEntitySynced implements Container,
     }
 
     @Override
-    public boolean stillValid(Player player)
+    public boolean stillValid(@NotNull Player player)
     {
+        assert this.level != null;
         return this.level.getBlockEntity(this.worldPosition) == this && player.distanceToSqr((double) this.worldPosition.getX() + 0.5D, (double) this.worldPosition.getY() + 0.5D, (double) this.worldPosition.getZ() + 0.5D) <= 64.0D;
     }
 
     @Override
-    public boolean canPlaceItem(int index, ItemStack stack)
+    public boolean canPlaceItem(int index, @NotNull ItemStack stack)
     {
         if(index == 0)
         {
-            return ForgeHooks.getBurnTime(stack) > 0;
+            return ForgeHooks.getBurnTime(stack, ModRecipeTypes.FLUID_MIXER.get()) > 0;
         }
         else if(index == 1)
         {
@@ -227,74 +221,81 @@ public class FluidMixerTileEntity extends TileEntitySynced implements Container,
         this.inventory.clear();
     }
 
-    @Override
-    public void tick()
+    @Nullable
+    @ParametersAreNonnullByDefault
+    @Override //FIXME: does this actually properly tick the instances of this entity?
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        return type == ModTileEntities.FLUID_MIXER.get() ? FluidMixerTileEntity::tickServer : null;
+    }
+
+    private static <T extends BlockEntity> void tickServer(Level level, BlockPos pos, BlockState state, T tInstance)
     {
-        if(this.level != null && !this.level.isClientSide())
+        if(level != null && !level.isClientSide() && tInstance instanceof FluidMixerTileEntity instance)
         {
-            ItemStack ingredient = this.getItem(SLOT_INGREDIENT);
-            ItemStack fuel = this.getItem(SLOT_FUEL);
+            ItemStack ingredient = instance.getItem(SLOT_INGREDIENT);
+            ItemStack fuel = instance.getItem(SLOT_FUEL);
 
-            if(this.currentRecipe == null && !ingredient.isEmpty())
+            if(instance.currentRecipe == null && !ingredient.isEmpty())
             {
-                this.currentRecipe = this.getRecipe().orElse(null);
+                instance.currentRecipe = instance.getRecipe().orElse(null);
             }
-            else if(!this.canMix(this.currentRecipe))
+            else if(!instance.canMix(instance.currentRecipe))
             {
-                this.currentRecipe = null;
-                this.extractionProgress = 0;
+                instance.currentRecipe = null;
+                instance.extractionProgress = 0;
             }
 
-            if(this.canMix(this.currentRecipe))
+            if(instance.canMix(instance.currentRecipe))
             {
-                this.updateFuel(fuel);
+                instance.updateFuel(fuel);
 
-                if(this.remainingFuel > 0)
+                if(instance.remainingFuel > 0)
                 {
-                    this.setMixing(true);
+                    instance.setMixing(true);
 
-                    if(this.extractionProgress++ == Config.SERVER.mixerMixTime.get())
+                    if(instance.extractionProgress++ == Config.SERVER.mixerMixTime.get())
                     {
-                        FluidMixerRecipe recipe = this.currentRecipe;
-                        this.tankFuelium.fill(recipe.getResult().createStack(), IFluidHandler.FluidAction.EXECUTE);
-                        this.tankBlaze.drain(recipe.getFluidAmount(this.tankBlaze.getFluid().getFluid()), IFluidHandler.FluidAction.EXECUTE);
-                        this.tankEnderSap.drain(recipe.getFluidAmount(this.tankEnderSap.getFluid().getFluid()), IFluidHandler.FluidAction.EXECUTE);
-                        this.shrinkItem(SLOT_INGREDIENT);
-                        this.extractionProgress = 0;
-                        this.currentRecipe = null;
+                        FluidMixerRecipe recipe = instance.currentRecipe;
+                        instance.tankFuelium.fill(recipe.getResult().createStack(), IFluidHandler.FluidAction.EXECUTE);
+                        instance.tankBlaze.drain(recipe.getFluidAmount(instance.tankBlaze.getFluid().getFluid()), IFluidHandler.FluidAction.EXECUTE);
+                        instance.tankEnderSap.drain(recipe.getFluidAmount(instance.tankEnderSap.getFluid().getFluid()), IFluidHandler.FluidAction.EXECUTE);
+                        instance.shrinkItem(SLOT_INGREDIENT);
+                        instance.extractionProgress = 0;
+                        instance.currentRecipe = null;
                     }
                 }
                 else
                 {
-                    this.extractionProgress = 0;
-                    this.setMixing(false);
+                    instance.extractionProgress = 0;
+                    instance.setMixing(false);
                 }
             }
             else
             {
-                this.extractionProgress = 0;
-                this.setMixing(false);
+                instance.extractionProgress = 0;
+                instance.setMixing(false);
             }
 
-            if(this.remainingFuel > 0)
+            if(instance.remainingFuel > 0)
             {
-                this.remainingFuel--;
-                this.updateFuel(fuel);
+                instance.remainingFuel--;
+                instance.updateFuel(fuel);
 
                 // Updates the enabled state of the fluid extractor
-                if(this.remainingFuel == 0)
+                if(instance.remainingFuel == 0)
                 {
-                    this.setMixing(false);
+                    instance.setMixing(false);
                 }
             }
         }
     }
 
+    @SuppressWarnings("unused") //FIXME unused
     private void updateFuel(ItemStack fuel)
     {
-        if(!fuel.isEmpty() && ForgeHooks.getBurnTime(fuel) > 0 && this.remainingFuel == 0 && this.canMix(this.currentRecipe))
+        if(!fuel.isEmpty() && ForgeHooks.getBurnTime(fuel, ModRecipeTypes.FLUID_MIXER.get()) > 0 && this.remainingFuel == 0 && this.canMix(this.currentRecipe))
         {
-            this.fuelMaxProgress = ForgeHooks.getBurnTime(fuel);
+            this.fuelMaxProgress = ForgeHooks.getBurnTime(fuel, ModRecipeTypes.FLUID_MIXER.get());
             this.remainingFuel = this.fuelMaxProgress;
             this.shrinkItem(SLOT_FUEL);
         }
@@ -315,7 +316,7 @@ public class FluidMixerTileEntity extends TileEntitySynced implements Container,
         {
             this.currentRecipe = null;
         }
-        return this.currentRecipe != null && this.canMix(this.currentRecipe) && this.remainingFuel >= 0;
+        return this.canMix(this.currentRecipe) && this.remainingFuel >= 0; //FIXME potential null invocation error?
     }
 
     private void shrinkItem(int index)
@@ -349,17 +350,17 @@ public class FluidMixerTileEntity extends TileEntitySynced implements Container,
     }
 
     @Override
-    public void load(BlockState state, CompoundTag compound)
+    public void load(@NotNull CompoundTag compound)
     {
-        super.load(state, compound);
+        super.load(compound);
         if(compound.contains("Items", Tag.TAG_LIST))
         {
             this.inventory = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
-            ItemStackHelper.loadAllItems(compound, this.inventory);
+            ContainerHelper.loadAllItems(compound, this.inventory);
         }
         if(compound.contains("CustomName", Tag.TAG_STRING))
         {
-            this.customName = compound.getString("CustomName");
+            this.customName = Component.literal(compound.getString("CustomName"));
         }
         if(compound.contains("TankBlaze", Tag.TAG_COMPOUND))
         {
@@ -392,17 +393,15 @@ public class FluidMixerTileEntity extends TileEntitySynced implements Container,
             this.extractionProgress = compound.getInt("ExtractionProgress");
         }
     }
-
-    @Override
-    public CompoundTag save(CompoundTag compound)
+    public CompoundTag saveHelper(@NotNull CompoundTag compound)
     {
         super.saveAdditional(compound);
 
-        ItemStackHelper.saveAllItems(compound, this.inventory);
+        ContainerHelper.saveAllItems(compound, this.inventory);
 
         if(this.hasCustomName())
         {
-            compound.putString("CustomName", this.customName);
+            compound.putString("CustomName", String.valueOf(this.customName));
         }
 
         this.writeTanks(compound);
@@ -414,9 +413,9 @@ public class FluidMixerTileEntity extends TileEntitySynced implements Container,
     }
 
     @Override
-    public CompoundTag getUpdateTag()
+    public @NotNull CompoundTag getUpdateTag()
     {
-        CompoundTag tag = super.save(new CompoundTag());
+        CompoundTag tag = this.saveHelper(this.saveWithFullMetadata());
         this.writeTanks(tag);
         return tag;
     }
@@ -443,20 +442,22 @@ public class FluidMixerTileEntity extends TileEntitySynced implements Container,
         return this.tankBlaze.isEmpty() && this.tankEnderSap.isEmpty() && this.tankFuelium.isEmpty();
     }
 
-    private String getName()
+    public @NotNull MutableComponent getName()
     {
-        return this.hasCustomName() ? this.customName : "container.fluid_mixer";
+        return this.hasCustomName() ? this.customName : Component.translatable("container.fluid_mixer");
     }
 
     public boolean hasCustomName()
     {
-        return this.customName != null && !this.customName.isEmpty();
+        return this.customName != null && !this.customName.getString().isEmpty();
     }
 
     @Override
-    public Component getDisplayName()
+    public @NotNull Component getDisplayName()
     {
-        return this.hasCustomName() ? MutableComponent.create(new LiteralContents(this.getName()) : Component.translatable(this.getName());
+        return this.hasCustomName()
+                ? MutableComponent.create(new LiteralContents(this.getName().toString()))
+                : Component.translatable(this.getName().toString());
     }
 
     @Nullable
@@ -509,12 +510,12 @@ public class FluidMixerTileEntity extends TileEntitySynced implements Container,
 
     @Nullable
     @Override
-    public Container createMenu(int windowId, Inventory playerInventory, Player playerEntity)
+    public AbstractContainerMenu createMenu(int windowId, @NotNull Inventory playerInventory, @NotNull Player playerEntity)
     {
         return new FluidMixerContainer(windowId, playerInventory, this);
     }
 
-    public IIntArray getFluidMixerData()
+    public ContainerData getFluidMixerData()
     {
         return fluidMixerData;
     }
@@ -527,18 +528,21 @@ public class FluidMixerTileEntity extends TileEntitySynced implements Container,
 
     public Optional<FluidMixerRecipe> getRecipe()
     {
-        return this.level.getRecipeManager().getRecipeFor(ModRecipeTypes.FLUID_MIXER, this, this.level);
+        assert this.level != null;
+        return this.level.getRecipeManager().getRecipeFor(ModRecipeTypes.FLUID_MIXER.get(), this, this.level);
     }
 
     private boolean isValidIngredient(ItemStack ingredient)
     {
-        List<FluidMixerRecipe> recipes = this.level.getRecipeManager().getRecipes().stream().filter(recipe -> recipe.getType() == ModRecipeTypes.FLUID_MIXER).map(recipe -> (FluidMixerRecipe) recipe).collect(Collectors.toList());
+        assert this.level != null;
+        List<FluidMixerRecipe> recipes = this.level.getRecipeManager().getRecipes().stream().filter(recipe -> recipe.getType() == ModRecipeTypes.FLUID_MIXER.get()).map(recipe -> (FluidMixerRecipe) recipe).toList();
         return recipes.stream().anyMatch(recipe -> InventoryUtil.areItemStacksEqualIgnoreCount(ingredient, recipe.getIngredient()));
     }
 
     private boolean isValidFluid(FluidStack stack)
     {
-        List<FluidMixerRecipe> recipes = this.level.getRecipeManager().getRecipes().stream().filter(recipe -> recipe.getType() == ModRecipeTypes.FLUID_MIXER).map(recipe -> (FluidMixerRecipe) recipe).collect(Collectors.toList());
+        assert this.level != null;
+        List<FluidMixerRecipe> recipes = this.level.getRecipeManager().getRecipes().stream().filter(recipe -> recipe.getType() == ModRecipeTypes.FLUID_MIXER.get()).map(recipe -> (FluidMixerRecipe) recipe).toList();
         return recipes.stream().anyMatch(recipe ->
         {
             for(FluidEntry entry : recipe.getInputs())
@@ -581,6 +585,7 @@ public class FluidMixerTileEntity extends TileEntitySynced implements Container,
     {
         if(cap == ForgeCapabilities.FLUID_HANDLER)
         {
+            assert this.level != null;
             BlockState state = this.level.getBlockState(this.worldPosition);
             if(state.getProperties().contains(RotatedObjectBlock.DIRECTION))
             {
@@ -600,19 +605,21 @@ public class FluidMixerTileEntity extends TileEntitySynced implements Container,
             }
             return LazyOptional.empty();
         }
-        else if(!this.remove && cap == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+        else if(!this.remove && cap == ForgeCapabilities.ITEM_HANDLER)
         {
             return this.itemHandler.cast();
         }
         return super.getCapability(cap, facing);
     }
 
+    @SuppressWarnings("unused") //FIXME: unused
     private void setMixing(boolean state)
     {
         if(this.mixing != state)
         {
             this.mixing = state;
-            this.level.setBlock(this.worldPosition, this.getBlockState().setValue(FluidMixerBlock.ENABLED, state), Constants.BlockFlags.DEFAULT);
+            assert this.level != null;
+            this.level.setBlock(this.worldPosition, this.getBlockState().setValue(FluidMixerBlock.ENABLED, state), Block.UPDATE_NEIGHBORS);
         }
     }
 }

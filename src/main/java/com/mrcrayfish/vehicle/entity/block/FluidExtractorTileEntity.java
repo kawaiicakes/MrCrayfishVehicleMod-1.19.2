@@ -7,44 +7,51 @@ import com.mrcrayfish.vehicle.crafting.ModRecipeTypes;
 import com.mrcrayfish.vehicle.init.ModTileEntities;
 import com.mrcrayfish.vehicle.inventory.container.FluidExtractorContainer;
 import com.mrcrayfish.vehicle.util.InventoryUtil;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.Container;
-import net.minecraft.inventory.ItemStackHelper;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.util.IIntArray;
-import net.minecraft.util.INameable;
 import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.contents.LiteralContents;
+import net.minecraft.world.Container;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.Nameable;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerData;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ForgeHooks;
 import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Author: MrCrayfish
  */
-public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements Container, BaseEntityBlock, MenuProvider, INameable
+@SuppressWarnings("deprecation")
+public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements Container, EntityBlock, MenuProvider, Nameable
 {
     private NonNullList<ItemStack> inventory = NonNullList.withSize(7, ItemStack.EMPTY);
 
@@ -55,53 +62,37 @@ public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements 
     private int remainingFuel;
     private int fuelMaxProgress;
     private int extractionProgress;
-    private int capacity;
+    private final int capacity;
     private boolean extracting;
 
     private String customName;
 
-    protected final IIntArray fluidExtractorData = new IIntArray()
+    protected final ContainerData fluidExtractorData = new ContainerData()
     {
         public int get(int index)
         {
-            switch(index)
-            {
-                case 0:
-                    return extractionProgress;
-                case 1:
-                    return remainingFuel;
-                case 2:
-                    return fuelMaxProgress;
-                case 3:
-                    return tank.getFluid().getFluid().builtInRegistryHolder().key().location().hashCode();
-                case 4:
-                    return tank.getFluidAmount();
-            }
-            return 0;
+            return switch (index) {
+                case 0 -> extractionProgress;
+                case 1 -> remainingFuel;
+                case 2 -> fuelMaxProgress;
+                case 3 -> tank.getFluid().getFluid().builtInRegistryHolder().key().location().hashCode();
+                case 4 -> tank.getFluidAmount();
+                default -> 0;
+            };
         }
 
         public void set(int index, int value)
         {
-            switch(index)
-            {
-                case 0:
-                    extractionProgress = value;
-                    break;
-                case 1:
-                    remainingFuel = value;
-                    break;
-                case 2:
-                    fuelMaxProgress = value;
-                    break;
-                case 3:
-                    updateFluid(tank, value);
-                    break;
-                case 4:
-                    if(!tank.isEmpty() || tank.getFluid().getRawFluid() != Fluids.EMPTY)
-                    {
+            switch (index) {
+                case 0 -> extractionProgress = value;
+                case 1 -> remainingFuel = value;
+                case 2 -> fuelMaxProgress = value;
+                case 3 -> updateFluid(tank, value);
+                case 4 -> {
+                    if (!tank.isEmpty() || tank.getFluid().getRawFluid() != Fluids.EMPTY) {
                         tank.getFluid().setAmount(value);
                     }
-                    break;
+                }
             }
 
         }
@@ -114,11 +105,15 @@ public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements 
 
     public FluidExtractorTileEntity()
     {
-        super(ModTileEntities.FLUID_EXTRACTOR.get(), Config.SERVER.extractorCapacity.get(), stack -> true);
+        super(ModTileEntities.FLUID_EXTRACTOR.get(), null, null, Config.SERVER.extractorCapacity.get());
+        this.capacity = Config.SERVER.extractorCapacity.get();
+    }
+    public FluidExtractorTileEntity(BlockPos pos, BlockState state)
+    {
+        super(ModTileEntities.FLUID_EXTRACTOR.get(), pos, state, Config.SERVER.extractorCapacity.get(), stack -> true);
         this.capacity = Config.SERVER.extractorCapacity.get();
     }
 
-    @Override
     public void tick()
     {
         if(this.level != null && !this.level.isClientSide())
@@ -174,7 +169,7 @@ public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements 
     {
         if(!fuel.isEmpty() && this.remainingFuel == 0 && this.canFillWithFluid(source))
         {
-            this.fuelMaxProgress = ForgeHooks.getBurnTime(fuel);
+            this.fuelMaxProgress = ForgeHooks.getBurnTime(fuel, ModRecipeTypes.FLUID_EXTRACTOR.get());
             this.remainingFuel = this.fuelMaxProgress;
             this.shrinkItem(SLOT_FUEL_SOURCE);
         }
@@ -239,15 +234,15 @@ public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements 
     }
 
     @Override
-    public ItemStack getItem(int index)
+    public @NotNull ItemStack getItem(int index)
     {
         return this.inventory.get(index);
     }
 
     @Override
-    public ItemStack removeItem(int index, int count)
+    public @NotNull ItemStack removeItem(int index, int count)
     {
-        ItemStack stack = ItemStackHelper.removeItem(this.inventory, index, count);
+        ItemStack stack = ContainerHelper.removeItem(this.inventory, index, count);
         if(!stack.isEmpty())
         {
             this.setChanged();
@@ -256,13 +251,13 @@ public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements 
     }
 
     @Override
-    public ItemStack removeItemNoUpdate(int index)
+    public @NotNull ItemStack removeItemNoUpdate(int index)
     {
-        return ItemStackHelper.takeItem(this.inventory, index);
+        return ContainerHelper.takeItem(this.inventory, index);
     }
 
     @Override
-    public void setItem(int index, ItemStack stack)
+    public void setItem(int index, @NotNull ItemStack stack)
     {
         this.inventory.set(index, stack);
         if(stack.getCount() > this.getMaxStackSize())
@@ -273,17 +268,18 @@ public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements 
     }
 
     @Override
-    public boolean stillValid(Player player)
+    public boolean stillValid(@NotNull Player player)
     {
+        assert this.level != null;
         return this.level.getBlockEntity(this.worldPosition) == this && player.distanceToSqr((double) this.worldPosition.getX() + 0.5D, (double) this.worldPosition.getY() + 0.5D, (double) this.worldPosition.getZ() + 0.5D) <= 64.0D;
     }
 
     @Override
-    public boolean canPlaceItem(int index, ItemStack stack)
+    public boolean canPlaceItem(int index, @NotNull ItemStack stack)
     {
         if(index == 0)
         {
-            return ForgeHooks.getBurnTime(stack) > 0;
+            return ForgeHooks.getBurnTime(stack, ModRecipeTypes.FLUID_EXTRACTOR.get()) > 0;
         }
         else if(index == 1)
         {
@@ -319,9 +315,9 @@ public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements 
     }
 
     @Override
-    public void load(BlockState state, CompoundTag compound)
+    public void load(CompoundTag compound)
     {
-        super.load(state, compound);
+        super.load(compound);
         if(compound.contains("ExtractionProgress", Tag.TAG_INT))
         {
             this.extractionProgress = compound.getInt("ExtractionProgress");
@@ -337,7 +333,7 @@ public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements 
         if(compound.contains("Items", Tag.TAG_LIST))
         {
             this.inventory = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
-            ItemStackHelper.loadAllItems(compound, this.inventory);
+            ContainerHelper.loadAllItems(compound, this.inventory);
         }
         if(compound.contains("CustomName", Tag.TAG_STRING))
         {
@@ -345,15 +341,14 @@ public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements 
         }
     }
 
-    @Override
-    public CompoundTag save(CompoundTag compound)
+    public CompoundTag saveHelper(CompoundTag compound)
     {
         super.saveAdditional(compound);
         compound.putInt("ExtractionProgress", this.extractionProgress);
         compound.putInt("RemainingFuel", this.remainingFuel);
         compound.putInt("FuelMaxProgress", this.fuelMaxProgress);
 
-        ItemStackHelper.saveAllItems(compound, this.inventory);
+        ContainerHelper.saveAllItems(compound, this.inventory);
 
         if(this.hasCustomName())
         {
@@ -363,8 +358,33 @@ public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements 
         return compound;
     }
 
+    /**
+     * Any class extending <code>TileFluidHandlerSynced</code> MUST override this method such that its body contains
+     * the constructor of the subclass. The constructor of the subclass MUST call <code>super</code> and pass
+     * arguments appropriately.
+     * <br>
+     * Similarly, any class extending subclasses of <code>TileEntitySynced</code> must copy the described behaviour.
+     * Any method making a call to the constructor of <code>TileEntitySynced</code> or anything extending it -
+     * specifically in other classes - should instead consider doing so inside an override of this method.
+     *
+     * @param pos   a <code>BlockPos</code> automatically passed by the game.
+     * @param state a <code>BlockState</code> automatically passed by the game.
+     * @return a new <code>BlockEntity</code> instance representing this object.
+     */
+    @org.jetbrains.annotations.Nullable
     @Override
-    public Component getName()
+    public BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
+        return new FluidExtractorTileEntity(pos, state);
+    }
+
+    @Override
+    public @NotNull CompoundTag getUpdateTag()
+    {
+        return saveHelper(this.saveWithFullMetadata());
+    }
+
+    @Override
+    public @NotNull Component getName()
     {
         return this.getDisplayName();
     }
@@ -376,9 +396,9 @@ public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements 
     }
 
     @Override
-    public Component getDisplayName()
+    public @NotNull Component getDisplayName()
     {
-        return this.hasCustomName() ? MutableComponent.create(new LiteralContents(this.customName) : Component.translatable("container.fluid_extractor");
+        return this.hasCustomName() ? MutableComponent.create(new LiteralContents(this.customName)) : Component.translatable("container.fluid_extractor");
     }
 
     private void shrinkItem(int index)
@@ -393,12 +413,12 @@ public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements 
 
     @Nullable
     @Override
-    public Container createMenu(int windowId, Inventory playerInventory, Player playerEntity)
+    public AbstractContainerMenu createMenu(int windowId, @NotNull Inventory playerInventory, @NotNull Player playerEntity)
     {
         return new FluidExtractorContainer(windowId, playerInventory, this);
     }
 
-    public IIntArray getFluidExtractorData()
+    public ContainerData getFluidExtractorData()
     {
         return fluidExtractorData;
     }
@@ -411,12 +431,14 @@ public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements 
 
     public Optional<FluidExtractorRecipe> getRecipe()
     {
-        return this.level.getRecipeManager().getRecipeFor(ModRecipeTypes.FLUID_EXTRACTOR, this, this.level);
+        assert this.level != null;
+        return this.level.getRecipeManager().getRecipeFor(ModRecipeTypes.FLUID_EXTRACTOR.get(), this, this.level);
     }
 
     public boolean isValidIngredient(ItemStack ingredient)
     {
-        List<FluidExtractorRecipe> recipes = this.level.getRecipeManager().getRecipes().stream().filter(recipe -> recipe.getType() == ModRecipeTypes.FLUID_EXTRACTOR).map(recipe -> (FluidExtractorRecipe) recipe).collect(Collectors.toList());
+        assert this.level != null;
+        List<FluidExtractorRecipe> recipes = this.level.getRecipeManager().getRecipes().stream().filter(recipe -> recipe.getType() == ModRecipeTypes.FLUID_EXTRACTOR.get()).map(recipe -> (FluidExtractorRecipe) recipe).toList();
         return recipes.stream().anyMatch(recipe -> InventoryUtil.areItemStacksEqualIgnoreCount(ingredient, recipe.getIngredient()));
     }
 
@@ -432,7 +454,7 @@ public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements 
     @Override
     public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> cap, @Nullable Direction side)
     {
-        if (!this.remove && cap == net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY )
+        if (!this.remove && cap == ForgeCapabilities.ITEM_HANDLER)
             return this.itemHandler.cast();
         return super.getCapability(cap, side);
     }
@@ -442,7 +464,8 @@ public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements 
         if(this.extracting != state)
         {
             this.extracting = state;
-            this.level.setBlock(this.worldPosition, this.getBlockState().setValue(FluidMixerBlock.ENABLED, state), Constants.BlockFlags.DEFAULT);
+            assert this.level != null;
+            this.level.setBlock(this.worldPosition, this.getBlockState().setValue(FluidMixerBlock.ENABLED, state), Block.UPDATE_NEIGHBORS);
         }
     }
 }

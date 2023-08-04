@@ -5,7 +5,7 @@ import com.mrcrayfish.vehicle.entity.properties.TrailerProperties;
 import com.mrcrayfish.vehicle.entity.properties.VehicleProperties;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.entity.MoverType;
+import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;

@@ -1,18 +1,17 @@
 package com.mrcrayfish.vehicle.inventory;
 
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.Container;
-import net.minecraft.inventory.ItemStackHelper;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.NonNullList;
+import net.minecraft.world.Container;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Author: MrCrayfish
  */
-public interface IStorageBlock extends AbstractContainerMenu, MenuProvider
-{
+public interface IStorageBlock extends Container, MenuProvider {
     NonNullList<ItemStack> getInventory();
 
     @Override
@@ -35,15 +34,15 @@ public interface IStorageBlock extends AbstractContainerMenu, MenuProvider
     }
 
     @Override
-    default ItemStack getItem(int index)
+    default @NotNull ItemStack getItem(int index)
     {
         return index >= 0 && index < this.getInventory().size() ? this.getInventory().get(index) : ItemStack.EMPTY;
     }
 
     @Override
-    default ItemStack removeItem(int index, int count)
+    default @NotNull ItemStack removeItem(int index, int count)
     {
-        ItemStack stack = ItemStackHelper.removeItem(this.getInventory(), index, count);
+        ItemStack stack = ContainerHelper.removeItem(this.getInventory(), index, count);
         if (!stack.isEmpty())
         {
             this.setChanged();
@@ -52,7 +51,7 @@ public interface IStorageBlock extends AbstractContainerMenu, MenuProvider
     }
 
     @Override
-    default ItemStack removeItemNoUpdate(int index)
+    default @NotNull ItemStack removeItemNoUpdate(int index)
     {
         ItemStack stack = this.getInventory().get(index);
         if (stack.isEmpty())
@@ -67,7 +66,7 @@ public interface IStorageBlock extends AbstractContainerMenu, MenuProvider
     }
 
     @Override
-    default void setItem(int index, ItemStack stack)
+    default void setItem(int index, @NotNull ItemStack stack)
     {
         this.getInventory().set(index, stack);
         if(!stack.isEmpty() && stack.getCount() > this.getMaxStackSize())
@@ -78,7 +77,7 @@ public interface IStorageBlock extends AbstractContainerMenu, MenuProvider
     }
 
     @Override
-    default boolean stillValid(Player player)
+    default boolean stillValid(@NotNull Player player)
     {
         return false;
     }

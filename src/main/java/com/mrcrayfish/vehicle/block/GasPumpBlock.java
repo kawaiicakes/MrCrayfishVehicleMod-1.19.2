@@ -178,8 +178,8 @@ public class GasPumpBlock extends RotatedObjectBlock
     {
         if (state.getValue(TOP))
         {
-            return new GasPumpTileEntity();
+            return new GasPumpTileEntity(pos, state);
         }
-        return new GasPumpTankTileEntity();
+        return new GasPumpTankTileEntity(pos, state);
     }
 }

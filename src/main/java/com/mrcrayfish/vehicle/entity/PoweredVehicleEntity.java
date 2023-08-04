@@ -6,6 +6,8 @@ import com.mrcrayfish.vehicle.block.VehicleCrateBlock;
 import com.mrcrayfish.vehicle.client.VehicleHelper;
 import com.mrcrayfish.vehicle.common.SurfaceHelper;
 import com.mrcrayfish.vehicle.common.entity.Transform;
+import com.mrcrayfish.vehicle.entity.block.GasPumpTankTileEntity;
+import com.mrcrayfish.vehicle.entity.block.GasPumpTileEntity;
 import com.mrcrayfish.vehicle.entity.properties.PoweredProperties;
 import com.mrcrayfish.vehicle.entity.properties.VehicleProperties;
 import com.mrcrayfish.vehicle.init.ModDataKeys;
@@ -21,54 +23,50 @@ import com.mrcrayfish.vehicle.network.message.MessageHandbrake;
 import com.mrcrayfish.vehicle.network.message.MessageHorn;
 import com.mrcrayfish.vehicle.network.message.MessageThrottle;
 import com.mrcrayfish.vehicle.network.message.MessageTurnAngle;
-import com.mrcrayfish.vehicle.entity.block.GasPumpTankTileEntity;
-import com.mrcrayfish.vehicle.entity.block.GasPumpTileEntity;
 import com.mrcrayfish.vehicle.util.CommonUtils;
 import com.mrcrayfish.vehicle.util.InventoryUtil;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.entity.MoverType;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Container;
-import net.minecraft.inventory.IInventoryChangedListener;
-import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.ContainerListener;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundSource;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
-import net.minecraft.network.chat.Component;
+import net.minecraft.world.*;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MoverType;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -78,7 +76,8 @@ import java.util.UUID;
 /**
  * Author: MrCrayfish
  */
-public abstract class PoweredVehicleEntity extends VehicleEntity implements IInventoryChangedListener, MenuProvider
+@SuppressWarnings("deprecation")
+public abstract class PoweredVehicleEntity extends VehicleEntity implements ContainerListener, MenuProvider
 {
     protected static final int MAX_WHEELIE_TICKS = 10;
 
@@ -194,10 +193,9 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
                 return;
 
             tileEntity = this.level.getBlockEntity(pos.below());
-            if(!(tileEntity instanceof GasPumpTankTileEntity))
+            if(!(tileEntity instanceof GasPumpTankTileEntity gasPumpTank))
                 return;
 
-            GasPumpTankTileEntity gasPumpTank = (GasPumpTankTileEntity) tileEntity;
             FluidTank tank = gasPumpTank.getFluidTank();
             FluidStack stack = tank.getFluid();
             if(stack.isEmpty() || !Config.SERVER.validFuels.get().contains(stack.getFluid().builtInRegistryHolder().key().location().toString()))
@@ -216,12 +214,11 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
         }
 
         ItemStack stack = player.getItemInHand(hand);
-        if(!(stack.getItem() instanceof JerryCanItem))
+        if(!(stack.getItem() instanceof JerryCanItem jerryCan))
             return;
 
-        JerryCanItem jerryCan = (JerryCanItem) stack.getItem();
         Optional<IFluidHandlerItem> optional = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).resolve();
-        if(!optional.isPresent())
+        if(optional.isEmpty())
             return;
 
         IFluidHandlerItem handler = optional.get();
@@ -306,7 +303,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
 
         Entity controllingPassenger = this.getControllingPassenger();
 
-        /* If there driver, create particles */
+        /* If there is a driver, create particles */
         if(controllingPassenger != null)
         {
             this.createParticles();
@@ -325,8 +322,8 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
         this.updateVehicleMotion();
 
         /* Updates the rotation and fixes the old rotation */
-        this.setRot(this.yRot, this.xRot);
-        double deltaRot = this.yRotO - this.yRot;
+        this.setRot(this.getYRot(), this.getXRot());
+        double deltaRot = this.yRotO - this.getYRot();
         this.yRotO += (deltaRot < -180) ? 360F : (deltaRot >= 180) ? -360F : 0F;
 
         this.updateWheelPositions();
@@ -432,7 +429,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
                     BlockState state = this.level.getBlockState(pos);
                     if(state.getMaterial() != Material.AIR && state.getMaterial().isSolid())
                     {
-                        Vec3 dirVec = this.calculateViewVector(this.xRot, this.yRot + 180F).add(0, this.charging ? 0.5 : 1.0, 0);
+                        Vec3 dirVec = this.calculateViewVector(this.getXRot(), this.getYRot() + 180F).add(0, this.charging ? 0.5 : 1.0, 0);
                         if(this.charging)
                         {
                             dirVec = dirVec.scale(this.chargingAmount * this.getEnginePower() / 3F);
@@ -456,7 +453,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
         if(this.shouldShowExhaustFumes() && this.canDrive() && this.tickCount % 2 == 0)
         {
             //TODO maybe add more control of this
-            Vec3 fumePosition = this.getExhaustFumesPosition().scale(0.0625).yRot(-this.yRot * 0.017453292F);
+            Vec3 fumePosition = this.getExhaustFumesPosition().scale(0.0625).yRot(-this.getYRot() * 0.017453292F);
             this.level.addParticle(ParticleTypes.SMOKE, this.getX() + fumePosition.x, this.getY() + fumePosition.y, this.getZ() + fumePosition.z, -this.getDeltaMovement().x, 0.0D, -this.getDeltaMovement().z);
             if(this.charging && this.isMoving())
             {
@@ -635,6 +632,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
         return IEngineTier.fromStack(this.getEngineStack());
     }
 
+    @SuppressWarnings("unused") //FIXME unused
     @OnlyIn(Dist.CLIENT)
     public final boolean shouldRenderEngine()
     {
@@ -688,6 +686,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
         this.disableFallDamage = true;
     }
 
+    @SuppressWarnings("unused") //FIXME unused
     public boolean isLaunching()
     {
         return launching;
@@ -800,6 +799,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
         return this.handbrake.get(this);
     }
 
+    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public void onSyncedDataUpdated(EntityDataAccessor<?> key)
     {
@@ -808,7 +808,8 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
         {
             if(COLOR.equals(key))
             {
-                /*Color color = new Color(this.dataManager.get(COLOR)); //TODO move this code to renderer to make fuel port darker or lighter
+                /* this will have to be done some other time
+                Color color = new Color(this.dataManager.get(COLOR)); //TODO move this code to renderer to make fuel port darker or lighter
                 int colorInt = (Math.sqrt(color.getRed() * color.getRed() * 0.241
                         + color.getGreen() * color.getGreen() * 0.691
                         + color.getBlue() * color.getBlue() * 0.068) > 127 ? color.darker() : color.brighter()).getRGB();*/
@@ -873,7 +874,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
             this.vehicleInventory.setItem(1, wheel.copy());
         }
 
-        this.vehicleInventory.addListener(this);
+        this.vehicleInventory.addListener((net.minecraft.world.ContainerListener) this);
     }
 
     private void updateSlots()
@@ -881,9 +882,8 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
         if(!this.level.isClientSide())
         {
             ItemStack engine = this.vehicleInventory.getItem(0);
-            if(engine.getItem() instanceof EngineItem)
+            if(engine.getItem() instanceof EngineItem item)
             {
-                EngineItem item = (EngineItem) engine.getItem();
                 if(item.getEngineType() == this.getEngineType())
                 {
                     this.setEngineStack(engine.copy());
@@ -918,8 +918,8 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
         }
     }
 
-    @Override
-    public void containerChanged(Container inventory)
+    @Override //TODO wtf is someIntLol doing?
+    public void slotChanged(@NotNull AbstractContainerMenu container, int someIntLol, @NotNull ItemStack itemStack)
     {
         this.updateSlots();
     }
@@ -963,7 +963,8 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
             List<Wheel> wheels = properties.getWheels();
 
             // Fixes game crashing if adding wheels when reloading vehicle properties json
-           /* if(this.wheelPositions.length != wheels.size() * 3)
+           /*  hmm
+           if(this.wheelPositions.length != wheels.size() * 3)
             {
                 this.wheelPositions = new double[wheels.size() * 3];
             }*/
@@ -993,7 +994,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
                 wheelY -= ((8 * 0.0625) / 2.0) * scale * wheel.getScaleY();
 
                 /* Update the wheel position */
-                Vec3 wheelVec = new Vec3(wheelX, wheelY, wheelZ).yRot(-this.yRot * 0.017453292F);
+                Vec3 wheelVec = new Vec3(wheelX, wheelY, wheelZ).yRot(-this.getYRot() * 0.017453292F);
                 wheelPositions[i * 3] = wheelVec.x;
                 wheelPositions[i * 3 + 1] = wheelVec.y;
                 wheelPositions[i * 3 + 2] = wheelVec.z;
@@ -1025,7 +1026,8 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
         }
 
         ResourceLocation entityId = this.getType().builtInRegistryHolder().key().location();
-        if(entityId != null)
+        //noinspection ConstantValue
+        if(entityId != null) //FIXME is this truly always true? find out and delete if necessary...
         {
             return VehicleCrateBlock.create(entityId, this.getColor(), engine, wheel);
         }
@@ -1033,7 +1035,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
     }
 
     @Override
-    public Component getDisplayName()
+    public @NotNull Component getDisplayName()
     {
         return this.getName();
     }
@@ -1045,7 +1047,7 @@ public abstract class PoweredVehicleEntity extends VehicleEntity implements IInv
 
     @Nullable
     @Override
-    public Container createMenu(int windowId, Inventory playerInventory, Player playerEntity)
+    public AbstractContainerMenu createMenu(int windowId, @NotNull Inventory playerInventory, @NotNull Player playerEntity)
     {
         return new EditVehicleContainer(windowId, this.getVehicleInventory(), this, playerEntity, playerInventory);
     }

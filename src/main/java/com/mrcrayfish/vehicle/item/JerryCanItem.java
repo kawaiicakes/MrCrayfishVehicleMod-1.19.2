@@ -3,31 +3,32 @@ package com.mrcrayfish.vehicle.item;
 import com.mrcrayfish.vehicle.Config;
 import com.mrcrayfish.vehicle.util.FluidUtils;
 import com.mrcrayfish.vehicle.util.RenderUtil;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.item.ItemUseContext;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.network.chat.contents.LiteralContents;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fluids.capability.templates.FluidHandlerItemStack;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Optional;
@@ -36,6 +37,7 @@ import java.util.function.Supplier;
 /**
  * Author: MrCrayfish
  */
+@ParametersAreNonnullByDefault
 public class JerryCanItem extends Item
 {
     private final DecimalFormat FUEL_FORMAT = new DecimalFormat("0.#%");
@@ -51,7 +53,7 @@ public class JerryCanItem extends Item
     @Override
     public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items)
     {
-        if(this.allowdedIn(group))
+        if(this.allowedIn(group))
         {
             ItemStack stack = new ItemStack(this);
             items.add(stack);
@@ -72,22 +74,23 @@ public class JerryCanItem extends Item
                 FluidStack fluidStack = handler.getFluidInTank(0);
                 if(!fluidStack.isEmpty())
                 {
-                    tooltip.add(Component.translatable(fluidStack.getTranslationKey())).withStyle(ChatFormatting.BLUE));
+                    tooltip.add(Component.translatable(fluidStack.getTranslationKey()).withStyle(ChatFormatting.BLUE));
                     tooltip.add(MutableComponent.create(new LiteralContents(this.getCurrentFuel(stack) + " / " + this.capacitySupplier.get() + "mb")).withStyle(ChatFormatting.GRAY));
                 }
                 else
                 {
-                    tooltip.add(Component.translatable("item.vehicle.jerry_can.empty")).withStyle(ChatFormatting.RED));
+                    tooltip.add(Component.translatable("item.vehicle.jerry_can.empty").withStyle(ChatFormatting.RED));
                 }
             });
-            tooltip.add(MutableComponent.create(new LiteralContents(ChatFormatting.YELLOW + I18n.get("vehicle.info_help")));
+            tooltip.add(MutableComponent.create(new LiteralContents(ChatFormatting.YELLOW + I18n.get("vehicle.info_help"))));
         }
     }
 
     @Override
-    public InteractionResult onItemUseFirst(ItemStack stack, ItemUseContext context)
+    public InteractionResult onItemUseFirst(ItemStack stack, UseOnContext context)
     {
         // This is such ugly code
+        //(kawaiicakes: at least I can read it lol)
         BlockEntity tileEntity = context.getLevel().getBlockEntity(context.getClickedPos());
         if(tileEntity != null && context.getPlayer() != null)
         {
@@ -134,7 +137,7 @@ public class JerryCanItem extends Item
     }
 
     @Override
-    public boolean showDurabilityBar(ItemStack stack)
+    public boolean isBarVisible(ItemStack stack)
     {
         return this.getCurrentFuel(stack) > 0;
     }

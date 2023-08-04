@@ -21,7 +21,7 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.Container;
 import net.minecraft.world.Containers;
-import net.minecraft.inventory.ItemStackHelper;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.nbt.CompoundTag;
@@ -163,7 +163,7 @@ public class MopedEntity extends MotorcycleEntity implements IStorage, IAttachab
                 if(!blockEntityTag.isEmpty() && blockEntityTag.contains("Items", Tag.TAG_LIST))
                 {
                     NonNullList<ItemStack> chestInventory = NonNullList.withSize(27, ItemStack.EMPTY);
-                    ItemStackHelper.loadAllItems(blockEntityTag, chestInventory);
+                    ContainerHelper.loadAllItems(blockEntityTag, chestInventory);
                     for(int i = 0; i < chestInventory.size(); i++)
                     {
                         this.inventory.setItem(i, chestInventory.get(i));

@@ -40,7 +40,7 @@ public class MovingEngineSound extends AbstractTickableSoundInstance
     @Override
     public void tick()
     {
-        // Minecraft will still tick the sound even after stop has been called
+        // Minecraft will still tickServer the sound even after stop has been called
         if(this.isStopped())
             return;
 

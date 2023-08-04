@@ -1,5 +1,6 @@
 package com.mrcrayfish.vehicle.inventory.container;
 
+import com.mrcrayfish.vehicle.crafting.ModRecipeTypes;
 import com.mrcrayfish.vehicle.init.ModContainers;
 import com.mrcrayfish.vehicle.inventory.container.slot.FuelSlot;
 import com.mrcrayfish.vehicle.entity.block.FluidMixerTileEntity;
@@ -14,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Author: MrCrayfish
  */
+@SuppressWarnings("unused") //FIXME fields are mostly unused
 public class FluidMixerContainer extends AbstractContainerMenu
 {
     private int extractionProgress;
@@ -66,7 +68,7 @@ public class FluidMixerContainer extends AbstractContainerMenu
         ItemStack stack = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
 
-        if(slot != null && slot.hasItem())
+        if(slot.hasItem()) //FIXME slot null check necessary?
         {
             ItemStack slotStack = slot.getItem();
             stack = slotStack.copy();
@@ -87,7 +89,7 @@ public class FluidMixerContainer extends AbstractContainerMenu
                         return ItemStack.EMPTY;
                     }
                 }
-                else if(ForgeHooks.getBurnTime(slotStack) > 0)
+                else if(ForgeHooks.getBurnTime(slotStack, ModRecipeTypes.FLUID_MIXER.get()) > 0)
                 {
                     if(!this.moveItemStackTo(slotStack, 0, 1, false))
                     {

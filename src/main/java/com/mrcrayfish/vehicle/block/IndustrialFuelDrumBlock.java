@@ -25,6 +25,6 @@ public class IndustrialFuelDrumBlock extends FuelDrumBlock
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state)
     {
-        return new IndustrialFuelDrumTileEntity();
+        return new IndustrialFuelDrumTileEntity(pos, state);
     }
 }

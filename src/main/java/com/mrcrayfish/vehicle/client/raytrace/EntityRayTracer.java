@@ -99,7 +99,7 @@ public class EntityRayTracer
     private final Map<EntityType<?>, List<RayTraceData>> entityInteractableBoxData = new HashMap<>();
 
     /**
-     * The result of clicking and holding on a continuously interactable raytrace part. Every tick that this is not null,
+     * The result of clicking and holding on a continuously interactable raytrace part. Every tickServer that this is not null,
      * both the raytrace and the interaction of this part will be performed.
      */
     @Nullable
@@ -127,7 +127,7 @@ public class EntityRayTracer
     }
 
     /**
-     * Clears registration data and triggers re-registration in the next client tick
+     * Clears registration data and triggers re-registration in the next client tickServer
      */
     public void clearDataForReregistration()
     {
@@ -321,9 +321,9 @@ public class EntityRayTracer
     }
 
     /**
-     * Performs a raytrace and interaction each tick that a continuously interactable part is right-clicked and held while looking at
+     * Performs a raytrace and interaction each tickServer that a continuously interactable part is right-clicked and held while looking at
      * 
-     * @param event tick event
+     * @param event tickServer event
      */
     @SubscribeEvent
     public void rayTraceEntitiesContinuously(TickEvent.ClientTickEvent event)

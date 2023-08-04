@@ -10,20 +10,25 @@ import com.mrcrayfish.vehicle.common.FluidNetworkHandler;
 import com.mrcrayfish.vehicle.init.ModTileEntities;
 import com.mrcrayfish.vehicle.util.FluidUtils;
 import com.mrcrayfish.vehicle.util.TileEntityUtil;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.level.block.BaseEntityBlock;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.core.Direction;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.common.util.LazyOptional;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.EntityBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import org.apache.commons.lang3.tuple.Pair;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.function.Function;
@@ -31,31 +36,41 @@ import java.util.function.Function;
 /**
  * Author: MrCrayfish
  */
-public class PumpTileEntity extends PipeTileEntity implements BaseEntityBlock
+public class PumpTileEntity extends PipeTileEntity implements EntityBlock
 {
     private int lastHandlerIndex;
     private boolean validatedNetwork;
-    private Map<BlockPos, PipeNode> fluidNetwork = new HashMap<>();
-    private List<Pair<BlockPos, Direction>> fluidHandlers = new ArrayList<>();
+    private final Map<BlockPos, PipeNode> fluidNetwork = new HashMap<>();
+    private final List<Pair<BlockPos, Direction>> fluidHandlers = new ArrayList<>();
     private PowerMode powerMode = PowerMode.ALWAYS_ACTIVE;
 
     public PumpTileEntity()
     {
-        super(ModTileEntities.FLUID_PUMP.get());
+        super(ModTileEntities.FLUID_PUMP.get(), null, null);
+    }
+    public PumpTileEntity(BlockPos pos, BlockState state)
+    {
+        super(ModTileEntities.FLUID_PUMP.get(), pos, state);
     }
 
     @Override
-    public void tick()
-    {
-        if(this.level != null && !this.level.isClientSide())
-        {
-            if(!this.validatedNetwork)
-            {
-                this.validatedNetwork = true;
-                this.generatePipeNetwork();
-            }
+    @ParametersAreNonnullByDefault
+    @Nullable
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+        return type == ModTileEntities.FLUID_PUMP.get() && !level.isClientSide() ? PumpTileEntity::tick : null;
+    }
 
-            this.pumpFluid();
+    public static <T extends BlockEntity> void tick(Level level, BlockPos pos, BlockState state, T tInstance)
+    {
+        if (tInstance instanceof PumpTileEntity instance){
+            if (instance.level != null && !instance.level.isClientSide()) {
+                if (!instance.validatedNetwork) {
+                    instance.validatedNetwork = true;
+                    instance.generatePipeNetwork();
+                }
+
+                instance.pumpFluid();
+            }
         }
     }
 
@@ -64,6 +79,7 @@ public class PumpTileEntity extends PipeTileEntity implements BaseEntityBlock
         return this.powerMode;
     }
 
+    @SuppressWarnings("unused") //FIXME: unused
     public Map<BlockPos, PipeNode> getFluidNetwork()
     {
         return ImmutableMap.copyOf(this.fluidNetwork);
@@ -74,6 +90,7 @@ public class PumpTileEntity extends PipeTileEntity implements BaseEntityBlock
         this.validatedNetwork = false;
     }
 
+    @SuppressWarnings("unused") //FIXME: unused
     private void pumpFluid()
     {
         if(this.fluidHandlers.isEmpty() || this.level == null)
@@ -87,7 +104,7 @@ public class PumpTileEntity extends PipeTileEntity implements BaseEntityBlock
             return;
 
         Optional<IFluidHandler> source = this.getSourceFluidHandler(this.level);
-        if(!source.isPresent())
+        if(source.isEmpty())
             return;
 
         IFluidHandler sourceHandler = source.get();
@@ -134,6 +151,7 @@ public class PumpTileEntity extends PipeTileEntity implements BaseEntityBlock
     }
 
     // This can probably be optimised...
+    @SuppressWarnings("unused") //FIXME: unused
     private void generatePipeNetwork()
     {
         Preconditions.checkNotNull(this.level);
@@ -202,9 +220,8 @@ public class PumpTileEntity extends PipeTileEntity implements BaseEntityBlock
                 if(state.getValue(FluidPipeBlock.CONNECTED_PIPES[direction.get3DDataValue()]))
                 {
                     BlockEntity selfTileEntity = this.level.getBlockEntity(pos);
-                    if(selfTileEntity instanceof PipeTileEntity)
+                    if(selfTileEntity instanceof PipeTileEntity pipeTileEntity)
                     {
-                        PipeTileEntity pipeTileEntity = (PipeTileEntity) selfTileEntity;
                         pipeTileEntity.addPump(this.worldPosition);
                         node.tileEntity = new WeakReference<>(pipeTileEntity);
                         FluidNetworkHandler.instance().addPipeForUpdate(pipeTileEntity);
@@ -299,7 +316,7 @@ public class PumpTileEntity extends PipeTileEntity implements BaseEntityBlock
         {
             CompoundTag compound = new CompoundTag();
             this.writePowerMode(compound);
-            TileEntityUtil.sendUpdatePacket(this, super.save(compound));
+            TileEntityUtil.sendUpdatePacket(this, super.saveHelper(compound));
             BlockState state = this.getBlockState();
             state = ((FluidPumpBlock) state.getBlock()).getDisabledState(state, this.level, this.worldPosition);
             this.level.setBlock(this.worldPosition, state, Block.UPDATE_CLIENTS | Block.UPDATE_IMMEDIATE);
@@ -307,9 +324,9 @@ public class PumpTileEntity extends PipeTileEntity implements BaseEntityBlock
     }
 
     @Override
-    public void load(BlockState state, CompoundTag compound)
+    public void load(@NotNull CompoundTag compound)
     {
-        super.load(state, compound);
+        super.load(compound);
         if(compound.contains("PowerMode", Tag.TAG_INT))
         {
             this.powerMode = PowerMode.fromOrdinal(compound.getInt("PowerMode"));
@@ -317,10 +334,10 @@ public class PumpTileEntity extends PipeTileEntity implements BaseEntityBlock
     }
 
     @Override
-    public CompoundTag save(CompoundTag compound)
+    public void saveAdditional(@NotNull CompoundTag compound)
     {
         compound.putInt("PowerMode", this.powerMode.ordinal());
-        return super.saveAdditional(compound);
+        super.saveAdditional(compound);
     }
 
     private void writePowerMode(CompoundTag compound)
@@ -328,10 +345,9 @@ public class PumpTileEntity extends PipeTileEntity implements BaseEntityBlock
         compound.putInt("PowerMode", this.powerMode.ordinal());
     }
 
-    @org.jetbrains.annotations.Nullable
     @Override
-    public BlockEntity newBlockEntity(BlockPos p_153215_, BlockState p_153216_) {
-        return null;
+    public @NotNull BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
+        return new PumpTileEntity(pos, state);
     }
 
     private static class PipeNode
@@ -346,8 +362,8 @@ public class PumpTileEntity extends PipeTileEntity implements BaseEntityBlock
         REQUIRES_SIGNAL_OFF("off", input -> !Objects.requireNonNull(input.level).hasNeighborSignal(input.worldPosition));
 
         private static final String LANG_KEY_CHAT_PREFIX = Reference.MOD_ID + ".chat.pump.power";
-        private String key;
-        private Function<PumpTileEntity, Boolean> function;
+        private final String key;
+        private final Function<PumpTileEntity, Boolean> function;
 
         PowerMode(String key, Function<PumpTileEntity, Boolean> function)
         {
