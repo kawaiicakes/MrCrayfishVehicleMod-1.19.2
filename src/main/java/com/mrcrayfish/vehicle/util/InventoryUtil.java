@@ -7,7 +7,6 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -40,7 +39,7 @@ public class InventoryUtil
     }
 
     @SuppressWarnings("UnusedReturnValue") //TODO unused return
-    public static <T extends AbstractContainerMenu> T readInventoryToNBT(CompoundTag compound, String tagName, T t)
+    public static <T extends Container> T readInventoryToNBT(CompoundTag compound, String tagName, T t)
     {
         if(compound.contains(tagName, Tag.TAG_LIST))
         {
@@ -49,12 +48,9 @@ public class InventoryUtil
             {
                 CompoundTag tagCompound = tagList.getCompound(i);
                 byte slot = tagCompound.getByte("Slot");
-                if(slot >= 0 && slot < t.slots.size())
+                if(slot >= 0 && slot < t.getContainerSize())
                 {
-                    t.setItem(slot, 420_69_1337, ItemStack.of(tagCompound));
-                    //FIXME the second int changes this.stateId. What is it? Proper impl?
-                    //It looks like whatever stateId is is only changed when either #setItem or #initializeContents
-                    //is called on this AbstractContainerMenu. I will just arbitrarily set it to 420691337.
+                    t.setItem(slot, ItemStack.of(tagCompound));
                 }
             }
         }

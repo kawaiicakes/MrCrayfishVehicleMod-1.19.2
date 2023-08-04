@@ -7,37 +7,33 @@ import com.mrcrayfish.vehicle.common.inventory.IStorage;
 import com.mrcrayfish.vehicle.common.inventory.StorageInventory;
 import com.mrcrayfish.vehicle.entity.TrailerEntity;
 import com.mrcrayfish.vehicle.init.ModEntities;
-import com.mrcrayfish.vehicle.inventory.container.StorageContainer;
 import com.mrcrayfish.vehicle.item.SprayCanItem;
 import com.mrcrayfish.vehicle.network.PacketHandler;
 import com.mrcrayfish.vehicle.network.message.MessageAttachTrailer;
 import com.mrcrayfish.vehicle.network.message.MessageSyncStorage;
 import com.mrcrayfish.vehicle.util.InventoryUtil;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.block.CropsBlock;
-import net.minecraft.block.FarmlandBlock;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.Containers;
-import net.minecraft.inventory.container.SimpleNamedContainerProvider;
-import net.minecraft.item.BlockNamedItem;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.Vec3;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.CropBlock;
+import net.minecraft.world.level.block.FarmBlock;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.Tags;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PacketDistributor;
 import org.jetbrains.annotations.NotNull;
 
@@ -102,7 +98,7 @@ public class SeederTrailerEntity extends TrailerEntity implements IStorage
     private void plantSeed(Vec3 vec)
     {
         BlockPos pos = new BlockPos(xo + vec.x, yo + 0.25, zo + vec.z);
-        if(level.isEmptyBlock(pos) && level.getBlockState(pos.below()).getBlock() instanceof FarmlandBlock)
+        if(level.isEmptyBlock(pos) && level.getBlockState(pos.below()).getBlock() instanceof FarmBlock)
         {
             ItemStack seed = this.getSeed();
             if(seed.isEmpty() && this.getPullingEntity() instanceof StorageTrailerEntity)
@@ -111,7 +107,7 @@ public class SeederTrailerEntity extends TrailerEntity implements IStorage
             }
             if(this.isSeed(seed))
             {
-                Block seedBlock = ((BlockNamedItem) seed.getItem()).getBlock();
+                Block seedBlock = ((BlockItem) seed.getItem()).getBlock();
                 this.level.setBlockAndUpdate(pos, seedBlock.defaultBlockState());
                 seed.shrink(1);
             }
@@ -133,7 +129,7 @@ public class SeederTrailerEntity extends TrailerEntity implements IStorage
 
     private boolean isSeed(ItemStack stack)
     {
-        return !stack.isEmpty() && stack.getItem() instanceof BlockNamedItem && ((BlockNamedItem) stack.getItem()).getBlock() instanceof CropsBlock;
+        return !stack.isEmpty() && stack.getItem() instanceof BlockItem && ((BlockItem) stack.getItem()).getBlock() instanceof CropBlock;
     }
 
     private ItemStack getSeedFromStorage(StorageTrailerEntity storageTrailer)
@@ -186,7 +182,7 @@ public class SeederTrailerEntity extends TrailerEntity implements IStorage
     {
         StorageInventory original = this.inventory;
         this.inventory = new StorageInventory(this, this.getDisplayName(), 3, stack ->
-                !stack.isEmpty() && stack.getItem().is(Tags.Items.SEEDS));
+                !stack.isEmpty() && stack.getTags().anyMatch(tag -> tag.equals(Tags.Items.SEEDS))); //TODO: verify this works. was previously stack.getItem().is(Tag.Items.SEEDS).
         // Copies the inventory if it exists already over to the new instance
         if(original != null)
         {
@@ -225,11 +221,10 @@ public class SeederTrailerEntity extends TrailerEntity implements IStorage
     @OnlyIn(Dist.CLIENT)
     public static void registerInteractionBoxes()
     {
-        EntityRayTracer.instance().registerInteractionBox(ModEntities.SEEDER.get(), () -> {
-            return createScaledBoundingBox(-7.0, 1.5, 6.0, 7.0, 3.5, 17.0, 0.0625);
-        }, (entity, rightClick) -> {
+        EntityRayTracer.instance().registerInteractionBox(ModEntities.SEEDER.get(), () -> createScaledBoundingBox(-7.0, 1.5, 6.0, 7.0, 3.5, 17.0, 0.0625), (entity, rightClick) -> {
             if(rightClick) {
                 PacketHandler.getPlayChannel().sendToServer(new MessageAttachTrailer(entity.getId()));
+                assert Minecraft.getInstance().player != null;
                 Minecraft.getInstance().player.swing(InteractionHand.MAIN_HAND);
             }
         }, entity -> true);

@@ -1,19 +1,13 @@
 package com.mrcrayfish.vehicle.common.inventory;
 
-import net.minecraft.world.Container;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.SimpleContainer;
-import net.minecraft.inventory.container.ChestContainer;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.inventory.container.IContainerProvider;
-import net.minecraft.world.MenuProvider;
-import net.minecraft.inventory.container.SimpleNamedContainerProvider;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.Container;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
@@ -23,7 +17,7 @@ import java.util.function.Predicate;
 /**
  * Author: MrCrayfish
  */
-public class StorageInventory extends SimpleContainer {
+public class StorageInventory extends SimpleContainer implements Container {
     private final WeakReference<Entity> entityRef;
     private final Component displayName;
     private final Predicate<ItemStack> itemPredicate;
