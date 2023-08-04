@@ -1,24 +1,25 @@
 package com.mrcrayfish.vehicle.entity.vehicle;
 
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Vector3f;
+import com.mojang.math.Vector4f;
 import com.mrcrayfish.vehicle.common.entity.Transform;
 import com.mrcrayfish.vehicle.entity.HelicopterEntity;
 import com.mrcrayfish.vehicle.entity.properties.VehicleProperties;
 import com.mrcrayfish.vehicle.init.ModParticleTypes;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.particles.IParticleData;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.util.math.RayTraceContext;
-import net.minecraft.world.phys.HitResult;
-import com.mojang.math.Matrix4f;
-import net.minecraft.world.phys.Vec3;
-import com.mojang.math.Vector3f;
-import com.mojang.math.Vector4f;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.Tags;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Author: MrCrayfish
@@ -55,13 +56,13 @@ public class CompactHelicopterEntity extends HelicopterEntity
             downDistance = (downDistance * 0.5) + (downDistance * 0.5) * this.random.nextDouble();
             Vec3 start = new Vec3(posX, this.getY() + 3.0, posZ);
             Vec3 end = start.subtract(0, downDistance, 0);
-            BlockHitResult result = this.level.clip(new RayTraceContext(start, end, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.SOURCE_ONLY, null));
+            BlockHitResult result = this.level.clip(new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.SOURCE_ONLY, null));
             if(result.getType() != HitResult.Type.MISS)
             {
                 Vec3 loc = result.getLocation();
                 double distanceScale = (downDistance - start.distanceTo(loc)) / downDistance;
                 BlockState state = this.level.getBlockState(result.getBlockPos());
-                if(state.is(Tags.Blocks.DIRT) || state.is(Tags.Blocks.GRAVEL) || state.is(Tags.Blocks.SAND))
+                if(state.is(BlockTags.DIRT) || state.is(Tags.Blocks.GRAVEL) || state.is(Tags.Blocks.SAND))
                 {
                     this.level.addParticle(ModParticleTypes.DUST.get(), loc.x, loc.y, loc.z, randX * bladeScale * distanceScale, 0.02, randZ * bladeScale * distanceScale);
                 }
@@ -76,7 +77,8 @@ public class CompactHelicopterEntity extends HelicopterEntity
     }
 
     // Client only TODO move to base vehicle class
-    private Matrix4f getTransformMatrix(float partialTicks)
+    @SuppressWarnings("SameParameterValue")
+    private Matrix4f getTransformMatrix(float partialTicks) //FIXME: always 0, will probably change when this is move to base vehicle class
     {
         Matrix4f matrix = new Matrix4f();
         matrix.setIdentity();
@@ -93,5 +95,10 @@ public class CompactHelicopterEntity extends HelicopterEntity
         translate.add(0.0F, properties.getWheelOffset() * 0.0625F, 0.0F);
         matrix.multiply(Matrix4f.createTranslateMatrix(translate.x(), translate.y(), translate.z()));
         return matrix;
+    }
+
+    @Override
+    public void dataChanged(@NotNull AbstractContainerMenu containerMenu, int magicNumber1, int magicNumber2) {
+        //FIXME: implement
     }
 }

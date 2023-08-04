@@ -99,8 +99,9 @@ public class Wheel
      * Indicates that the wheel scale is to be generated. This is only used when loading vehicle
      * properties and has no other significant use.
      *
-     * @return true if the wheel auto scaled
+     * @return true if the wheel auto-scaled
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted") //FIXME
     public boolean isAutoScale()
     {
         return this.autoScale;
@@ -108,7 +109,7 @@ public class Wheel
 
     /**
      * Determines if this wheels should spawn particles. Depending on the drivetrain of a vehicle,
-     * the spawning of particles can be disabled. For instance, a rear wheel drive vehicle will only
+     * the spawning of particles can be disabled. For instance, a rear-wheel drive vehicle will only
      * spawn particles for the rear wheels as that's where the force to push the vehicle comes from.
      * It should be noted that there is no system in place that determines the drivetrain of a vehicle
      * and the spawning of particles is specified when adding wheels.
@@ -122,11 +123,12 @@ public class Wheel
 
     /**
      * Determines if this wheel should render. Some vehicles have wheels that are manually rendered
-     * due the fact they need extra tranformations and rotations, and therefore shouldn't use the
+     * due the fact they need extra transformations and rotations, and therefore shouldn't use the
      * wheel system and rather just be a placeholder.
      *
      * @return if the wheel should be rendered
      */
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted") //FIXME
     public boolean shouldRender()
     {
         return render;
@@ -166,7 +168,7 @@ public class Wheel
     {
         LEFT(-1), RIGHT(1), NONE(1);
 
-        int offset;
+        final int offset;
 
         Side(int offset)
         {

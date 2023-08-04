@@ -24,6 +24,7 @@ public class SportsPlaneEntity extends PlaneEntity
     }
 
     @Override
-    public void dataChanged(@NotNull AbstractContainerMenu container, int p_150525_, int p_150526_) {
+    public void dataChanged(@NotNull AbstractContainerMenu container, int magicNumber1, int magicNumber2) {
+        //FIXME: proper impl.
     }
 }

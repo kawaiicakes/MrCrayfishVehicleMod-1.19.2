@@ -774,6 +774,8 @@ public abstract class VehicleEntity extends Entity implements IEntityAdditionalS
             {
                 wheel = this.getWheelStack();
             }
+            //FIXME: I don't like this... that third does not like null as an arg but I'm not sure what else I could put there.
+            //noinspection DataFlowIssue
             return VehicleCrateBlock.create(entityId, this.getColor(), null, wheel);
         }
         return ItemStack.EMPTY;

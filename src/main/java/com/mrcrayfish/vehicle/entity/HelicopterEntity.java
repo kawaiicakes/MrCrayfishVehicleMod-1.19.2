@@ -75,7 +75,7 @@ public abstract class HelicopterEntity extends PoweredVehicleEntity
         Entity entity = this.getControllingPassenger();
         if(entity != null && this.isFlying() && operating)
         {
-            float deltaYaw = entity.getYHeadRot() % 360.0F - this.yRot;
+            float deltaYaw = entity.getYHeadRot() % 360.0F - this.getYRot();
             while(deltaYaw < -180.0F)
             {
                 deltaYaw += 360.0F;
@@ -84,7 +84,7 @@ public abstract class HelicopterEntity extends PoweredVehicleEntity
             {
                 deltaYaw -= 360.0F;
             }
-            this.yRot += deltaYaw * this.getRotateStrength();
+            this.setYRot(this.getYRot() + deltaYaw * this.getRotateStrength()); //TODO: reassignment operator replaced by this impl. verify functionality
         }
 
         this.updateBladeSpeed();
@@ -127,7 +127,7 @@ public abstract class HelicopterEntity extends PoweredVehicleEntity
         this.velocity = CommonUtils.lerp(this.velocity, heading, this.getMovementStrength());
         this.motion = this.motion.add(this.velocity);
 
-        this.xRot = this.getPitch();
+        this.setXRot(this.getPitch()); //TODO: reassignment operator replaced by this impl. verify functionality
 
         // Makes the helicopter fall if it's not being operated by a pilot
         if(!operating)
@@ -138,7 +138,7 @@ public abstract class HelicopterEntity extends PoweredVehicleEntity
 
     private float getPitch()
     {
-        return -(float) new Vec3(-this.motion.x, 0, this.motion.z).scale(this.getMaxLeanAngle()).yRot((float) Math.toRadians(-(this.yRot + 90))).x;
+        return -(float) new Vec3(-this.motion.x, 0, this.motion.z).scale(this.getMaxLeanAngle()).yRot((float) Math.toRadians(-(this.getYRot() + 90))).x;
     }
 
     protected Vec3 getInput()
@@ -147,7 +147,7 @@ public abstract class HelicopterEntity extends PoweredVehicleEntity
         {
             double strafe = Mth.clamp(this.getSideInput(), -1.0F, 1.0F);
             double forward = Mth.clamp(this.getForwardInput(), -1.0F, 1.0F);
-            Vec3 input = new Vec3(strafe, 0, forward).yRot((float) Math.toRadians(-this.yRot));
+            Vec3 input = new Vec3(strafe, 0, forward).yRot((float) Math.toRadians(-this.getYRot()));
             return input.length() > 1.0 ? input.normalize() : input;
         }
         return Vec3.ZERO;
@@ -230,7 +230,7 @@ public abstract class HelicopterEntity extends PoweredVehicleEntity
         if(this.isFlying())
         {
             double leanAngle = this.getMaxLeanAngle();
-            Vec3 rotation = new Vec3(-this.motion.x, 0, this.motion.z).scale(leanAngle).yRot((float) Math.toRadians(-(this.yRot + 90)));
+            Vec3 rotation = new Vec3(-this.motion.x, 0, this.motion.z).scale(leanAngle).yRot((float) Math.toRadians(-(this.getYRot() + 90)));
             this.bodyRotationPitch = -(float) rotation.x;
             this.bodyRotationRoll = (float) rotation.z;
         }
@@ -239,7 +239,7 @@ public abstract class HelicopterEntity extends PoweredVehicleEntity
             this.bodyRotationPitch *= 0.5;
             this.bodyRotationRoll *= 0.5;
         }
-        this.bodyRotationYaw = this.yRot;
+        this.bodyRotationYaw = this.getYRot();
     }
 
     @Override
@@ -257,8 +257,10 @@ public abstract class HelicopterEntity extends PoweredVehicleEntity
         return passenger != this.getControllingPassenger();
     }
 
+    @SuppressWarnings("RedundantMethodOverride")
     @Override
     protected void updateTurning() {}
+    //FIXME: marked as redundant. is this true? or a hallucination of IntelliJ?
 
     @Override
     public double getPassengersRidingOffset()

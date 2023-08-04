@@ -17,6 +17,7 @@ public abstract class BoatEntity extends PoweredVehicleEntity
 {
     protected State state;
     protected State previousState;
+    @SuppressWarnings("FieldCanBeLocal") //FIXME: this may be changed to a local variable, but probably shouldn't because it may be used elsewhere in the future.
     private double waterLevel;
 
     public BoatEntity(EntityType<?> entityType, Level worldIn)
@@ -29,60 +30,65 @@ public abstract class BoatEntity extends PoweredVehicleEntity
     {
 
     }
-    //    @Override
-//    public void updateVehicleMotion()
-//    {
-//        if(this.state == State.IN_WATER || this.state == State.UNDER_WATER)
-//        {
-//            if(this.state == State.UNDER_WATER)
-//            {
-//                this.setDeltaMovement(this.getDeltaMovement().add(0, 0.08, 0));
-//            }
-//            else
-//            {
-//                //TODO fix boat movement
-//                /*double floatingY = ((this.waterLevel - 0.35D + (0.25D * Math.min(1.0F, getNormalSpeed())) - this.getY())) / (double) this.getBbHeight();
-//                this.setDeltaMovement(this.getDeltaMovement().add(0, floatingY * 0.05, 0));
-//                if(Math.abs(floatingY) < 0.1 && this.getDeltaMovement().y > 0 && Math.abs(this.getDeltaMovement().y) < 0.1)
-//                {
-//                    this.setPos(this.getX(), this.waterLevel - 0.35 + (0.25 * Math.min(1.0F, getNormalSpeed())), this.getZ());
-//                    this.setDeltaMovement(this.getDeltaMovement().multiply(1.0, 0.0, 1.0));
-//                }
-//                this.setDeltaMovement(this.getDeltaMovement().multiply(1.0, 0.75, 1.0));*/
-//            }
-//
-//            float f1 = Mth.sin(this.yRot * 0.017453292F) / 20F;
-//            float f2 = Mth.cos(this.yRot * 0.017453292F) / 20F;
-//            this.vehicleMotionX = (-currentSpeed * f1);
-//            this.vehicleMotionZ = (currentSpeed * f2);
-//            this.setDeltaMovement(this.getDeltaMovement().multiply(0.5, 1.0, 0.5));
-//        }
-//        else if(this.state == State.IN_AIR)
-//        {
-//            this.setDeltaMovement(this.getDeltaMovement().add(0, -0.08, 0));
-//            if(this.previousState == State.UNDER_WATER || this.previousState == State.IN_WATER)
-//            {
-//                this.setDeltaMovement(new Vec3(this.vehicleMotionX, this.getDeltaMovement().y, this.vehicleMotionZ));
-//                this.vehicleMotionX = 0;
-//                this.vehicleMotionZ = 0;
-//            }
-//        }
-//        else
-//        {
-//            this.vehicleMotionX *= 0.75F;
-//            this.vehicleMotionZ *= 0.75F;
-//        }
-//    }
+
+    /*
+    @Override FIXME: commented out code
+    public void updateVehicleMotion()
+    {
+        if(this.state == State.IN_WATER || this.state == State.UNDER_WATER)
+        {
+            if(this.state == State.UNDER_WATER)
+            {
+                this.setDeltaMovement(this.getDeltaMovement().add(0, 0.08, 0));
+            }
+            else
+            {
+                //TODO fix boat movement
+                double floatingY = ((this.waterLevel - 0.35D + (0.25D * Math.min(1.0F, getNormalSpeed())) - this.getY())) / (double) this.getBbHeight();
+                this.setDeltaMovement(this.getDeltaMovement().add(0, floatingY * 0.05, 0));
+                if(Math.abs(floatingY) < 0.1 && this.getDeltaMovement().y > 0 && Math.abs(this.getDeltaMovement().y) < 0.1)
+                {
+                    this.setPos(this.getX(), this.waterLevel - 0.35 + (0.25 * Math.min(1.0F, getNormalSpeed())), this.getZ());
+                    this.setDeltaMovement(this.getDeltaMovement().multiply(1.0, 0.0, 1.0));
+                }
+                this.setDeltaMovement(this.getDeltaMovement().multiply(1.0, 0.75, 1.0));
+            }
+
+            float f1 = Mth.sin(this.yRot * 0.017453292F) / 20F;
+            float f2 = Mth.cos(this.yRot * 0.017453292F) / 20F;
+            this.vehicleMotionX = (-currentSpeed * f1);
+            this.vehicleMotionZ = (currentSpeed * f2);
+            this.setDeltaMovement(this.getDeltaMovement().multiply(0.5, 1.0, 0.5));
+        }
+        else if(this.state == State.IN_AIR)
+        {
+            this.setDeltaMovement(this.getDeltaMovement().add(0, -0.08, 0));
+            if(this.previousState == State.UNDER_WATER || this.previousState == State.IN_WATER)
+            {
+                this.setDeltaMovement(new Vec3(this.vehicleMotionX, this.getDeltaMovement().y, this.vehicleMotionZ));
+                this.vehicleMotionX = 0;
+                this.vehicleMotionZ = 0;
+            }
+        }
+        else
+        {
+            this.vehicleMotionX *= 0.75F;
+            this.vehicleMotionZ *= 0.75F;
+        }
+    }
+    */
 
     @Override
     public void onVehicleTick()
     {
         this.previousState = this.state;
         this.state = this.getState();
+        /* TODO: implement commented out code lol (whatever it was supposed to do)
         if(this.state == State.IN_AIR)
         {
             //this.deltaYaw *= 2;
         }
+         */
     }
 
     private boolean checkInWater()
@@ -97,7 +103,7 @@ public abstract class BoatEntity extends PoweredVehicleEntity
         boolean inWater = false;
         this.waterLevel = Double.MIN_VALUE;
 
-        BlockPos.Mutable pooledMutable = new BlockPos.Mutable();
+        BlockPos.MutableBlockPos pooledMutable = new BlockPos.MutableBlockPos();
         for(int x = minX; x < maxX; x++)
         {
             for(int y = minY; y < maxY; y++)
@@ -109,7 +115,7 @@ public abstract class BoatEntity extends PoweredVehicleEntity
                     if(fluidState.is(FluidTags.WATER))
                     {
                         float waterLevel = (float) y + fluidState.getHeight(this.level, pooledMutable);
-                        this.waterLevel = Math.max((double) waterLevel, this.waterLevel);
+                        this.waterLevel = Math.max(waterLevel, this.waterLevel);
                         inWater |= boundingBox.minY < (double) waterLevel;
                     }
                 }
@@ -132,7 +138,7 @@ public abstract class BoatEntity extends PoweredVehicleEntity
         int maxZ = Mth.ceil(axisalignedbb.maxZ);
         boolean underWater = false;
 
-        BlockPos.Mutable pooledMutable = new BlockPos.Mutable();
+        BlockPos.MutableBlockPos pooledMutable = new BlockPos.MutableBlockPos();
         for(int x = minX; x < maxX; x++)
         {
             for(int y = minY; y < maxY; y++)
@@ -174,8 +180,8 @@ public abstract class BoatEntity extends PoweredVehicleEntity
         return State.IN_AIR;
     }
 
-    //TODO figure out new way to reimplement
-    /*@Override
+    /* TODO: figure out new way to implement
+    @Override
     protected void updateGroundState()
     {
         this.wheelsOnGround = this.getState() == State.IN_WATER || this.getState() == State.UNDER_WATER;
@@ -187,6 +193,6 @@ public abstract class BoatEntity extends PoweredVehicleEntity
         UNDER_WATER,
         UNDER_FLOWING_WATER,
         ON_LAND,
-        IN_AIR;
+        IN_AIR
     }
 }

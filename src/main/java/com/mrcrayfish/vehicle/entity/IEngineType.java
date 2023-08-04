@@ -1,7 +1,7 @@
 package com.mrcrayfish.vehicle.entity;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.contents.TranslatableContents;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * Author: MrCrayfish
@@ -14,6 +14,6 @@ public interface IEngineType
 
     default TranslatableContents getEngineName()
     {
-        return Component.translatable(this.getId().getNamespace() + ".engine_type." + this.getId().getPath() + ".name");
+        return new TranslatableContents(this.getId().getNamespace() + ".engine_type." + this.getId().getPath() + ".name");
     }
 }

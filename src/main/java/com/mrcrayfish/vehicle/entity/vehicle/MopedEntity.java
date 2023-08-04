@@ -12,32 +12,34 @@ import com.mrcrayfish.vehicle.network.PacketHandler;
 import com.mrcrayfish.vehicle.network.message.MessageAttachChest;
 import com.mrcrayfish.vehicle.network.message.MessageOpenStorage;
 import com.mrcrayfish.vehicle.util.InventoryUtil;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.Container;
+import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.Container;
-import net.minecraft.world.Containers;
-import net.minecraft.world.ContainerHelper;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.core.NonNullList;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.phys.Vec3;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.util.Constants;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.Map;
@@ -166,6 +168,7 @@ public class MopedEntity extends MotorcycleEntity implements IStorage, IAttachab
                     ContainerHelper.loadAllItems(blockEntityTag, chestInventory);
                     for(int i = 0; i < chestInventory.size(); i++)
                     {
+                        assert this.inventory != null;
                         this.inventory.setItem(i, chestInventory.get(i));
                     }
                 }
@@ -223,7 +226,7 @@ public class MopedEntity extends MotorcycleEntity implements IStorage, IAttachab
 
     protected Vec3 getChestPosition()
     {
-        return new Vec3(0, 1.0, -0.75).yRot(-(this.yRot) * 0.017453292F).add(this.position());
+        return new Vec3(0, 1.0, -0.75).yRot(-(this.getYRot()) * 0.017453292F).add(this.position());
     }
 
     protected int getPlayerCountInChest()
@@ -251,20 +254,18 @@ public class MopedEntity extends MotorcycleEntity implements IStorage, IAttachab
     @OnlyIn(Dist.CLIENT)
     public static void registerInteractionBoxes()
     {
-        EntityRayTracer.instance().registerInteractionBox(ModEntities.MOPED.get(), () -> {
-            return createScaledBoundingBox(-3.5, 8.0, -7.0, 3.5, 15.0, -14.0, 0.0625);
-        }, (entity, rightClick) -> {
+        EntityRayTracer.instance().registerInteractionBox(ModEntities.MOPED.get(), () -> createScaledBoundingBox(-3.5, 8.0, -7.0, 3.5, 15.0, -14.0, 0.0625), (entity, rightClick) -> {
             if(rightClick) {
                 PacketHandler.getPlayChannel().sendToServer(new MessageOpenStorage(entity.getId(), "Chest"));
+                assert Minecraft.getInstance().player != null;
                 Minecraft.getInstance().player.swing(InteractionHand.MAIN_HAND);
             }
         }, MopedEntity::hasChest);
 
-        EntityRayTracer.instance().registerInteractionBox(ModEntities.MOPED.get(), () -> {
-            return createScaledBoundingBox(-4.0, 7.0, -6.5, 4.0, 8.0, -14.5, 0.0625);
-        }, (entity, rightClick) -> {
+        EntityRayTracer.instance().registerInteractionBox(ModEntities.MOPED.get(), () -> createScaledBoundingBox(-4.0, 7.0, -6.5, 4.0, 8.0, -14.5, 0.0625), (entity, rightClick) -> {
             if(rightClick) {
                 PacketHandler.getPlayChannel().sendToServer(new MessageAttachChest(entity.getId(), "Chest"));
+                assert Minecraft.getInstance().player != null;
                 Minecraft.getInstance().player.swing(InteractionHand.MAIN_HAND);
             }
         }, entity -> !entity.hasChest());
@@ -295,5 +296,10 @@ public class MopedEntity extends MotorcycleEntity implements IStorage, IAttachab
             Vec3 target = MopedEntity.this.getChestPosition();
             player.level.playSound(null, target.x, target.y, target.z, SoundEvents.CHEST_OPEN, MopedEntity.this.getSoundSource(), 0.5F, 0.9F);
         }
+    }
+
+    @Override
+    public void dataChanged(@NotNull AbstractContainerMenu containerMenu, int magicNumber1, int magicNumber2) {
+        //FIXME: proper impl.
     }
 }

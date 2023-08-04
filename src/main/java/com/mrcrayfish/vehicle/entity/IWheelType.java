@@ -35,6 +35,7 @@ public interface IWheelType
         return 1.0F;
     }
 
+    @SuppressWarnings("unused") //FIXME: unused
     default void applyPhysics(PoweredVehicleEntity vehicle) {}
 
     static Optional<IWheelType> fromStack(ItemStack stack)

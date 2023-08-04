@@ -3,6 +3,7 @@ package com.mrcrayfish.vehicle.entity.vehicle;
 import com.mrcrayfish.vehicle.entity.LandVehicleEntity;
 import com.mrcrayfish.vehicle.entity.trailer.StorageTrailerEntity;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.Blocks;
@@ -18,6 +19,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.level.Level;
 import net.minecraft.server.level.ServerLevel;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -120,5 +122,10 @@ public class LawnMowerEntity extends LandVehicleEntity
     @Override
     protected void addAdditionalSaveData(CompoundTag p_20139_) {
 
+    }
+
+    @Override
+    public void dataChanged(@NotNull AbstractContainerMenu containerMenu, int magicNumber1, int magicNumber2) {
+        //FIXME: proper impl.
     }
 }

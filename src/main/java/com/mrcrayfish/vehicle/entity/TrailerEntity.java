@@ -35,6 +35,7 @@ public abstract class TrailerEntity extends VehicleEntity
     @OnlyIn(Dist.CLIENT)
     public float prevWheelRotation;
 
+    @SuppressWarnings("deprecation") //FIXME: deprecated
     public TrailerEntity(EntityType<?> entityType, Level worldIn)
     {
         super(entityType, worldIn);
@@ -106,19 +107,19 @@ public abstract class TrailerEntity extends VehicleEntity
 
     private void updatePullingMotion()
     {
+        assert this.pullingEntity != null;
         Vec3 towBar = this.pullingEntity.position();
-        if(this.pullingEntity instanceof VehicleEntity)
+        if(this.pullingEntity instanceof VehicleEntity vehicle)
         {
-            VehicleEntity vehicle = (VehicleEntity) this.pullingEntity;
             Vec3 towBarVec = vehicle.getProperties().getTowBarOffset();
             towBarVec = new Vec3(towBarVec.x, towBarVec.y, towBarVec.z).scale(0.0625);
             towBarVec = towBarVec.scale(vehicle.getProperties().getBodyTransform().getScale());
             towBarVec = towBarVec.add(0, 0, vehicle.getProperties().getBodyTransform().getZ());
-            towBar = towBar.add(towBarVec.yRot((float) Math.toRadians(-vehicle.yRot)));
+            towBar = towBar.add(towBarVec.yRot((float) Math.toRadians(-vehicle.getYRot())));
         }
 
-        this.yRot = (float) Math.toDegrees(Math.atan2(towBar.z - this.getZ(), towBar.x - this.getX()) - Math.toRadians(90F));
-        double deltaRot = this.yRotO - this.yRot;
+        this.setYRot((float) Math.toDegrees(Math.atan2(towBar.z - this.getZ(), towBar.x - this.getX()) - Math.toRadians(90F)));
+        double deltaRot = this.yRotO - this.getYRot();
         if (deltaRot < -180.0D)
         {
             this.yRotO += 360.0F;
@@ -129,7 +130,7 @@ public abstract class TrailerEntity extends VehicleEntity
         }
 
         double bodyScale = this.getProperties().getBodyTransform().getScale();
-        Vec3 vec = new Vec3(0, 0, this.getHitchOffset() * bodyScale * 0.0625).yRot((float) Math.toRadians(-this.yRot)).add(towBar);
+        Vec3 vec = new Vec3(0, 0, this.getHitchOffset() * bodyScale * 0.0625).yRot((float) Math.toRadians(-this.getYRot())).add(towBar);
         Vec3 motion = this.getDeltaMovement();
         this.setDeltaMovement(vec.x - this.getX(), motion.y(), vec.z - this.getZ());
         this.move(MoverType.SELF, this.getDeltaMovement());
@@ -141,6 +142,7 @@ public abstract class TrailerEntity extends VehicleEntity
         return 0.0;
     }
 
+    @SuppressWarnings("UnusedReturnValue") //FIXME: unused
     public boolean setPullingEntity(Entity pullingEntity)
     {
         if(pullingEntity instanceof Player || (pullingEntity instanceof VehicleEntity && pullingEntity.getVehicle() == null && ((VehicleEntity) pullingEntity).canTowTrailers()))

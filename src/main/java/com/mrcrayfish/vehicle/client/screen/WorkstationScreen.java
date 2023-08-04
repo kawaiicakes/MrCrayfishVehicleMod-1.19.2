@@ -437,6 +437,7 @@ public class WorkstationScreen extends AbstractContainerScreen<WorkstationContai
         this.drawVehicle(startX + 88, startY + 90, partialTicks);
     }
 
+    @SuppressWarnings("SpellCheckingInspection")
     private void drawVehicle(int x, int y, float partialTicks)
     {
         PoseStack matrixStack = RenderSystem.getModelViewStack();

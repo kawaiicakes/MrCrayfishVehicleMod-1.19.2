@@ -113,24 +113,24 @@ public abstract class PlaneEntity extends PoweredVehicleEntity
         // Adds delta pitch and yaw to the plane based on the flaps and roll of the plane
         Vector3f elevatorDirection = new Vector3f(Vec3.directionFromRotation(this.elevatorAngle * elevatorForce * this.getElevatorSensitivity(), 0));
         elevatorDirection.transform(Vector3f.ZP.rotationDegrees(this.planeRoll.get(this)));
-        this.xRot += CommonUtils.pitch(elevatorDirection);
-        this.yRot -= CommonUtils.yaw(elevatorDirection);
+        this.setXRot(this.getXRot() + CommonUtils.pitch(elevatorDirection)); //TODO: xRot private access fix. validate function
+        this.setYRot(this.getYRot() - CommonUtils.yaw(elevatorDirection));
 
         // Makes the plane turn slightly when roll is turned to the side
         float planeRoll = this.planeRoll.get(this) % 360;
         float absPlaneRoll = Math.abs(planeRoll);
         if(absPlaneRoll >= 0 && absPlaneRoll <= 90)
         {
-            float forwardFactor = 1.0F - Mth.degreesDifferenceAbs(this.xRot, 0F) / 90F;
+            float forwardFactor = 1.0F - Mth.degreesDifferenceAbs(this.getXRot(), 0F) / 90F;
             float turnStrength = 1.0F - (Mth.degreesDifferenceAbs(absPlaneRoll, 45F) / 45F);
             turnStrength *= Math.signum(planeRoll);
             float turnAmount = turnStrength * forwardFactor * this.getMaxTurnAngle();
-            this.yRot += turnAmount;
+            this.setYRot(this.getYRot() + turnAmount) ;
         }
 
         // Makes the plane fall the closer it is to being sideways
         float fallAmount = 1.0F - Mth.degreesDifferenceAbs(absPlaneRoll, 90F) / 90F;
-        this.xRot += Math.abs(fallAmount);
+        this.setXRot(this.getXRot() + Math.abs(fallAmount));
 
         // Updates the accelerations of the plane with drag and friction applied
         Vec3 forward = Vec3.directionFromRotation(this.getRotationVector());
@@ -174,7 +174,7 @@ public abstract class PlaneEntity extends PoweredVehicleEntity
             // Calculates the difference from the old yaw to the new yaw
             float vehicleDeltaYaw = CommonUtils.yaw(forward) - CommonUtils.yaw(heading);
             vehicleDeltaYaw = Mth.wrapDegrees(vehicleDeltaYaw);
-            this.yRot -= vehicleDeltaYaw;
+            this.setYRot(this.getYRot() - vehicleDeltaYaw);
         }
         else
         {
@@ -186,14 +186,14 @@ public abstract class PlaneEntity extends PoweredVehicleEntity
         if(this.isFlying())
         {
             float pitchDelta = Mth.degreesDifference(90F, Math.abs(this.xRotO));
-            float yawDelta = (float) Math.floor(Math.abs(CommonUtils.yaw(this.motion) - this.yRot));
+            float yawDelta = (float) Math.floor(Math.abs(CommonUtils.yaw(this.motion) - this.getYRot()));
             boolean flipped = this.motion.multiply(1, 0, 1).length() > 0 && yawDelta > 45F && yawDelta <= 180F;
-            this.xRot = -CommonUtils.pitch(this.motion);
-            this.yRot = this.motion.multiply(1, 0, 1).length() > 0 ? CommonUtils.yaw(this.motion) : this.yRot;
+            this.setXRot(-CommonUtils.pitch(this.motion));
+            this.setXRot(this.motion.multiply(1, 0, 1).length() > 0 ? CommonUtils.yaw(this.motion) : this.getYRot());
             if(flipped)
             {
-                pitchDelta += Mth.degreesDifference(90F, Math.abs(this.xRot));
-                this.xRotO = this.xRot + pitchDelta * -Math.signum(this.xRot);
+                pitchDelta += Mth.degreesDifference(90F, Math.abs(this.getXRot()));
+                this.xRotO = this.getXRot() + pitchDelta * -Math.signum(this.getXRot());
                 this.yRotO = Mth.wrapDegrees(this.yRotO + yawDelta);
                 this.planeRoll.set(this, this.planeRoll.get(this) + 180F);
                 this.getPassengers().forEach(this::updatePassengerPosition);
@@ -208,7 +208,7 @@ public abstract class PlaneEntity extends PoweredVehicleEntity
         }
         else
         {
-            this.xRot = 0F;
+            this.setXRot(0F);
         }
     }
 
@@ -219,11 +219,11 @@ public abstract class PlaneEntity extends PoweredVehicleEntity
             float enginePower = this.getEnginePower();
             enginePower *= this.getEngineTier().map(IEngineTier::getPowerMultiplier).orElse(1.0F);
             float maxRotorSpeed = this.getMaxRotorSpeed();
-            float angleOfAttack = (Mth.clamp(this.xRot, -90F, 90F) + 90F) / 180F;
+            float angleOfAttack = (Mth.clamp(this.getXRot(), -90F, 90F) + 90F) / 180F;
             enginePower *= angleOfAttack;
 
             // Makes the plane slow down the closer it points up
-            if(this.xRot < 0)
+            if(this.getXRot() < 0)
             {
                 float upFactor = 1.0F - (float) Math.pow(1.0F - angleOfAttack / 0.5F, 5);
                 maxRotorSpeed = Mth.clamp(maxRotorSpeed * upFactor, Math.min(maxRotorSpeed, 90F), Math.max(maxRotorSpeed, 90F));
@@ -302,7 +302,7 @@ public abstract class PlaneEntity extends PoweredVehicleEntity
     {
         if(this.isFlying())
         {
-            this.bodyRotationPitch = this.xRot;
+            this.bodyRotationPitch = this.getXRot();
             this.bodyRotationRoll = this.planeRoll.get(this);
         }
         else
@@ -310,7 +310,7 @@ public abstract class PlaneEntity extends PoweredVehicleEntity
             this.bodyRotationPitch *= 0.75F;
             this.bodyRotationRoll *= 0.75F;
         }
-        this.bodyRotationYaw = this.yRot;
+        this.bodyRotationYaw = this.getYRot();
     }
 
     @Override
@@ -376,6 +376,7 @@ public abstract class PlaneEntity extends PoweredVehicleEntity
         this.lift.set(this, lift);
     }
 
+    @SuppressWarnings("unused") //FIXME: unused
     public float getForwardInput()
     {
         return this.forwardInput.get(this);
@@ -443,7 +444,7 @@ public abstract class PlaneEntity extends PoweredVehicleEntity
     }
 
     /**
-     * This determines how quickly the elevator approaches it's maximum elevator angle.
+     * This determines how quickly the elevator approaches its maximum elevator angle.
      */
     public final float getElevatorStrength()
     {
