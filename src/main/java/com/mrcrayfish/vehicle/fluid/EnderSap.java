@@ -1,17 +1,17 @@
 package com.mrcrayfish.vehicle.fluid;
 
-import com.mrcrayfish.vehicle.Reference;
 import com.mrcrayfish.vehicle.init.ModBlocks;
 import com.mrcrayfish.vehicle.init.ModFluids;
 import com.mrcrayfish.vehicle.init.ModItems;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.FluidState;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraftforge.fluids.ForgeFlowingFluid.Properties;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraftforge.common.SoundActions;
+import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Author: MrCrayfish
@@ -20,7 +20,14 @@ public abstract class EnderSap extends ForgeFlowingFluid
 {
     public EnderSap()
     {
-        super(new Properties(() -> ModFluids.ENDER_SAP.get(), () -> ModFluids.FLOWING_ENDER_SAP.get(), ForgeFlowingFluid.Properties(new ResourceLocation(Reference.MOD_ID, "block/ender_sap_still"), new ResourceLocation(Reference.MOD_ID, "block/ender_sap_flowing")).viscosity(3000).sound(SoundEvents.BUCKET_FILL, SoundEvents.BUCKET_EMPTY)).block(() -> ModBlocks.ENDER_SAP.get()));
+        super(new Properties(
+                () -> new FluidType(FluidType.Properties.create()
+                .viscosity(3000)
+                .sound(SoundActions.BUCKET_EMPTY, SoundEvents.BUCKET_EMPTY)
+                .sound(SoundActions.BUCKET_FILL, SoundEvents.BUCKET_FILL)),
+                ModFluids.ENDER_SAP,
+                ModFluids.FLOWING_ENDER_SAP)
+        .block(ModBlocks.ENDER_SAP));
     }
 
     @Override
@@ -32,13 +39,13 @@ public abstract class EnderSap extends ForgeFlowingFluid
     public static class Source extends EnderSap
     {
         @Override
-        public boolean isSource(FluidState state)
+        public boolean isSource(@NotNull FluidState state)
         {
             return true;
         }
 
         @Override
-        public int getAmount(FluidState state)
+        public int getAmount(@NotNull FluidState state)
         {
             return 8;
         }
@@ -47,7 +54,7 @@ public abstract class EnderSap extends ForgeFlowingFluid
     public static class Flowing extends EnderSap
     {
         @Override
-        protected void createFluidStateDefinition(StateDefinition.Builder<Fluid, FluidState> builder)
+        protected void createFluidStateDefinition(StateDefinition.@NotNull Builder<Fluid, FluidState> builder)
         {
             super.createFluidStateDefinition(builder);
             builder.add(LEVEL);
@@ -60,7 +67,7 @@ public abstract class EnderSap extends ForgeFlowingFluid
         }
 
         @Override
-        public boolean isSource(FluidState state)
+        public boolean isSource(@NotNull FluidState state)
         {
             return false;
         }

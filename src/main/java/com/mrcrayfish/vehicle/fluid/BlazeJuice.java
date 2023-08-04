@@ -1,17 +1,17 @@
 package com.mrcrayfish.vehicle.fluid;
 
-import com.mrcrayfish.vehicle.Reference;
 import com.mrcrayfish.vehicle.init.ModBlocks;
 import com.mrcrayfish.vehicle.init.ModFluids;
 import com.mrcrayfish.vehicle.init.ModItems;
-import net.minecraft.world.level.material.Fluid;
-import net.minecraft.world.level.material.FluidState;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraftforge.fluids.ForgeFlowingFluid.Properties;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.FluidState;
+import net.minecraftforge.common.SoundActions;
+import net.minecraftforge.fluids.FluidType;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Author: MrCrayfish
@@ -20,7 +20,14 @@ public abstract class BlazeJuice extends ForgeFlowingFluid
 {
     public BlazeJuice()
     {
-        super(new Properties(() -> ModFluids.BLAZE_JUICE.get(), () -> ModFluids.FLOWING_BLAZE_JUICE.get(), ForgeFlowingFluid.Properties(new ResourceLocation(Reference.MOD_ID, "block/blaze_juice_still"), new ResourceLocation(Reference.MOD_ID, "block/blaze_juice_flowing")).viscosity(800).sound(SoundEvents.BUCKET_FILL, SoundEvents.BUCKET_EMPTY)).block(() -> ModBlocks.BLAZE_JUICE.get()));
+        super(new Properties(
+                () -> new FluidType(FluidType.Properties.create()
+                        .viscosity(800)
+                        .sound(SoundActions.BUCKET_EMPTY, SoundEvents.BUCKET_EMPTY)
+                        .sound(SoundActions.BUCKET_FILL, SoundEvents.BUCKET_FILL)),
+                ModFluids.FLOWING_BLAZE_JUICE,
+                ModFluids.BLAZE_JUICE)
+                .block(ModBlocks.BLAZE_JUICE));
     }
 
     @Override
@@ -32,13 +39,13 @@ public abstract class BlazeJuice extends ForgeFlowingFluid
     public static class Source extends BlazeJuice
     {
         @Override
-        public boolean isSource(FluidState state)
+        public boolean isSource(@NotNull FluidState state)
         {
             return true;
         }
 
         @Override
-        public int getAmount(FluidState state)
+        public int getAmount(@NotNull FluidState state)
         {
             return 8;
         }
@@ -47,7 +54,7 @@ public abstract class BlazeJuice extends ForgeFlowingFluid
     public static class Flowing extends BlazeJuice
     {
         @Override
-        protected void createFluidStateDefinition(StateDefinition.Builder<Fluid, FluidState> builder)
+        protected void createFluidStateDefinition(StateDefinition.@NotNull Builder<Fluid, FluidState> builder)
         {
             super.createFluidStateDefinition(builder);
             builder.add(LEVEL);
@@ -60,7 +67,7 @@ public abstract class BlazeJuice extends ForgeFlowingFluid
         }
 
         @Override
-        public boolean isSource(FluidState state)
+        public boolean isSource(@NotNull FluidState state)
         {
             return false;
         }
