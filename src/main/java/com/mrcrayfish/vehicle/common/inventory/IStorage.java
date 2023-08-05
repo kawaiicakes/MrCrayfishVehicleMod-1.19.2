@@ -3,9 +3,9 @@ package com.mrcrayfish.vehicle.common.inventory;
 import com.mrcrayfish.vehicle.entity.VehicleEntity;
 import com.mrcrayfish.vehicle.inventory.container.StorageContainer;
 import com.mrcrayfish.vehicle.util.InventoryUtil;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.inventory.container.SimpleNamedContainerProvider;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
@@ -47,9 +47,7 @@ public interface IStorage
         if(inventory == null)
             return;
 
-        NetworkHooks.openScreen(player, new SimpleNamedContainerProvider((windowId, playerInventory, playerEntity) -> {
-            return new StorageContainer(windowId, playerInventory, inventory, playerEntity);
-        }, inventory.getDisplayName()), buffer -> {
+        NetworkHooks.openScreen(player, new SimpleMenuProvider((windowId, playerInventory, playerEntity) -> new StorageContainer(windowId, playerInventory, inventory, playerEntity), inventory.getDisplayName()), buffer -> {
             buffer.writeVarInt(storage.getId());
             buffer.writeUtf(key);
         });

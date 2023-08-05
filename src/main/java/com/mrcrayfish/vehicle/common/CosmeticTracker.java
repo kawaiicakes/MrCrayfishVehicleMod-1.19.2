@@ -10,28 +10,20 @@ import com.mrcrayfish.vehicle.entity.VehicleEntity;
 import com.mrcrayfish.vehicle.network.PacketHandler;
 import com.mrcrayfish.vehicle.network.message.MessageSyncActionData;
 import com.mrcrayfish.vehicle.network.message.MessageSyncCosmetics;
-import net.minecraft.client.Minecraft;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.loading.FMLLoader;
 import net.minecraftforge.network.PacketDistributor;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -49,9 +41,7 @@ public class CosmeticTracker
     {
         this.vehicleRef = new WeakReference<>(vehicle);
         ImmutableMap.Builder<ResourceLocation, Entry> builder = ImmutableMap.builder();
-        vehicle.getProperties().getCosmetics().forEach((cosmeticId, cosmeticProperties) -> {
-            builder.put(cosmeticId, new Entry(cosmeticProperties));
-        });
+        vehicle.getProperties().getCosmetics().forEach((cosmeticId, cosmeticProperties) -> builder.put(cosmeticId, new Entry(cosmeticProperties)));
         this.selectedCosmetics = builder.build();
     }
 
@@ -64,16 +54,14 @@ public class CosmeticTracker
         }
 
         this.selectedCosmetics.forEach((cosmeticId, entry) ->
-        {
-            entry.getActions().forEach(action ->
-            {
-                action.tick(vehicle);
-                if(!vehicle.level.isClientSide() && action.isDirty())
+                entry.getActions().forEach(action ->
                 {
-                    this.dirtyActions.computeIfAbsent(cosmeticId, id -> new ArrayList<>()).add(action);
-                }
-            });
-        });
+                    action.tick(vehicle);
+                    if(!vehicle.level.isClientSide() && action.isDirty())
+                    {
+                        this.dirtyActions.computeIfAbsent(cosmeticId, id -> new ArrayList<>()).add(action);
+                    }
+                }));
 
         if(!vehicle.level.isClientSide())
         {
@@ -131,7 +119,7 @@ public class CosmeticTracker
     @OnlyIn(Dist.CLIENT)
     public Entry getSelectedEntry(ResourceLocation cosmeticId)
     {
-        return Optional.ofNullable(this.selectedCosmetics.get(cosmeticId)).orElse(null);
+        return this.selectedCosmetics.get(cosmeticId);
     }
 
     public Collection<Action> getActions(ResourceLocation cosmeticId)
@@ -189,7 +177,7 @@ public class CosmeticTracker
                 ResourceLocation modelLocation = new ResourceLocation(cosmeticTag.getString("Model"));
                 this.setSelectedModel(cosmeticId, modelLocation);
                 CompoundTag actions = cosmeticTag.getCompound("Actions");
-                this.selectedCosmetics.get(cosmeticId).getActions().forEach(action -> {
+                Objects.requireNonNull(this.selectedCosmetics.get(cosmeticId)).getActions().forEach(action -> {
                     ResourceLocation id = CosmeticActions.getId(action.getClass());
                     action.load(actions.getCompound(id.toString()), false);
                 });
@@ -229,7 +217,7 @@ public class CosmeticTracker
                     CompoundTag data = buffer.readNbt();
                     dataMap.put(id, data);
                 }
-                this.selectedCosmetics.get(cosmeticId).getActions().forEach(action ->
+                Objects.requireNonNull(this.selectedCosmetics.get(cosmeticId)).getActions().forEach(action ->
                 {
                     ResourceLocation id = CosmeticActions.getId(action.getClass());
                     CompoundTag data = dataMap.get(id);

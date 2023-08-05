@@ -54,7 +54,7 @@ public class SurfaceHelper
         builder.put(HEAVY_METAL, SurfaceType.SOLID);
         builder.put(BARRIER, SurfaceType.SOLID);
         builder.put(PISTON, SurfaceType.SOLID);
-        builder.put(R, SurfaceType.SNOW);
+        builder.put(REPLACEABLE_WATER_PLANT, SurfaceType.SNOW);
         builder.put(CAKE, SurfaceType.SNOW);
         MATERIAL_TO_SURFACE_TYPE = builder.build();
     }
@@ -72,7 +72,7 @@ public class SurfaceHelper
             return defaultValue;
 
         Optional<IWheelType> optional = vehicle.getWheelType();
-        if(!optional.isPresent())
+        if(optional.isEmpty())
             return defaultValue;
 
         int wheelCount = 0;

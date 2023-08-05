@@ -3,24 +3,20 @@ package com.mrcrayfish.vehicle.common;
 import com.mrcrayfish.vehicle.block.FluidPipeBlock;
 import com.mrcrayfish.vehicle.entity.block.PipeTileEntity;
 import com.mrcrayfish.vehicle.entity.block.PumpTileEntity;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.util.RegistryKey;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.util.Constants;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Handles updating the disabled state of pipes. This runs after everything has ticked
  * to avoid race conditions.
- *
  * Author: MrCrayfish
  */
 public class FluidNetworkHandler
@@ -37,7 +33,7 @@ public class FluidNetworkHandler
     }
 
     private boolean dirty = false;
-    private Map<RegistryKey<Level>, Set<BlockPos>> pipeUpdateMap = new HashMap<>();
+    private final Map<ResourceKey<Level>, Set<BlockPos>> pipeUpdateMap = new HashMap<>();
 
     private FluidNetworkHandler() {}
 
@@ -46,12 +42,12 @@ public class FluidNetworkHandler
         if(!(tileEntity instanceof PumpTileEntity))
         {
             this.dirty = true;
-            this.pipeUpdateMap.computeIfAbsent(tileEntity.getLevel().dimension(), key -> new HashSet<>()).add(tileEntity.getBlockPos());
+            this.pipeUpdateMap.computeIfAbsent(Objects.requireNonNull(tileEntity.getLevel()).dimension(), key -> new HashSet<>()).add(tileEntity.getBlockPos());
         }
     }
 
     @SubscribeEvent
-    public void onServerTick(TickEvent.WorldTickEvent event)
+    public void onServerTick(TickEvent.LevelTickEvent event)
     {
         if(!this.dirty)
             return;
@@ -59,18 +55,17 @@ public class FluidNetworkHandler
         if(event.phase != TickEvent.Phase.END)
             return;
 
-        Set<BlockPos> positions = this.pipeUpdateMap.remove(event.world.dimension());
+        Set<BlockPos> positions = this.pipeUpdateMap.remove(event.level.dimension());
         if(positions != null)
         {
             positions.forEach(pos ->
             {
-                BlockEntity tileEntity = event.world.getBlockEntity(pos);
-                if(tileEntity instanceof PipeTileEntity)
+                BlockEntity tileEntity = event.level.getBlockEntity(pos);
+                if(tileEntity instanceof PipeTileEntity pipeTileEntity)
                 {
-                    PipeTileEntity pipeTileEntity = (PipeTileEntity) tileEntity;
                     BlockState state = pipeTileEntity.getBlockState();
-                    boolean disabled = pipeTileEntity.getPumps().isEmpty() || event.world.hasNeighborSignal(pos);
-                    event.world.setBlock(pos, state.setValue(FluidPipeBlock.DISABLED, disabled), Block.UPDATE_CLIENTS | Block.UPDATE_IMMEDIATE);
+                    boolean disabled = pipeTileEntity.getPumps().isEmpty() || event.level.hasNeighborSignal(pos);
+                    event.level.setBlock(pos, state.setValue(FluidPipeBlock.DISABLED, disabled), Block.UPDATE_CLIENTS | Block.UPDATE_IMMEDIATE);
                 }
             });
         }

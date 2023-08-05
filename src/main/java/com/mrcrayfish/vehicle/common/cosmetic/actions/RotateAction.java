@@ -52,9 +52,7 @@ public class RotateAction extends Action
 
     public enum Source
     {
-        PROPELLER("propeller", (vehicle, partialTicks) -> {
-            return vehicle instanceof PlaneEntity ? ((PlaneEntity) vehicle).getPropellerRotation(partialTicks) : 0F;
-        });
+        PROPELLER("propeller", (vehicle, partialTicks) -> vehicle instanceof PlaneEntity ? ((PlaneEntity) vehicle).getPropellerRotation(partialTicks) : 0F);
         //TODO add more eventually
 
         private final String key;

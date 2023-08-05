@@ -125,8 +125,8 @@ public class CosmeticProperties
     {
         try
         {
-            Resource resource = manager.getResource(cosmeticLocation);
-            deserializeModels(resource.getInputStream(), modelMap);
+            Resource resource = manager.getResource(cosmeticLocation).orElseThrow();
+            deserializeModels(resource.open(), modelMap);
         }
         catch(IOException e)
         {
@@ -180,9 +180,9 @@ public class CosmeticProperties
     {
         private final ResourceLocation id;
         private Vec3 offset = DEFAULT_OFFSET;
-        private List<ResourceLocation> models = new ArrayList<>();
-        private Map<ResourceLocation, List<ResourceLocation>> disabledCosmetics = new HashMap<>();
-        private List<Supplier<Action>> actions = new ArrayList<>();
+        private final List<ResourceLocation> models = new ArrayList<>();
+        private final Map<ResourceLocation, List<ResourceLocation>> disabledCosmetics = new HashMap<>();
+        private final List<Supplier<Action>> actions = new ArrayList<>();
 
         public Builder(ResourceLocation id)
         {

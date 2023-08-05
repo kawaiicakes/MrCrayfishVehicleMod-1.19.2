@@ -1,7 +1,6 @@
 package com.mrcrayfish.vehicle.common;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.contents.TranslatableContents;
 
 /**
  * Author: MrCrayfish

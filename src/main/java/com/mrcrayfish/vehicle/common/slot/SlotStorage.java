@@ -3,6 +3,7 @@ package com.mrcrayfish.vehicle.common.slot;
 import com.mrcrayfish.vehicle.common.inventory.StorageInventory;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Author: MrCrayfish
@@ -18,7 +19,7 @@ public class SlotStorage extends Slot
     }
 
     @Override
-    public boolean mayPlace(ItemStack stack)
+    public boolean mayPlace(@NotNull ItemStack stack)
     {
         return this.storageInventory.isStorageItem(stack);
     }
