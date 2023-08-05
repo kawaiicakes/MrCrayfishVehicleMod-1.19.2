@@ -5,19 +5,21 @@ import com.mojang.datafixers.util.Pair;
 import com.mrcrayfish.vehicle.Reference;
 import com.mrcrayfish.vehicle.init.ModBlocks;
 import com.mrcrayfish.vehicle.world.storage.loot.functions.CopyFluidTanks;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.data.DataGenerator;
-import net.minecraft.data.loot.BlockLootTables;
-import net.minecraft.loot.ConstantRange;
-import net.minecraft.loot.ItemLootEntry;
-import net.minecraft.loot.LootParameterSet;
-import net.minecraft.loot.LootParameterSets;
-import net.minecraft.loot.LootPool;
-import net.minecraft.loot.LootTable;
-import net.minecraft.loot.functions.CopyNbt;
+import net.minecraft.data.loot.BlockLoot;
+import net.minecraft.data.loot.LootTableProvider;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.common.data.ForgeLootTableProvider;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.LootTable;
+import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.functions.CopyNbtFunction;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSet;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.minecraft.world.level.storage.loot.providers.nbt.ContextNbtProvider;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -28,9 +30,9 @@ import java.util.stream.Collectors;
 /**
  * Author: MrCrayfish
  */
-public class LootTableGen extends ForgeLootTableProvider
+public class LootTableGen extends LootTableProvider
 {
-    private final List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootParameterSet>> tables = ImmutableList.of(Pair.of(BlockProvider::new, LootParameterSets.BLOCK));
+    private final List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> tables = ImmutableList.of(Pair.of(BlockProvider::new, LootContextParamSets.BLOCK));
 
     public LootTableGen(DataGenerator generator)
     {
@@ -38,12 +40,12 @@ public class LootTableGen extends ForgeLootTableProvider
     }
 
     @Override
-    protected List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootParameterSet>> getTables()
+    protected @NotNull List<Pair<Supplier<Consumer<BiConsumer<ResourceLocation, LootTable.Builder>>>, LootContextParamSet>> getTables()
     {
         return this.tables;
     }
 
-    private static class BlockProvider extends BlockLootTables
+    private static class BlockProvider extends BlockLoot
     {
         @Override
         protected void addTables()
@@ -63,20 +65,22 @@ public class LootTableGen extends ForgeLootTableProvider
             this.add(ModBlocks.VEHICLE_CRATE.get(), BlockProvider::createVehicleCrateDrop);
         }
 
+        @SuppressWarnings({"ConstantValue", "deprecation"}) //FIXME: see annotation.
         @Override
-        protected Iterable<Block> getKnownBlocks()
+        protected @NotNull Iterable<Block> getKnownBlocks()
         {
             return ForgeRegistries.BLOCKS.getValues().stream().filter(block -> block.builtInRegistryHolder().key().location() != null && Reference.MOD_ID.equals(block.builtInRegistryHolder().key().location().getNamespace())).collect(Collectors.toSet());
         }
 
         protected static LootTable.Builder createFluidTankDrop(Block block)
         {
-            return LootTable.lootTable().withPool(applyExplosionCondition(block, LootPool.lootPool().setRolls(ConstantRange.exactly(1)).add(ItemLootEntry.lootTableItem(block).apply(CopyFluidTanks.copyFluidTanks()))));
+            return LootTable.lootTable().withPool(applyExplosionCondition(block, LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(LootItem.lootTableItem(block).apply(CopyFluidTanks.copyFluidTanks()))));
         }
 
         protected static LootTable.Builder createVehicleCrateDrop(Block block)
         {
-            return LootTable.lootTable().withPool(applyExplosionCondition(block, LootPool.lootPool().setRolls(ConstantRange.exactly(1)).add(ItemLootEntry.lootTableItem(block).apply(CopyNbt.copyData(CopyNbt.Source.BLOCK_ENTITY).copy("Vehicle", "BlockEntityTag.Vehicle").copy("Color", "BlockEntityTag.Color").copy("EngineStack", "BlockEntityTag.EngineStack").copy("Creative", "BlockEntityTag.Creative").copy("WheelStack", "BlockEntityTag.WheelStack")))));
+            //FIXME I'm unsure if ContextNbtProvider is what I need...
+            return LootTable.lootTable().withPool(applyExplosionCondition(block, LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(LootItem.lootTableItem(block).apply(CopyNbtFunction.copyData(ContextNbtProvider.BLOCK_ENTITY).copy("Vehicle", "BlockEntityTag.Vehicle").copy("Color", "BlockEntityTag.Color").copy("EngineStack", "BlockEntityTag.EngineStack").copy("Creative", "BlockEntityTag.Creative").copy("WheelStack", "BlockEntityTag.WheelStack")))));
         }
     }
 }

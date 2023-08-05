@@ -1,6 +1,7 @@
 package com.mrcrayfish.vehicle.datagen;
 
 import com.mrcrayfish.vehicle.crafting.FluidEntry;
+import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.crafting.CompoundIngredient;
 import com.mrcrayfish.vehicle.entity.VehicleEntity;
 import com.mrcrayfish.vehicle.init.ModBlocks;
@@ -23,6 +24,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.Registry;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.crafting.conditions.ModLoadedCondition;
+import net.minecraftforge.registries.ForgeRegistries;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -39,7 +42,7 @@ public class RecipeGen extends RecipeProvider
     }
 
     @Override
-    protected void buildCraftingRecipes(Consumer<FinishedRecipe> consumer)
+    protected void buildCraftingRecipes(@NotNull Consumer<FinishedRecipe> consumer)
     {
         smithing(consumer, ModItems.DIAMOND_ELECTRIC_ENGINE.get(), ModItems.NETHERITE_ELECTRIC_ENGINE.get());
 
@@ -362,7 +365,7 @@ public class RecipeGen extends RecipeProvider
         SpecialRecipeBuilder.special(ModRecipeSerializers.REFILL_SPRAY_CAN.get()).save(consumer, "vehicle:refill_spray_can");
 
         // Vehicles
-        workstationCrafting(consumer, ModEntities.QUAD_BIKE.get(), CompoundIngredient.of(Tags.Items.INGOTS_IRON, 80), CompoundIngredient.of(Items.IRON_BARS, 4), CompoundIngredient.of(Items.BLACK_WOOL, 4), CompoundIngredient.of(Items.REDSTONE, 6), CompoundIngredient.of(ModItems.PANEL.get(), 8));
+        workstationCrafting(consumer, ModEntities.QUAD_BIKE.get(), Ingredient.of(Tags.Items.INGOTS_IRON), CompoundIngredient.of(Items.IRON_BARS, 4), CompoundIngredient.of(Items.BLACK_WOOL, 4), CompoundIngredient.of(Items.REDSTONE, 6), CompoundIngredient.of(ModItems.PANEL.get(), 8));
         workstationCrafting(consumer, ModEntities.DIRT_BIKE.get(), CompoundIngredient.of(Tags.Items.INGOTS_IRON, 32), CompoundIngredient.of(ModItems.PANEL.get(), 2), CompoundIngredient.of(Items.GRAY_WOOL, 2));
         workstationCrafting(consumer, ModEntities.GO_KART.get(), CompoundIngredient.of(Tags.Items.INGOTS_IRON, 48), CompoundIngredient.of(ModItems.PANEL.get(), 4));
         workstationCrafting(consumer, ModEntities.GOLF_CART.get(), CompoundIngredient.of(Tags.Items.INGOTS_IRON, 80), CompoundIngredient.of(Items.IRON_BARS, 4), CompoundIngredient.of(Items.WHITE_WOOL, 8), CompoundIngredient.of(Items.REDSTONE, 12), CompoundIngredient.of(ModItems.PANEL.get(), 16));
@@ -391,7 +394,7 @@ public class RecipeGen extends RecipeProvider
 
     private static void smithing(Consumer<FinishedRecipe> consumer, Item inputItem, Item resultItem)
     {
-        ResourceLocation id = Registry.ITEM.getKey(resultItem.asItem());
+        ResourceLocation id = ForgeRegistries.ITEMS.getKey(resultItem.asItem());
         UpgradeRecipeBuilder.smithing(Ingredient.of(inputItem), Ingredient.of(Items.NETHERITE_INGOT), resultItem).unlocks("has_netherite_ingot", has(Items.NETHERITE_INGOT)).save(consumer, new ResourceLocation(id.getNamespace(), id.getPath() + "_smithing"));
     }
 
@@ -412,6 +415,7 @@ public class RecipeGen extends RecipeProvider
         FluidExtractorRecipeBuilder.extracting(Ingredient.of(provider), output).save(consumer, new ResourceLocation(id.getNamespace(), id.getPath() + "_extracting"));
     }
 
+    @SuppressWarnings("SameParameterValue") //FIXME: unused provider
     private static void fluidMixing(Consumer<FinishedRecipe> consumer, FluidEntry inputOne, FluidEntry inputTwo, ItemLike provider, FluidEntry output)
     {
         ResourceLocation id = Objects.requireNonNull(output.getFluid().builtInRegistryHolder().key().location());

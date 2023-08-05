@@ -4,9 +4,10 @@ import com.google.gson.JsonObject;
 import com.mrcrayfish.vehicle.crafting.FluidEntry;
 import com.mrcrayfish.vehicle.init.ModRecipeSerializers;
 import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.function.Consumer;
@@ -16,11 +17,11 @@ import java.util.function.Consumer;
  */
 public class FluidExtractorRecipeBuilder
 {
-    private final IRecipeSerializer<?> serializer;
+    private final RecipeSerializer<?> serializer;
     private final Ingredient ingredient;
     private final FluidEntry entry;
 
-    public FluidExtractorRecipeBuilder(IRecipeSerializer<?> serializer, Ingredient ingredient, FluidEntry entry)
+    public FluidExtractorRecipeBuilder(RecipeSerializer<?> serializer, Ingredient ingredient, FluidEntry entry)
     {
         this.serializer = serializer;
         this.ingredient = ingredient;
@@ -45,11 +46,11 @@ public class FluidExtractorRecipeBuilder
     public static class Result implements FinishedRecipe
     {
         private final ResourceLocation id;
-        private final IRecipeSerializer<?> serializer;
+        private final RecipeSerializer<?> serializer;
         private final Ingredient ingredient;
         private final FluidEntry entry;
 
-        private Result(ResourceLocation id, IRecipeSerializer<?> serializer, Ingredient ingredient, FluidEntry entry)
+        private Result(ResourceLocation id, RecipeSerializer<?> serializer, Ingredient ingredient, FluidEntry entry)
         {
             this.id = id;
             this.serializer = serializer;
@@ -65,13 +66,13 @@ public class FluidExtractorRecipeBuilder
         }
 
         @Override
-        public ResourceLocation getId()
+        public @NotNull ResourceLocation getId()
         {
             return this.id;
         }
 
         @Override
-        public IRecipeSerializer<?> getType()
+        public @NotNull RecipeSerializer<?> getType()
         {
             return this.serializer;
         }

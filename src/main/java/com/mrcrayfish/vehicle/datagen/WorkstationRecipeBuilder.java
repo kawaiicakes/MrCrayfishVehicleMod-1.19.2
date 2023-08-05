@@ -5,10 +5,11 @@ import com.google.gson.JsonObject;
 import net.minecraftforge.common.crafting.CompoundIngredient;
 import com.mrcrayfish.vehicle.init.ModRecipeSerializers;
 import net.minecraft.data.recipes.FinishedRecipe;
-import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
 import net.minecraftforge.common.crafting.conditions.ICondition;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -20,12 +21,12 @@ import java.util.function.Consumer;
  */
 public class WorkstationRecipeBuilder
 {
-    private final IRecipeSerializer<?> serializer;
+    private final RecipeSerializer<?> serializer;
     private final ResourceLocation entityId;
     private final List<CompoundIngredient> ingredients;
     private final List<ICondition> conditions = new ArrayList<>();
 
-    public WorkstationRecipeBuilder(IRecipeSerializer<?> serializer, ResourceLocation entityId, List<CompoundIngredient> ingredients)
+    public WorkstationRecipeBuilder(RecipeSerializer<?> serializer, ResourceLocation entityId, List<CompoundIngredient> ingredients)
     {
         this.serializer = serializer;
         this.entityId = entityId;
@@ -59,9 +60,9 @@ public class WorkstationRecipeBuilder
         private final ResourceLocation entityId;
         private final List<CompoundIngredient> ingredients;
         private final List<ICondition> conditions;
-        private final IRecipeSerializer<?> serializer;
+        private final RecipeSerializer<?> serializer;
 
-        private Result(ResourceLocation id, IRecipeSerializer<?> serializer, ResourceLocation entityId, List<CompoundIngredient> ingredients, List<ICondition> conditions)
+        private Result(ResourceLocation id, RecipeSerializer<?> serializer, ResourceLocation entityId, List<CompoundIngredient> ingredients, List<ICondition> conditions)
         {
             this.id = id;
             this.serializer = serializer;
@@ -88,13 +89,13 @@ public class WorkstationRecipeBuilder
         }
 
         @Override
-        public ResourceLocation getId()
+        public @NotNull ResourceLocation getId()
         {
             return this.id;
         }
 
         @Override
-        public IRecipeSerializer<?> getType()
+        public @NotNull RecipeSerializer<?> getType()
         {
             return this.serializer;
         }

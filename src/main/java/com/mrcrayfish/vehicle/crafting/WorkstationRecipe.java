@@ -8,7 +8,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Recipe;
-import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
@@ -70,7 +70,7 @@ public class WorkstationRecipe implements Recipe<WorkstationTileEntity>
     }
 
     @Override
-    public IRecipeSerializer<?> getSerializer()
+    public RecipeSerializer<?> getSerializer()
     {
         return ModRecipeSerializers.WORKSTATION.get();
     }

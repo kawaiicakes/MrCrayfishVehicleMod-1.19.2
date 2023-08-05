@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.item.crafting.IRecipeSerializer;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.GsonHelper;
@@ -17,7 +17,7 @@ import java.util.Optional;
 /**
  * Author: MrCrayfish
  */
-public class WorkstationRecipeSerializer extends net.minecraftforge.registries.ForgeRegistryEntry<IRecipeSerializer<?>> implements IRecipeSerializer<WorkstationRecipe>
+public class WorkstationRecipeSerializer extends net.minecraftforge.registries.ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<WorkstationRecipe>
 {
     @Override
     public WorkstationRecipe fromJson(ResourceLocation recipeId, JsonObject parent)
