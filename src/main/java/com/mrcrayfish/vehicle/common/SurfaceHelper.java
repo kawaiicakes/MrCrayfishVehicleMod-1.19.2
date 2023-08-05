@@ -54,7 +54,7 @@ public class SurfaceHelper
         builder.put(HEAVY_METAL, SurfaceType.SOLID);
         builder.put(BARRIER, SurfaceType.SOLID);
         builder.put(PISTON, SurfaceType.SOLID);
-        builder.put(CORAL, SurfaceType.SNOW);
+        builder.put(R, SurfaceType.SNOW);
         builder.put(CAKE, SurfaceType.SNOW);
         MATERIAL_TO_SURFACE_TYPE = builder.build();
     }

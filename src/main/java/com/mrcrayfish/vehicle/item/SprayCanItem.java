@@ -4,6 +4,7 @@ import com.mrcrayfish.vehicle.Config;
 import com.mrcrayfish.vehicle.util.RenderUtil;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.nbt.Tag;
+import net.minecraft.network.chat.contents.LiteralContents;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.CreativeModeTab;
@@ -14,10 +15,11 @@ import net.minecraft.util.Mth;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 /**
@@ -31,9 +33,9 @@ public class SprayCanItem extends Item implements IDyeable
     }
 
     @Override
-    public void fillItemCategory(CreativeModeTab group, NonNullList<ItemStack> items)
+    public void fillItemCategory(@NotNull CreativeModeTab group, @NotNull NonNullList<ItemStack> items)
     {
-        if (this.allowdedIn(group))
+        if (this.getItemCategory() == group)
         {
             ItemStack stack = new ItemStack(this);
             this.refill(stack);
@@ -42,6 +44,7 @@ public class SprayCanItem extends Item implements IDyeable
     }
 
     @Override
+    @ParametersAreNonnullByDefault
     public void appendHoverText(ItemStack stack, @Nullable Level world, List<Component> tooltip, TooltipFlag flag)
     {
         if(Screen.hasShiftDown())
@@ -56,9 +59,9 @@ public class SprayCanItem extends Item implements IDyeable
             }
             else
             {
-                tooltip.add(Component.translatable(this.getDescriptionId() + ".empty")).withStyle(ChatFormatting.RED));
+                tooltip.add(Component.translatable(this.getDescriptionId() + ".empty").withStyle(ChatFormatting.RED));
             }
-            tooltip.add(Component.translatable("vehicle.info_help")).withStyle(ChatFormatting.YELLOW));
+            tooltip.add(Component.translatable("vehicle.info_help").withStyle(ChatFormatting.YELLOW));
         }
     }
 
@@ -68,9 +71,8 @@ public class SprayCanItem extends Item implements IDyeable
         {
             stack.setTag(new CompoundTag());
         }
-        if (stack.getItem() instanceof SprayCanItem)
+        if (stack.getItem() instanceof SprayCanItem sprayCan)
         {
-            SprayCanItem sprayCan = (SprayCanItem) stack.getItem();
             CompoundTag compound = stack.getTag();
             if (compound != null)
             {
@@ -84,7 +86,7 @@ public class SprayCanItem extends Item implements IDyeable
     }
 
     @Override
-    public boolean showDurabilityBar(ItemStack stack)
+    public boolean isBarVisible(ItemStack stack)
     {
         CompoundTag compound = stack.getTag();
         if (compound != null && compound.contains("RemainingSprays", Tag.TAG_INT))
@@ -96,14 +98,14 @@ public class SprayCanItem extends Item implements IDyeable
     }
 
     @Override
-    public double getDurabilityForDisplay(ItemStack stack)
+    public int getBarWidth(ItemStack stack)
     {
         CompoundTag compound = stack.getTag();
         if (compound != null && compound.contains("RemainingSprays", Tag.TAG_INT))
         {
-            return Mth.clamp(1.0 - (compound.getInt("RemainingSprays") / (double) this.getCapacity(stack)), 0.0, 1.0);
+            return (int) Mth.clamp(1.0 - (compound.getInt("RemainingSprays") / (double) this.getCapacity(stack)), 0.0, 1.0);
         }
-        return 0.0;
+        return 0;
     }
 
     public float getRemainingSprays(ItemStack stack)

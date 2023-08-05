@@ -19,6 +19,7 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.common.util.LazyOptional;
@@ -143,17 +144,17 @@ public class JerryCanItem extends Item
     }
 
     @Override
-    public double getDurabilityForDisplay(ItemStack stack)
+    public int getBarWidth(ItemStack stack)
     {
-        return 1.0 - (this.getCurrentFuel(stack) / (double) this.capacitySupplier.get());
+        return (int) (1.0 - (this.getCurrentFuel(stack) / (double) this.capacitySupplier.get()));
     }
 
     @Override
-    public int getRGBDurabilityForDisplay(ItemStack stack)
+    public int getBarColor(ItemStack stack)
     {
         Optional<IFluidHandlerItem> optional = stack.getCapability(ForgeCapabilities.FLUID_HANDLER_ITEM).resolve();
         return optional.map(handler -> {
-            int color = handler.getFluidInTank(0).getFluid().getAttributes().getColor();
+            int color = handler.getFluidInTank(0).getFluid().defaultFluidState().createLegacyBlock().getMaterial().getColor().calculateRGBColor(MaterialColor.Brightness.NORMAL);
             if(color == 0xFFFFFFFF) color = FluidUtils.getAverageFluidColor(handler.getFluidInTank(0).getFluid());
             return color;
         }).orElse(0);

@@ -8,7 +8,7 @@ import net.minecraft.world.item.Item;
  */
 public class WheelItem extends PartItem implements IDyeable
 {
-    private IWheelType wheelType;
+    private final IWheelType wheelType;
 
     public WheelItem(IWheelType wheelType, Item.Properties properties)
     {

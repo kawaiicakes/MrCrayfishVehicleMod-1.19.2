@@ -1,10 +1,10 @@
 package com.mrcrayfish.vehicle.item;
 
 import com.mrcrayfish.vehicle.util.CommonUtils;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.item.DyeItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraftforge.common.util.Constants;
 
 import java.util.List;
 
@@ -31,7 +31,7 @@ public interface IDyeable
         compound.putInt("Color", color);
     }
 
-    public static ItemStack dyeStack(ItemStack stack, List<DyeItem> dyes)
+    static ItemStack dyeStack(ItemStack stack, List<DyeItem> dyes)
     {
         ItemStack resultStack = ItemStack.EMPTY;
         int[] combinedColors = new int[3];
