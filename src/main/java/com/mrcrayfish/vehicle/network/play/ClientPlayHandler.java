@@ -5,22 +5,17 @@ import com.mrcrayfish.vehicle.common.entity.HeldVehicleDataHandler;
 import com.mrcrayfish.vehicle.common.inventory.IStorage;
 import com.mrcrayfish.vehicle.common.inventory.StorageInventory;
 import com.mrcrayfish.vehicle.entity.VehicleEntity;
-import com.mrcrayfish.vehicle.network.message.MessageEntityFluid;
-import com.mrcrayfish.vehicle.network.message.MessageSyncActionData;
-import com.mrcrayfish.vehicle.network.message.MessageSyncCosmetics;
-import com.mrcrayfish.vehicle.network.message.MessageSyncHeldVehicle;
-import com.mrcrayfish.vehicle.network.message.MessageSyncPlayerSeat;
-import com.mrcrayfish.vehicle.network.message.MessageSyncStorage;
+import com.mrcrayfish.vehicle.network.message.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 
@@ -37,10 +32,9 @@ public class ClientPlayHandler
             return;
 
         Entity entity = world.getEntity(message.getEntityId());
-        if(!(entity instanceof IStorage))
+        if(!(entity instanceof IStorage storage))
             return;
 
-        IStorage storage = (IStorage) entity;
         String[] keys = message.getKeys();
         CompoundTag[] tags = message.getTags();
         for(int i = 0; i < keys.length; i++)
@@ -67,9 +61,8 @@ public class ClientPlayHandler
         LazyOptional<IFluidHandler> optional = entity.getCapability(ForgeCapabilities.FLUID_HANDLER);
         optional.ifPresent(handler ->
         {
-            if(handler instanceof FluidTank)
+            if(handler instanceof FluidTank tank)
             {
-                FluidTank tank = (FluidTank) handler;
                 tank.setFluid(message.getStack());
             }
         });
@@ -81,9 +74,8 @@ public class ClientPlayHandler
         if(player != null)
         {
             Entity entity = player.getCommandSenderWorld().getEntity(message.getEntityId());
-            if(entity instanceof VehicleEntity)
+            if(entity instanceof VehicleEntity vehicle)
             {
-                VehicleEntity vehicle = (VehicleEntity) entity;
                 int oldSeatIndex = vehicle.getSeatTracker().getSeatIndex(message.getUuid());
                 vehicle.getSeatTracker().setSeatIndex(message.getSeatIndex(), message.getUuid());
                 Entity passenger = vehicle.getPassengers().stream().filter(e -> e.getUUID().equals(message.getUuid())).findFirst().orElse(null);

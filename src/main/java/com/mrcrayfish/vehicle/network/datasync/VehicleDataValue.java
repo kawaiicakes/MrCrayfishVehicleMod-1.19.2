@@ -6,7 +6,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.network.syncher.EntityDataAccessor;
 
 /**
- * A wrapper class for data parameters that are registered on vehicles. The returned value depends
+ * A wrapper class for data parameters that are registered on vehicles. The returned value depends on
  * if the local player is currently the controlling passenger of the vehicle. Since data parameters
  * update from server to client, tickServer sensitive logic uses the data can sometimes be messed up due
  * to latency. For a good experience driving vehicles, the physics need to be updated instantly with
@@ -14,7 +14,6 @@ import net.minecraft.network.syncher.EntityDataAccessor;
  * synced back to the client via a data parameter, you can see how this would affect driving, especially
  * on a high latency server. This also helps in the aid of reducing code, since remote client players
  * should continue to use the data parameter value, not the local value.
- *
  * Author: MrCrayfish
  */
 public class VehicleDataValue<T>
