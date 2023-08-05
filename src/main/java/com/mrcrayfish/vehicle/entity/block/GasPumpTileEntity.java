@@ -38,7 +38,7 @@ public class GasPumpTileEntity extends TileEntitySynced implements BlockEntityRe
 {
     @Override
     public @NotNull BlockEntity newBlockEntity(@NotNull BlockPos p_153215_, @NotNull BlockState p_153216_) {
-        return null;
+        return new GasPumpTileEntity(p_153215_, p_153216_);
     }
     private int fuelingEntityId;
     private Player fuelingEntity;

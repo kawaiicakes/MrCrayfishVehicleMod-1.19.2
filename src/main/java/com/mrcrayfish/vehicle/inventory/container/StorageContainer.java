@@ -1,15 +1,14 @@
 package com.mrcrayfish.vehicle.inventory.container;
 
-import com.mrcrayfish.vehicle.common.inventory.IStorage;
 import com.mrcrayfish.vehicle.common.inventory.StorageInventory;
 import com.mrcrayfish.vehicle.common.slot.SlotStorage;
 import com.mrcrayfish.vehicle.init.ModContainers;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Author: MrCrayfish
@@ -50,18 +49,19 @@ public class StorageContainer extends AbstractContainerMenu
     }
 
     @Override
-    public boolean stillValid(Player playerIn)
+    public boolean stillValid(@NotNull Player playerIn)
     {
         return this.storageInventory.stillValid(playerIn);
     }
 
+    @SuppressWarnings("ConstantValue")
     @Override
-    public ItemStack quickMoveStack(Player playerIn, int index)
+    public @NotNull ItemStack quickMoveStack(@NotNull Player playerIn, int index)
     {
         ItemStack itemstack = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
 
-        if(slot != null && slot.hasItem())
+        if(slot != null && slot.hasItem()) //FIXME: slot != null always returns true
         {
             ItemStack itemstack1 = slot.getItem();
             itemstack = itemstack1.copy();
@@ -92,7 +92,7 @@ public class StorageContainer extends AbstractContainerMenu
     }
 
     @Override
-    public void removed(Player playerIn)
+    public void removed(@NotNull Player playerIn)
     {
         super.removed(playerIn);
         this.storageInventory.stopOpen(playerIn);

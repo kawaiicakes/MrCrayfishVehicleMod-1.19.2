@@ -1,18 +1,21 @@
 package com.mrcrayfish.vehicle.inventory.container;
 
+import com.mrcrayfish.vehicle.crafting.ModRecipeTypes;
+import com.mrcrayfish.vehicle.entity.block.FluidExtractorTileEntity;
 import com.mrcrayfish.vehicle.init.ModContainers;
 import com.mrcrayfish.vehicle.inventory.container.slot.FuelSlot;
-import com.mrcrayfish.vehicle.entity.block.FluidExtractorTileEntity;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.Container;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.ForgeHooks;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Author: MrCrayfish
  */
+@SuppressWarnings("unused") //FIXME: all int fields are unused
 public class FluidExtractorContainer extends AbstractContainerMenu
 {
     private int extractionProgress;
@@ -52,13 +55,14 @@ public class FluidExtractorContainer extends AbstractContainerMenu
     }
 
     @Override
-    public boolean stillValid(Player playerIn)
+    public boolean stillValid(@NotNull Player playerIn)
     {
         return true;
     }
 
+    @SuppressWarnings("ConstantValue") //FIXME if(slot != null) always tests as true
     @Override
-    public ItemStack quickMoveStack(Player playerIn, int index)
+    public @NotNull ItemStack quickMoveStack(@NotNull Player playerIn, int index)
     {
         ItemStack stack = ItemStack.EMPTY;
         Slot slot = this.slots.get(index);
@@ -84,7 +88,7 @@ public class FluidExtractorContainer extends AbstractContainerMenu
                         return ItemStack.EMPTY;
                     }
                 }
-                else if(ForgeHooks.getBurnTime(slotStack) > 0)
+                else if(ForgeHooks.getBurnTime(slotStack, ModRecipeTypes.FLUID_EXTRACTOR.get()) > 0)
                 {
                     if(!this.moveItemStackTo(slotStack, 0, 1, false))
                     {
