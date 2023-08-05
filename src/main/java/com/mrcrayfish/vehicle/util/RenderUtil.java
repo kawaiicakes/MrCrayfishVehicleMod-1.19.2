@@ -1,23 +1,20 @@
 package com.mrcrayfish.vehicle.util;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.*;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.MatrixApplyingVertexBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Sheets;
-import com.mojang.blaze3d.vertex.BufferBuilder;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.resources.model.BakedModel;
 import net.minecraftforge.client.extensions.IForgeBakedModel;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.model.ModelBakery;
 import net.minecraft.client.resources.model.ModelResourceLocation;
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.core.Direction;
@@ -46,7 +43,7 @@ public class RenderUtil
     {
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferbuilder = tesselator.getBuilder();
-        bufferbuilder.begin(7, DefaultVertexFormat.POSITION_TEX);
+        bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
         bufferbuilder.vertex(x, y + height, 0).uv(((float) textureX * 0.00390625F), ((float) (textureY + height) * 0.00390625F)).endVertex();
         bufferbuilder.vertex(x + width, y + height, 0).uv(((float) (textureX + width) * 0.00390625F), ((float) (textureY + height) * 0.00390625F)).endVertex();
         bufferbuilder.vertex(x + width, y, 0).uv(((float) (textureX + width) * 0.00390625F), ((float) textureY * 0.00390625F)).endVertex();
@@ -69,20 +66,16 @@ public class RenderUtil
         float alphaEnd = (float)(rightColor & 255) / 255.0F;
         RenderSystem.disableTexture();
         RenderSystem.enableBlend();
-        RenderSystem.disableAlphaTest();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.shadeModel(7425);
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferbuilder = tesselator.getBuilder();
         bufferbuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        bufferbuilder.vertex((double)right, (double)top, 0).color(greenEnd, blueEnd, alphaEnd, redEnd).endVertex();
-        bufferbuilder.vertex((double)left, (double)top, 0).color(greenStart, blueStart, alphaStart, redStart).endVertex();
-        bufferbuilder.vertex((double)left, (double)bottom, 0).color(greenStart, blueStart, alphaStart, redStart).endVertex();
-        bufferbuilder.vertex((double)right, (double)bottom, 0).color(greenEnd, blueEnd, alphaEnd, redEnd).endVertex();
+        bufferbuilder.vertex(right, top, 0).color(greenEnd, blueEnd, alphaEnd, redEnd).endVertex();
+        bufferbuilder.vertex(left, top, 0).color(greenStart, blueStart, alphaStart, redStart).endVertex();
+        bufferbuilder.vertex(left, bottom, 0).color(greenStart, blueStart, alphaStart, redStart).endVertex();
+        bufferbuilder.vertex(right, bottom, 0).color(greenEnd, blueEnd, alphaEnd, redEnd).endVertex();
         tesselator.end();
-        RenderSystem.shadeModel(7424);
         RenderSystem.disableBlend();
-        RenderSystem.enableAlphaTest();
         RenderSystem.enableTexture();
     }
 
@@ -101,9 +94,9 @@ public class RenderUtil
     public static void renderColoredModel(IForgeBakedModel model, ItemTransforms.TransformType transformType, boolean leftHanded, PoseStack matrixStack, MultiBufferSource renderTypeBuffer, int color, int lightTexture, int overlayTexture)
     {
         matrixStack.pushPose();
-        net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(matrixStack, model, transformType, leftHanded);
-        matrixStack.translate(-0.5, -0.5, -0.5);
-        if(!model.isCustomRenderer())
+        net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(matrixStack, (BakedModel) model, transformType, leftHanded);
+        matrixStack.translate(-0.5, -0.5, -0.5); //FIXME: unchecked cast
+        if(!((BakedModel) model).isCustomRenderer())
         {
             VertexConsumer vertexBuilder = renderTypeBuffer.getBuffer(Sheets.cutoutBlockSheet());
             renderModel(model, ItemStack.EMPTY, color, lightTexture, overlayTexture, matrixStack, vertexBuilder);
@@ -114,12 +107,12 @@ public class RenderUtil
     public static void renderDamagedVehicleModel(IForgeBakedModel model, ItemTransforms.TransformType transformType, boolean leftHanded, PoseStack matrixStack, int stage, int color, int lightTexture, int overlayTexture)
     {
         matrixStack.pushPose();
-        net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(matrixStack, model, transformType, leftHanded);
-        matrixStack.translate(-0.5, -0.5, -0.5);
-        if(!model.isCustomRenderer())
+        net.minecraftforge.client.ForgeHooksClient.handleCameraTransforms(matrixStack, (BakedModel) model, transformType, leftHanded);
+        matrixStack.translate(-0.5, -0.5, -0.5); //FIXME unchecked cast
+        if(!((BakedModel) model).isCustomRenderer())
         {
             Minecraft mc = Minecraft.getInstance();
-            PoseStack.Entry entry = matrixStack.last();
+            PoseStack.Pose entry = matrixStack.last();
             VertexConsumer vertexBuilder = new MatrixApplyingVertexBuilder(mc.renderBuffers().crumblingBufferSource().getBuffer(ModelBakery.DESTROY_TYPES.get(stage)), entry.pose(), entry.normal());
             renderModel(model, ItemStack.EMPTY, color, lightTexture, overlayTexture, matrixStack, vertexBuilder);
         }

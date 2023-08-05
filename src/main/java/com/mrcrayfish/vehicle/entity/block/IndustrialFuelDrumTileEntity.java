@@ -13,6 +13,9 @@ import org.jetbrains.annotations.Nullable;
  */
 public class IndustrialFuelDrumTileEntity extends FuelDrumTileEntity
 {
+    public IndustrialFuelDrumTileEntity() {
+        super(ModTileEntities.INDUSTRIAL_FUEL_DRUM.get(), null, null, ModBlocks.INDUSTRIAL_FUEL_DRUM.get().getCapacity());
+    }
     public IndustrialFuelDrumTileEntity(BlockPos pos, BlockState state)
     {
         super(ModTileEntities.INDUSTRIAL_FUEL_DRUM.get(), pos, state, ModBlocks.INDUSTRIAL_FUEL_DRUM.get().getCapacity());

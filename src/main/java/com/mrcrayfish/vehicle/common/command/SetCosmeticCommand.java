@@ -4,9 +4,10 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mrcrayfish.vehicle.common.CosmeticTracker;
 import com.mrcrayfish.vehicle.entity.VehicleEntity;
-import net.minecraft.command.CommandSource;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.command.Commands;
 import net.minecraft.command.arguments.ResourceLocationArgument;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.resources.ResourceLocation;
@@ -19,7 +20,7 @@ import java.util.List;
  */
 public class SetCosmeticCommand
 {
-    public static void register(CommandDispatcher<CommandSource> dispatcher)
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher)
     {
         dispatcher.register(Commands.literal("setcosmetic")
             .requires(source -> source.hasPermission(2))
@@ -28,7 +29,7 @@ public class SetCosmeticCommand
                     .executes(SetCosmeticCommand::handle))));
     }
 
-    private static int handle(CommandContext<CommandSource> context)
+    private static int handle(CommandContext<CommandSourceStack> context)
     {
         Entity entity = context.getSource().getEntity();
         if(!(entity instanceof Player))

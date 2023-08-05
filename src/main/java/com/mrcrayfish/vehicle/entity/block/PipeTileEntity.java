@@ -36,6 +36,11 @@ public class PipeTileEntity extends TileEntitySynced
         super(tileEntityType, pos, state);
     }
 
+    public PipeTileEntity(BlockPos pos, BlockState state)
+    {
+        super(ModTileEntities.FLUID_PIPE.get(), pos, state);
+    }
+
     @Override
     @ParametersAreNonnullByDefault
     @Nullable

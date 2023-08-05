@@ -29,42 +29,25 @@ public class StateHelper
 
     private static BlockPos getBlockPosRelativeTo(LevelReader world, BlockPos pos, Direction facing, RelativeDirection dir)
     {
-        switch(dir)
-        {
-            case LEFT:
-                return pos.relative(facing.getClockWise());
-            case RIGHT:
-                return pos.relative(facing.getCounterClockWise());
-            case UP:
-                return pos.relative(facing);
-            case DOWN:
-                return pos.relative(facing.getOpposite());
-            default:
-                return pos;
-        }
+        return switch (dir) {
+            case LEFT -> pos.relative(facing.getClockWise());
+            case RIGHT -> pos.relative(facing.getCounterClockWise());
+            case UP -> pos.relative(facing);
+            case DOWN -> pos.relative(facing.getOpposite());
+            default -> pos;
+        };
     }
 
     private static RelativeDirection getDirectionRelativeTo(Direction thisBlock, Direction otherBlock)
     {
         int num = thisBlock.get2DDataValue() - otherBlock.get2DDataValue();
-        switch(num)
-        {
-            case -3:
-                return RelativeDirection.LEFT;
-            case -2:
-                return RelativeDirection.UP;
-            case -1:
-                return RelativeDirection.RIGHT;
-            case 0:
-                return RelativeDirection.DOWN;
-            case 1:
-                return RelativeDirection.LEFT;
-            case 2:
-                return RelativeDirection.UP;
-            case 3:
-                return RelativeDirection.RIGHT;
-        }
-        return RelativeDirection.NONE;
+        return switch (num) {
+            case -3, 1 -> RelativeDirection.LEFT;
+            case -2, 2 -> RelativeDirection.UP;
+            case -1, 3 -> RelativeDirection.RIGHT;
+            case 0 -> RelativeDirection.DOWN;
+            default -> RelativeDirection.NONE;
+        };
     }
 
     public enum RelativeDirection

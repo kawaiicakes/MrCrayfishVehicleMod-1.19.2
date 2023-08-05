@@ -2,10 +2,10 @@ package com.mrcrayfish.vehicle.init;
 
 import com.mrcrayfish.vehicle.Reference;
 import com.mrcrayfish.vehicle.world.storage.loot.functions.CopyFluidTanks;
-import net.minecraft.loot.ILootSerializer;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.storage.loot.Serializer;
+import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 
 /**
@@ -20,7 +20,7 @@ public class ModLootFunctions
     {
     }
 
-    private static LootItemFunctionType register(String id, ILootSerializer<? extends ILootFunction> serializer)
+    private static LootItemFunctionType register(String id, Serializer<? extends LootItemConditionalFunction> serializer)
     {
         return Registry.register(Registry.LOOT_FUNCTION_TYPE, new ResourceLocation(Reference.MOD_ID, id), new LootItemFunctionType(serializer));
     }

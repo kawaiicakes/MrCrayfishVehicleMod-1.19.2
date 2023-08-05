@@ -10,6 +10,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 /**
  * Author: MrCrayfish
  */
+@SuppressWarnings("unused") //FIXME: several unused
 public class ModSounds
 {
     public static final DeferredRegister<SoundEvent> REGISTER = DeferredRegister.create(ForgeRegistries.SOUND_EVENTS, Reference.MOD_ID);

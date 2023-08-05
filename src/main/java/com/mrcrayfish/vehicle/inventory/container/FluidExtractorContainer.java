@@ -20,7 +20,7 @@ public class FluidExtractorContainer extends AbstractContainerMenu
     private int maxFuelProgress;
     private int fluidLevel;
 
-    private FluidExtractorTileEntity fluidExtractor;
+    private final FluidExtractorTileEntity fluidExtractor;
 
     public FluidExtractorContainer(int windowId, Container playerInventory, FluidExtractorTileEntity fluidExtractor)
     {
