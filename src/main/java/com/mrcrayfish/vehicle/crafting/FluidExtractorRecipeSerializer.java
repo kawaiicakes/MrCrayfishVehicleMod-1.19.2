@@ -6,16 +6,18 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.crafting.CraftingHelper;
+import net.minecraftforge.registries.RegistryBuilder;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 
 /**
  * Author: MrCrayfish
  */
-public class FluidExtractorRecipeSerializer extends net.minecraftforge.registries.ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<FluidExtractorRecipe>
+public class FluidExtractorRecipeSerializer extends RegistryBuilder<RecipeSerializer<?>> implements RecipeSerializer<FluidExtractorRecipe>
 {
     @Override
-    public FluidExtractorRecipe fromJson(ResourceLocation recipeId, JsonObject json)
+    public @NotNull FluidExtractorRecipe fromJson(@NotNull ResourceLocation recipeId, JsonObject json)
     {
         if(!json.has("ingredient"))
         {
@@ -32,7 +34,7 @@ public class FluidExtractorRecipeSerializer extends net.minecraftforge.registrie
 
     @Nullable
     @Override
-    public FluidExtractorRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer)
+    public FluidExtractorRecipe fromNetwork(@NotNull ResourceLocation recipeId, FriendlyByteBuf buffer)
     {
         ItemStack ingredient = buffer.readItem();
         FluidEntry result = FluidEntry.read(buffer);

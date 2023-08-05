@@ -3,13 +3,15 @@ package com.mrcrayfish.vehicle.crafting;
 import com.google.common.collect.ImmutableList;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.item.crafting.RecipeSerializer;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.util.GsonHelper;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryBuilder;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -17,10 +19,10 @@ import java.util.Optional;
 /**
  * Author: MrCrayfish
  */
-public class WorkstationRecipeSerializer extends net.minecraftforge.registries.ForgeRegistryEntry<RecipeSerializer<?>> implements RecipeSerializer<WorkstationRecipe>
+public class WorkstationRecipeSerializer extends RegistryBuilder<RecipeSerializer<?>> implements RecipeSerializer<WorkstationRecipe>
 {
     @Override
-    public WorkstationRecipe fromJson(ResourceLocation recipeId, JsonObject parent)
+    public @NotNull WorkstationRecipe fromJson(@NotNull ResourceLocation recipeId, @NotNull JsonObject parent)
     {
         ImmutableList.Builder<WorkstationIngredient> builder = ImmutableList.builder();
         JsonArray input = GsonHelper.getAsJsonArray(parent, "materials");
@@ -35,7 +37,7 @@ public class WorkstationRecipeSerializer extends net.minecraftforge.registries.F
         }
         ResourceLocation vehicle = new ResourceLocation(GsonHelper.getAsString(parent, "vehicle"));
         Optional<EntityType<?>> optional = EntityType.byString(GsonHelper.getAsString(parent, "vehicle"));
-        if(!optional.isPresent())
+        if(optional.isEmpty())
         {
             throw new com.google.gson.JsonSyntaxException("Invalid vehicle entity: " + vehicle);
         }
@@ -44,9 +46,9 @@ public class WorkstationRecipeSerializer extends net.minecraftforge.registries.F
 
     @Nullable
     @Override
-    public WorkstationRecipe fromNetwork(ResourceLocation recipeId, FriendlyByteBuf buffer)
+    public WorkstationRecipe fromNetwork(@NotNull ResourceLocation recipeId, FriendlyByteBuf buffer)
     {
-        EntityType<?> entityType = ForgeRegistries.ENTITIES.getValue(buffer.readResourceLocation());
+        EntityType<?> entityType = ForgeRegistries.ENTITY_TYPES.getValue(buffer.readResourceLocation());
         ImmutableList.Builder<WorkstationIngredient> builder = ImmutableList.builder();
         int size = buffer.readVarInt();
         for(int i = 0; i < size; i++)
@@ -56,6 +58,7 @@ public class WorkstationRecipeSerializer extends net.minecraftforge.registries.F
         return new WorkstationRecipe(recipeId, entityType, builder.build());
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void toNetwork(FriendlyByteBuf buffer, WorkstationRecipe recipe)
     {

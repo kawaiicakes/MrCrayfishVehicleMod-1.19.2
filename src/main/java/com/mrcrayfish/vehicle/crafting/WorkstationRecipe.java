@@ -12,15 +12,16 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Author: MrCrayfish
  */
 public class WorkstationRecipe implements Recipe<WorkstationTileEntity>
 {
-    private ResourceLocation id;
-    private EntityType<?> vehicle;
-    private ImmutableList<WorkstationIngredient> materials;
+    private final ResourceLocation id;
+    private final EntityType<?> vehicle;
+    private final ImmutableList<WorkstationIngredient> materials;
 
     public WorkstationRecipe(ResourceLocation id, EntityType<?> vehicle, ImmutableList<WorkstationIngredient> materials)
     {
@@ -40,13 +41,13 @@ public class WorkstationRecipe implements Recipe<WorkstationTileEntity>
     }
 
     @Override
-    public boolean matches(WorkstationTileEntity inv, Level worldIn)
+    public boolean matches(@NotNull WorkstationTileEntity inv, @NotNull Level worldIn)
     {
         return false;
     }
 
     @Override
-    public ItemStack assemble(WorkstationTileEntity inv)
+    public @NotNull ItemStack assemble(@NotNull WorkstationTileEntity inv)
     {
         return ItemStack.EMPTY;
     }
@@ -58,27 +59,27 @@ public class WorkstationRecipe implements Recipe<WorkstationTileEntity>
     }
 
     @Override
-    public ItemStack getResultItem()
+    public @NotNull ItemStack getResultItem()
     {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public ResourceLocation getId()
+    public @NotNull ResourceLocation getId()
     {
         return this.id;
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer()
+    public @NotNull RecipeSerializer<?> getSerializer()
     {
         return ModRecipeSerializers.WORKSTATION.get();
     }
 
     @Override
-    public RecipeType<?> getType()
+    public @NotNull RecipeType<?> getType()
     {
-        return RecipeType.WORKSTATION;
+        return ModRecipeTypes.WORKSTATION.get();
     }
 
     public boolean hasMaterials(Player player)

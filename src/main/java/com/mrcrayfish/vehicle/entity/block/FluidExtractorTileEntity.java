@@ -177,7 +177,7 @@ public class FluidExtractorTileEntity extends TileFluidHandlerSynced implements 
 
     private boolean canFillWithFluid(ItemStack stack)
     {
-        return this.currentRecipe != null && this.currentRecipe.getIngredient().getItem() == stack.getItem() && this.tank.getFluidAmount() < this.tank.getCapacity() && (this.tank.isEmpty() || this.tank.getFluid().getFluid() == this.currentRecipe.getResult().getFluid()) && (this.tank.getFluidAmount() + this.currentRecipe.getResult().getAmount()) <= this.tank.getCapacity();
+        return this.currentRecipe != null && this.currentRecipe.getIngredient().getItem() == stack.getItem() && this.tank.getFluidAmount() < this.tank.getCapacity() && (this.tank.isEmpty() || this.tank.getFluid().getFluid() == this.currentRecipe.getResult().fluid()) && (this.tank.getFluidAmount() + this.currentRecipe.getResult().amount()) <= this.tank.getCapacity();
     }
 
     @OnlyIn(Dist.CLIENT)

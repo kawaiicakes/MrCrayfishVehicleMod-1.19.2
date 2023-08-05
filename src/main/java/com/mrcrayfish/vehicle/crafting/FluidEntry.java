@@ -11,47 +11,24 @@ import net.minecraftforge.registries.ForgeRegistries;
 /**
  * Author: MrCrayfish
  */
-public class FluidEntry
-{
-    private Fluid fluid;
-    private int amount;
+@SuppressWarnings("deprecation")
+public record FluidEntry(Fluid fluid, int amount) {
 
-    public FluidEntry(Fluid fluid, int amount)
-    {
-        this.fluid = fluid;
-        this.amount = amount;
-    }
-
-    public Fluid getFluid()
-    {
-        return this.fluid;
-    }
-
-    public int getAmount()
-    {
-        return this.amount;
-    }
-
-    public FluidStack createStack()
-    {
+    public FluidStack createStack() {
         return new FluidStack(this.fluid, this.amount);
     }
 
-    public static FluidEntry fromJson(JsonObject object)
-    {
-        if(!object.has("fluid") || !object.has("amount"))
-        {
+    public static FluidEntry fromJson(JsonObject object) {
+        if (!object.has("fluid") || !object.has("amount")) {
             throw new com.google.gson.JsonSyntaxException("Invalid fluid entry, missing fluid and amount");
         }
         ResourceLocation fluidId = new ResourceLocation(GsonHelper.getAsString(object, "fluid"));
         Fluid fluid = ForgeRegistries.FLUIDS.getValue(fluidId);
-        if(fluid == null)
-        {
-            throw new com.google.gson.JsonSyntaxException("Invalid fluid entry, unknown fluid: " + fluidId.toString());
+        if (fluid == null) {
+            throw new com.google.gson.JsonSyntaxException("Invalid fluid entry, unknown fluid: " + fluidId);
         }
         int amount = GsonHelper.getAsInt(object, "amount");
-        if(amount < 1)
-        {
+        if (amount < 1) {
             throw new com.google.gson.JsonSyntaxException("Invalid fluid entry, amount must be more than zero");
         }
         return new FluidEntry(fluid, amount);
@@ -65,21 +42,18 @@ public class FluidEntry
         return object;
     }
 
-    public void write(FriendlyByteBuf buffer)
-    {
+    public void write(FriendlyByteBuf buffer) {
         buffer.writeUtf(this.fluid.builtInRegistryHolder().key().location().toString(), 256);
         buffer.writeInt(this.amount);
     }
 
-    public static FluidEntry read(FriendlyByteBuf buffer)
-    {
+    public static FluidEntry read(FriendlyByteBuf buffer) {
         Fluid fluid = ForgeRegistries.FLUIDS.getValue(new ResourceLocation(buffer.readUtf(256)));
         int amount = buffer.readInt();
         return new FluidEntry(fluid, amount);
     }
 
-    public static FluidEntry of(Fluid fluid, int amount)
-    {
+    public static FluidEntry of(Fluid fluid, int amount) {
         return new FluidEntry(fluid, amount);
     }
 }

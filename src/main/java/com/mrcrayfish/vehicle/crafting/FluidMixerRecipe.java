@@ -10,18 +10,20 @@ import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
 /**
  * Author: MrCrayfish
  */
+@SuppressWarnings("deprecation")
 public class FluidMixerRecipe implements Recipe<FluidMixerTileEntity>
 {
-    private ResourceLocation id;
-    private FluidEntry[] inputs;
-    private ItemStack ingredient;
-    private FluidEntry result;
+    private final ResourceLocation id;
+    private final FluidEntry[] inputs;
+    private final ItemStack ingredient;
+    private final FluidEntry result;
     private int hashCode;
 
     public FluidMixerRecipe(ResourceLocation id, FluidEntry fluidOne, FluidEntry fluidTwo, ItemStack ingredient, FluidEntry result)
@@ -52,9 +54,9 @@ public class FluidMixerRecipe implements Recipe<FluidMixerTileEntity>
         for(int i = 0; i < 2; i++)
         {
             FluidEntry entry = this.inputs[i];
-            if(entry.getFluid().equals(fluid))
+            if(entry.fluid().equals(fluid))
             {
-                return entry.getAmount();
+                return entry.amount();
             }
         }
         return -1;
@@ -63,18 +65,17 @@ public class FluidMixerRecipe implements Recipe<FluidMixerTileEntity>
     @Override
     public boolean equals(Object obj)
     {
-        if(!(obj instanceof FluidMixerRecipe)) return false;
-        FluidMixerRecipe other = (FluidMixerRecipe) obj;
+        if(!(obj instanceof FluidMixerRecipe other)) return false;
         int index = -1;
         for(int i = 0; i < 2; i++)
         {
-            if(other.inputs[0].getFluid().equals(this.inputs[i].getFluid()))
+            if(other.inputs[0].fluid().equals(this.inputs[i].fluid()))
             {
                 index = i == 1 ? 0 : 1;
             }
         }
         if(index == -1) return false;
-        if(!other.inputs[1].getFluid().equals(this.inputs[index].getFluid())) return false;
+        if(!other.inputs[1].fluid().equals(this.inputs[index].fluid())) return false;
         return InventoryUtil.areItemStacksEqualIgnoreCount(other.ingredient, this.ingredient);
     }
 
@@ -83,13 +84,13 @@ public class FluidMixerRecipe implements Recipe<FluidMixerTileEntity>
     {
         if(this.hashCode == 0)
         {
-            this.hashCode = Objects.hash(this.inputs[0].getFluid().builtInRegistryHolder().key().location(), this.inputs[1].getFluid().builtInRegistryHolder().key().location(), this.ingredient.getItem().builtInRegistryHolder().key().location());
+            this.hashCode = Objects.hash(this.inputs[0].fluid().builtInRegistryHolder().key().location(), this.inputs[1].fluid().builtInRegistryHolder().key().location(), this.ingredient.getItem().builtInRegistryHolder().key().location());
         }
         return this.hashCode;
     }
 
     @Override
-    public boolean matches(FluidMixerTileEntity fluidMixer, Level worldIn)
+    public boolean matches(FluidMixerTileEntity fluidMixer, @NotNull Level worldIn)
     {
         if(fluidMixer.getEnderSapTank().isEmpty() || fluidMixer.getBlazeTank().isEmpty())
             return false;
@@ -97,19 +98,19 @@ public class FluidMixerRecipe implements Recipe<FluidMixerTileEntity>
         int index = -1;
         for(int i = 0; i < 2; i++)
         {
-            if(inputOne.equals(this.inputs[i].getFluid()))
+            if(inputOne.equals(this.inputs[i].fluid()))
             {
                 index = i == 1 ? 0 : 1;
             }
         }
         if(index == -1) return false;
         Fluid inputTwo = fluidMixer.getBlazeTank().getFluid().getFluid();
-        if(!inputTwo.equals(this.inputs[index].getFluid())) return false;
+        if(!inputTwo.equals(this.inputs[index].fluid())) return false;
         return InventoryUtil.areItemStacksEqualIgnoreCount(fluidMixer.getItem(FluidMixerTileEntity.SLOT_INGREDIENT), this.ingredient);
     }
 
     @Override
-    public ItemStack assemble(FluidMixerTileEntity inv)
+    public @NotNull ItemStack assemble(@NotNull FluidMixerTileEntity inv)
     {
         return ItemStack.EMPTY;
     }
@@ -121,26 +122,26 @@ public class FluidMixerRecipe implements Recipe<FluidMixerTileEntity>
     }
 
     @Override
-    public ItemStack getResultItem()
+    public @NotNull ItemStack getResultItem()
     {
         return ItemStack.EMPTY;
     }
 
     @Override
-    public ResourceLocation getId()
+    public @NotNull ResourceLocation getId()
     {
         return this.id;
     }
 
     @Override
-    public RecipeSerializer<?> getSerializer()
+    public @NotNull RecipeSerializer<?> getSerializer()
     {
         return ModRecipeSerializers.FLUID_MIXER.get();
     }
 
     @Override
-    public RecipeType<?> getType()
+    public @NotNull RecipeType<?> getType()
     {
-        return RecipeType.FLUID_MIXER;
+        return ModRecipeTypes.FLUID_MIXER.get();
     }
 }

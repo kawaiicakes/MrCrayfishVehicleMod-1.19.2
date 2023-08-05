@@ -346,7 +346,7 @@ public class FluidMixerTileEntity extends TileEntitySynced implements Container,
             return false;
         if(this.tankFuelium.getFluidAmount() >= this.tankFuelium.getCapacity())
             return false;
-        return this.tankFuelium.getFluidAmount() + recipe.getResult().getAmount() <= this.tankFuelium.getCapacity();
+        return this.tankFuelium.getFluidAmount() + recipe.getResult().amount() <= this.tankFuelium.getCapacity();
     }
 
     @Override
@@ -547,7 +547,7 @@ public class FluidMixerTileEntity extends TileEntitySynced implements Container,
         {
             for(FluidEntry entry : recipe.getInputs())
             {
-                if(entry.getFluid() == stack.getFluid())
+                if(entry.fluid() == stack.getFluid())
                 {
                     return true;
                 }
